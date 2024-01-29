@@ -1,0 +1,8 @@
+name: venue_author-images
+query: "# title: Author images for a specific venue\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n#defaultView:ImageGrid\nSELECT (SAMPLE(?image_) AS ?image) ?author ?authorLabel\
+  \ ?count\nWITH {\n  SELECT ?author (COUNT(?work) AS ?count) WHERE {\n    ?work wdt:P1433\
+  \ target:;\n          wdt:P50 ?author .\n  }\n  GROUP BY ?author\n} AS %authors\n\
+  WHERE {\n  INCLUDE %authors\n  ?author wdt:P18 ?image_ .\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl.no,ru,sv,zh\" . } \n\
+  }\nGROUP BY ?author ?authorLabel ?count\nORDER BY DESC(?count)\nLIMIT 50  "

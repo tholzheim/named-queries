@@ -1,0 +1,17 @@
+name: chemical-class_related-chemicals
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?mol ?molLabel\
+  \ ?InChIKey ?CAS ?CASUrl ?ChemSpider ?ChemSpiderUrl ?PubChem_CID ?PubChem_CIDUrl\
+  \ WITH {\nSELECT DISTINCT ?mol WHERE {\n  ?mol wdt:P279* target: .\n  MINUS { []\
+  \ wdt:P279 ?mol }\n} LIMIT 500\n} AS %result\nWHERE {\nINCLUDE %result\nOPTIONAL\
+  \ { ?mol wdt:P235 ?InChIKey }\nOPTIONAL {\n  VALUES ?CASIDdir { wdt:P231 }\n  ?mol\
+  \ ?CASIDdir ?CAS .\n  OPTIONAL {\n    ?CASIDpred wikibase:directClaim ?CASIDdir\
+  \ .\n    ?CASIDpred wdt:P1630 ?CASformatterurl .\n  }\n  BIND(IRI(REPLACE(?CASformatterurl,\
+  \ '\\\\\\\\$1', str(?CAS))) AS ?CASUrl).\n}\nOPTIONAL {\n  VALUES ?IDdir { wdt:P661\
+  \ }\n  ?mol ?IDdir ?ChemSpider .\n  OPTIONAL {\n    ?IDpred wikibase:directClaim\
+  \ ?IDdir .\n    ?IDpred wdt:P1630 ?formatterurl .\n  }\n  BIND(IRI(REPLACE(?formatterurl,\
+  \ '\\\\\\\\$1', str(?ChemSpider))) AS ?ChemSpiderUrl).\n}\nOPTIONAL { ?mol wdt:P662\
+  \ ?PubChem_CID }\nOPTIONAL {\n  VALUES ?PCIDdir { wdt:P662 }\n  ?mol ?PCIDdir ?PubChem_CID\
+  \ .\n  OPTIONAL {\n    ?PCIDpred wikibase:directClaim ?PCIDdir .\n    ?PCIDpred\
+  \ wdt:P1630 ?PCformatterurl .\n  }\n  BIND(IRI(REPLACE(?PCformatterurl, '\\\\\\\\\
+  $1', str(?PubChem_CID))) AS ?PubChem_CIDUrl).\n}\nSERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en\". }\n}\n"

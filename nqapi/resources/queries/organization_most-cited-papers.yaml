@@ -1,0 +1,12 @@
+name: organization_most-cited-papers
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n# Bubble chart of most cited works of first author associated\n# with\
+  \ an organization\nSELECT\n  ?count ?work ?workLabel\nWITH {\n  # Find researchers\
+  \ associated with the organization and count\n  # the number of citations.\n  SELECT\n\
+  \    (COUNT(DISTINCT ?citing_work) AS ?count)\n    ?work\n  WHERE {\n    ?researcher\
+  \ wdt:P108 | wdt:P463 | (wdt:P1416 / wdt:P361*) target: .\n    ?work p:P50 ?researcher_statement\
+  \ .\n    ?researcher_statement ps:P50 ?researcher .\n    ?researcher_statement pq:P1545\
+  \ \"1\" .\n    ?citing_work wdt:P2860 ?work .\n  }\n  GROUP BY ?work           \
+  \        \n  ORDER BY DESC(?count)\n  LIMIT 20\n} AS %works\nWHERE {\n  # Label\
+  \ the works\n  INCLUDE %works\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" .\n  }\n}\nORDER BY DESC(?count)\n"

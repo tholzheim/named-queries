@@ -1,0 +1,6 @@
+name: work_associated-images
+query: "#defaultView:ImageGrid\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT DISTINCT ?image WHERE {\n  {\n    # Images from whatever property\
+  \ value is linked.\n    \n    # Excluded \"different from\" property and take all\
+  \ other properties\n    target: !wdt:P1889 ?item .\n\n    ?item wdt:P18 ?image .\
+  \ \n  }\n}   \n"

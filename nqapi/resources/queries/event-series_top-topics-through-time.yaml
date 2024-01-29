@@ -1,0 +1,12 @@
+name: event-series_top-topics-through-time
+query: "#defaultView:AreaChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?year\n  ?works\n  ?topic ?topicLabel\nWITH {\n  SELECT \n\
+  \    ?work\n  WHERE {\n    ?work wdt:P1433 / wdt:P4745 / (wdt:P179 | wdt:P31) target:\
+  \ .\n  }\n} AS %works\nWITH {\n  SELECT\n    (COUNT(?work) AS ?count)\n    ?topic\n\
+  \  WHERE {\n    INCLUDE %works\n    ?work wdt:P921 ?topic .\n  }\n  GROUP BY ?topic\n\
+  \  ORDER BY DESC(?count)\n  LIMIT 5\n} AS %topics\nWITH {\n  SELECT\n    ?year \n\
+  \    (COUNT(?work) AS ?works)\n    ?topic\n  WHERE {\n    INCLUDE %works\n    INCLUDE\
+  \ %topics\n    ?work wdt:P921 ?topic ;\n          wdt:P577 ?publication_datetime\
+  \ .\n    BIND(STR(YEAR(?publication_datetime)) AS ?year)\n  }\n  GROUP BY ?year\
+  \ ?topic\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY ?year"

@@ -1,0 +1,10 @@
+name: gene_variants
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?variant\
+  \ ?variantLabel ?variantDescription\n  ?types\nWITH {\n  SELECT ?variant ?type\n\
+  \  WHERE {\n    ?variant wdt:P3433 target:\n  }\n} AS %variants\nWITH {\n  SELECT\
+  \ ?variant (GROUP_CONCAT(?type_label; separator=\" // \") AS ?types) WHERE {\n \
+  \   INCLUDE %variants\n    OPTIONAL {\n      ?variant wdt:P279 ?variantType . \n\
+  \      ?variantType rdfs:label ?type_label .  FILTER (lang(?type_label) = 'en')\n\
+  \    }\n  }\n  GROUP BY ?variant\n} AS %result \nWHERE {\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  }"

@@ -1,0 +1,12 @@
+name: protein_similar-proteins
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count ?protein\
+  \ ?proteinLabel ?species ?speciesLabel (?functions AS ?property_value)\nWITH {\n\
+  \  SELECT ?protein (COUNT(?function) AS ?count)\n         (GROUP_CONCAT(?function_label;\
+  \ separator=\" // \") AS ?functions)\n  WHERE {\n    BIND(target: AS ?query_protein)\n\
+  \    ?query_protein wdt:P680 | wdt:P681 | wdt:P682 | wdt:P129 ?function .\n    FILTER\
+  \ (?query_protein != ?protein)\n    ?protein wdt:P680 | wdt:P681 | wdt:P682 | wdt:P129\
+  \ ?function . \n    ?function rdfs:label ?function_label FILTER(lang(?function_label)\
+  \ = \"en\")\n  }\n  GROUP BY ?protein\n} AS %result \nWHERE {\n  INCLUDE %result\n\
+  \  OPTIONAL { ?protein wdt:P703 ?species . }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\nLIMIT\
+  \ 500"

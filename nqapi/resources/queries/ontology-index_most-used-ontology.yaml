@@ -1,0 +1,10 @@
+name: ontology-index_most-used-ontology
+query: "SELECT\n  ?count\n  ?ontology ?ontologyLabel ?ontologyUrl\n  ?described_by_example\
+  \ ?described_by_exampleLabel\n  ?example_use ?example_useLabel\nWITH {\n  SELECT\n\
+  \    (COUNT(DISTINCT ?work) AS ?count)\n    ?ontology\n    (CONCAT(\"/ontology/\"\
+  , SUBSTR(STR(?ontology), 32)) AS ?ontologyUrl)\n    (SAMPLE(?described_by) AS ?described_by_example)\n\
+  \    (SAMPLE(?work) AS ?example_use)\n  WHERE {\n    ?work wdt:P4510 ?ontology .\
+  \ \n    ?ontology wdt:P31/wdt:P279* wd:Q324254 . \n    OPTIONAL { ?ontology wdt:P1343\
+  \ ?described_by . }\n  }\n  GROUP BY ?ontology\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n}\nORDER BY DESC(?count)\nLIMIT 500    \n"

@@ -1,0 +1,10 @@
+name: event_related-events-people
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?score\
+  \ ?event ?eventLabel ?eventDescription\n  ?example_person ?example_personLabel\n\
+  WHERE {\n  { \n    SELECT\n      (COUNT(DISTINCT ?person) AS ?score) ?event\n  \
+  \    (SAMPLE(?person) AS ?example_person)\n    WHERE {\n      ?person ^wdt:P823\
+  \ | ^wdt:P664 | wdt:P1344 | ^wdt:P710 | (^wdt:P98 / wdt:P4745) | (^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 ) | ^wdt:P5804 target: , ?event .\n      FILTER (?event != target:)\n\
+  \    }\n    GROUP BY ?event\n    ORDER BY DESC(?score)\n    LIMIT 200\n  } \n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?score)\n"

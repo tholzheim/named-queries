@@ -1,0 +1,14 @@
+name: author-curation_missing-citing-author-items
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  # Number\
+  \ of works with the coauthor\n  ?count\n\n  # The citing author as a string, - rather\
+  \ than as an item\n  ?citing_author\n\n  # Build URL to the Author disambiguator\
+  \ tool\n  (CONCAT(\n      'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \      ENCODE_FOR_URI(?citing_author)) AS ?resolver_url)\n\n  ?example_citing_work\
+  \ ?example_citing_workLabel\n  (CONCAT(\"/work/\", SUBSTR(STR(?example_citing_work),\
+  \ 32)) AS ?example_citing_workUrl)\nWITH {\n  SELECT\n    (COUNT(?work) as ?count)\n\
+  \    ?citing_author\n    (SAMPLE(?citing_work) AS ?example_citing_work) \n  WHERE\
+  \ {\n    ?work wdt:P50 target: .\n    ?citing_work wdt:P2860 ?work .\n    ?citing_work\
+  \ wdt:P2093 ?citing_author .\n  }\n  GROUP BY ?citing_author\n} AS %result\nWHERE\
+  \ {\n  INCLUDE %result\n  # Label the results\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?count)\n\
+  LIMIT 1000"

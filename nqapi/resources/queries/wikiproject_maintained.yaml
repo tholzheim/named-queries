@@ -1,0 +1,6 @@
+name: wikiproject_maintained
+query: "SELECT ?type ?typeLabel ?count WITH {\n    SELECT DISTINCT ?type (COUNT(?item)\
+  \ AS ?count) WHERE {\n    ?item wdt:P6104 wd:{{ q }};\n            (wdt:P31|wdt:P279)\
+  \ ?type.\n    }\n    GROUP BY ?type ?count\n    ORDER BY DESC (?count)\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,de,es,fr,it,sv,uk,zh\". }\n}\nORDER BY DESC (?count)"

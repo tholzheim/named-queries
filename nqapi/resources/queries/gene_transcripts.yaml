@@ -1,0 +1,8 @@
+name: gene_transcripts
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?transcript_ID\n\
+  \  ?reference ?referenceLabel ?referenceDescription\nWITH {\n  SELECT ?transcript_ID\
+  \ ?reference\n  WHERE {\n      target: wdt:P31 wd:Q7187;\n                 p:P704\
+  \ ?transcriptid_statement .\n    ?transcriptid_statement ps:P704 ?transcript_ID\
+  \ ;\n                            prov:wasDerivedFrom/pr:P248 ?reference .\n  }\n\
+  } AS %result \nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}"

@@ -1,0 +1,8 @@
+name: chemical_relates
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: related\
+  \ chemical structures\nSELECT ?mol ?molLabel ?InChIKey ?CAS ?ChemSpider ?PubChem_CID\
+  \ WHERE {\n  target: wdt:P235 ?queryKey .\n  ?mol wdt:P235 ?InChIKey .\n  OPTIONAL\
+  \ { ?mol wdt:P231 ?CAS }\n  OPTIONAL { ?mol wdt:P661 ?ChemSpider }\n  OPTIONAL {\
+  \ ?mol wdt:P662 ?PubChem_CID }\n  FILTER (regex(str(?InChIKey), concat(\"^\", substr($queryKey,1,14),\
+  \ \"-\")))\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\"\
+  . }\n}\n"

@@ -1,0 +1,7 @@
+name: author_citations-by-year
+query: "#defaultView:BarChart\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?year (count(distinct ?citing_work) as ?count) ?kind  WHERE {\n\
+  \  ?work wdt:P50 target: .\n  ?citing_work wdt:P2860 ?work .\n  bind(if (exists\
+  \ { ?citing_work wdt:P50 target: }, \"self-citations\", \"citations from others\"\
+  ) as ?kind)\n  ?citing_work wdt:P577 ?date .\n  BIND(str(YEAR(?date)) AS ?year)\n\
+  } group by ?year ?kind\norder by desc(?year)\n"

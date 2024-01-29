@@ -1,0 +1,10 @@
+name: printer-index_map
+query: "#defaultView:Map{\"layer\": \"?counts\"}\nSELECT\n  ?geo\n  ?printer ?printerLabel\
+  \ ?printerDescription\n  ?counts\n  ?example_work ?example_workLabel\nWHERE {\n\
+  \  hint:Query hint:optimizer \"None\".\n  {\n    SELECT\n      (COUNT(?work) AS\
+  \ ?count)\n      ?printer\n      (SAMPLE(?work) AS ?example_work)\n    WHERE {\n\
+  \      ?work wdt:P872 ?printer .\n    }\n    GROUP BY ?printer\n  }\n  BIND(IF(?count\
+  \ = 1, \"1\", IF(?count <= 5, \"2-5\", IF(?count <= 10, \"6-10\", \"10+\"))) AS\
+  \ ?counts)\n  ?printer wdt:P159? / wdt:P625 ?geo\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,it,jp,nl,no,ru,sv,zh\". }\n\
+  }\nORDER BY DESC(?count)\nLIMIT 1000\n"

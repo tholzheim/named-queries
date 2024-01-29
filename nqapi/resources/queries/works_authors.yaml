@@ -1,0 +1,8 @@
+name: works_authors
+query: "SELECT\n  ?count\n  ?author ?authorLabel\n  ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT\n    (COUNT(?work) AS ?count)\n    ?author\n    (SAMPLE(?work)\
+  \ AS ?example_work)\n  WHERE {\n    VALUES ?work { {% for q in qs %} wd:{{ q }}\
+  \ {% endfor %} }\n    ?work wdt:P50 ?author .\n  }\n  GROUP BY ?author\n  ORDER\
+  \ BY DESC(?count)\n  LIMIT 200\n} AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE\
+  \ wikibase:label {\n    bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n  }\nORDER BY DESC(?count)"

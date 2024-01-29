@@ -1,0 +1,11 @@
+name: publisher_citations-works
+query: "#defaultView:ScatterChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?work_count ?citation_count ?journal ?journalLabel \nWITH {\n\
+  \  SELECT ?work_count ?citation_count ?journal {\n    {\n      SELECT ?journal (COUNT(?work)\
+  \ AS ?work_count) {\n  \t    ?journal wdt:P123 target: .\n  \t    ?work wdt:P1433\
+  \ ?journal .\n      }\n      GROUP BY ?journal \n    }\n    {\n      SELECT ?journal\
+  \ (COUNT(?citing_work) AS ?citation_count) {\n  \t    ?journal wdt:P123 target:\
+  \ .\n  \t    ?work wdt:P1433 ?journal .\n        ?citing_work wdt:P2860 ?work .\
+  \ \n      }\n      GROUP BY ?journal \n    } \n  }\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  \ . } \n}\n"

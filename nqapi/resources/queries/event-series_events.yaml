@@ -1,0 +1,16 @@
+name: event-series_events
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: List of\
+  \ event and proceedings for a specific event series\nSELECT DISTINCT \n  (SAMPLE(?years)\
+  \ AS ?year)\n  (SAMPLE(?ordinal) AS ?ordinal)\n  (SAMPLE(?short_names) AS ?short_name)\n\
+  \  ?event ?eventLabel (CONCAT(\"/event/\", SUBSTR(STR(?event), 32)) AS ?eventUrl)\n\
+  \  ?proceedings ?proceedingsLabel (CONCAT(\"/venue/\", SUBSTR(STR(?proceedings),\
+  \ 32)) AS ?proceedingsUrl)\nWHERE {\n  {\n    ?event wdt:P179 | wdt:P31 target:\
+  \ .\n    OPTIONAL {\n      ?event wdt:P585 | wdt:P580 ?datetime .\n      BIND(YEAR(?datetime)\
+  \ AS ?years)\n    }\n    OPTIONAL {\n      ?event wdt:P1813 ?short_names\n    }\n\
+  \    OPTIONAL {\n      ?proceedings wdt:P4745 ?event\n    }\n    OPTIONAL{\n   \
+  \   ?event p:P179/pq:P1545 ?ordinal\n    }\n  }\n  UNION\n  {\n    # proceedings\
+  \ even if the event is not there!!!\n    ?proceedings ( wdt:P179 / wdt:P4745 ) target:\
+  \ .\n    OPTIONAL {\n      ?proceedings wdt:P577 ?datetime .\n      BIND(YEAR(?datetime)\
+  \ AS ?years)    \n    }\n  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n  }\nGROUP BY ?event ?year ?eventLabel\
+  \ ?proceedings ?proceedingsLabel\nORDER BY DESC(?year)\n"

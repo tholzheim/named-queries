@@ -1,0 +1,22 @@
+name: author_publications-per-year
+query: "#defaultView:BarChart\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\n# Inspired from LEGOLAS - http://abel.lis.illinois.edu/legolas/\n# Shubhanshu\
+  \ Mishra, Vetle Torvik\nselect ?year (count(?work) as ?number_of_publications) ?role\
+  \ where {\n  {\n    select (str(?year_) as ?year) (0 as ?pages) (\"_\" as ?role)\
+  \ where {\n      # default values = 0\n      ?year_item wdt:P31 wd:Q577 . \n   \
+  \   ?year_item wdt:P585 ?date .\n      bind(year(?date) as ?year_)\n      {\n  \
+  \      select (min(?year_) as ?earliest_year)  (max(?year_) as ?latest_year) where\
+  \ {\n          ?work wdt:P50 target: .\n          ?work wdt:P577 ?publication_date\
+  \ . \n          bind(year(?publication_date) as ?year_)\n        }\n      }\n  \
+  \    bind(year(now())+1 as ?next_year)\n      filter (?year_ >= ?earliest_year &&\
+  \ ?year_ <= ?latest_year)\n    }\n  }\n  union {\n  {\n    select ?work (min(?years)\
+  \ as ?year) (count(?coauthors) as ?number_of_authors) ?author_number where {\n \
+  \     ?work (p:P50|p:P2093) ?author_statement . \n      ?author_statement ps:P50\
+  \ target: .\n      optional { ?author_statement pq:P1545 ?author_number . }\n  \
+  \    ?work (wdt:P50|wdt:P2093) ?coauthors . \n      ?work wdt:P577 ?dates .\n  \
+  \    bind(str(year(?dates)) as ?years) .\n    }\n    group by ?work ?author_number\n\
+  \  }\n  bind(coalesce(if(?number_of_authors = 1,\n            'Solo author',\n \
+  \           if(xsd:integer(?author_number) = 1,\n               'First author',\n\
+  \               if(xsd:integer(?author_number) = ?number_of_authors,\n         \
+  \         'Last author',\n                  'Middle author'))), 'Unknown')\n   \
+  \    as ?role)\n   }\n}\ngroup by ?year ?role\norder by ?year\n"

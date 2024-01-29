@@ -1,0 +1,6 @@
+name: gene_proteins
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?protein\
+  \ ?proteinLabel ?proteinDescription\nWITH {\n  SELECT ?protein\n  WHERE {\n    target:\
+  \ wdt:P31 wd:Q7187 ;\n      wdt:P688 ?protein .\n  }\n} AS %result \nWHERE {\n \
+  \ INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}"

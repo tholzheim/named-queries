@@ -1,0 +1,16 @@
+name: location_nearby-locations-as-topics-in-works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (ROUND(1000\
+  \ * ?distance_) / 1000 AS ?distance)\n  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work),\
+  \ 32)) AS ?workUrl)\n  ?location ?locationLabel (CONCAT(\"/topic/\", SUBSTR(STR(?location),\
+  \ 32)) AS ?locationUrl)\nWITH {\n  SELECT\n    ?work ?location\n    (min(?distances)\
+  \ AS ?distance_)\n  WHERE {\n    ?work wdt:P921 ?location . \n\n    ?location p:P625\
+  \ ?other_geo_statement . \n\n    # Some locations have unknown geocoordinates indicated\
+  \ with novalue\n    # psv will remove them. \n    ?other_geo_statement ps:P625 ?other_geo\
+  \ .\n    ?other_geo_statement psv:P625 [] .\n\n    # Remove articles from encyclopedia\
+  \ and dictionaries\n    # Filter is more expensive when applied here. \n    MINUS\
+  \ { ?work wdt:P31 wd:Q17329259 }\n    MINUS { ?work wdt:P31 wd:Q4423781 }\n   \n\
+  \    target: wdt:P159* / wdt:P625 ?geo .\n    BIND(geof:distance(?other_geo, ?geo)\
+  \ AS ?distances)\n  }\n  GROUP BY ?work ?location\n  ORDER BY ?distance_\n  LIMIT\
+  \ 500\n} AS %results\nWHERE {\n  INCLUDE %results\n          \n  # Label the result\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,cs,da,de,es,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY ?distance\n"

@@ -1,0 +1,15 @@
+name: event_topic-scores
+query: "# Topics of works authored by people associated with an event\n\nPREFIX target:\
+  \ <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?score ?topic ?topicLabel ?topicDescription\n\
+  WITH {\n  SELECT\n    DISTINCT ?person\n  WHERE {\n    {\n      # speaker, organizer,\
+  \ program committee member\n      target: wdt:P823 | wdt:P664 | wdt:P5804 ?person\
+  \ .\n    }\n    UNION\n    {\n      # participant\n      ?person wdt:P1344 | ^wdt:P710\
+  \ target: .\n    }\n    UNION\n    {\n      # author\n      ?person ^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 target: .\n    }\n  }\n} AS %people  \nWITH {\n  SELECT\n    (SUM(?score_)\
+  \ AS ?score) ?topic\n  WHERE {\n    {\n      target: wdt:P921 ?topic .\n      BIND(50\
+  \ AS ?score_)\n    }\n    UNION\n    {\n      INCLUDE %people\n      ?person ^wdt:P50\
+  \ / wdt:P921 ?topic .\n      BIND(1 AS ?score_)\n    }\n    UNION\n    {\n     \
+  \ target: ^wdt:P4745 / ^wdt:P1433 / wdt:P921 ?topic .\n      BIND(7 AS ?score_)\n\
+  \    }\n  }\n  GROUP BY ?topic\n} AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?score)\nLIMIT 200\n"

@@ -1,0 +1,12 @@
+name: authors_co-author
+query: "#defaultView:Graph\nPREFIX gas: <http://www.bigdata.com/rdf/gas#>\n\nSELECT\
+  \ ?author ?authorLabel ?work ?workLabel \nWITH {\n SELECT ?work ?author WHERE {\
+  \ \n  { }\n  {% for q1 in qs %} {% for q2 in qs %} {% if q1 < q2 %} UNION {\n  \
+  \ SELECT ?work ?author WHERE {\n    SERVICE gas:service {\n     gas:program gas:gasClass\
+  \ \"com.bigdata.rdf.graph.analytics.BFS\" ;\n           gas:in wd:{{ q1 }} ;\n \
+  \          gas:target wd:{{ q2 }} ;\n           gas:traversalDirection \"Undirected\"\
+  \ ;\n           gas:out ?work ;\n           gas:linkType wdt:P50 ;\n          gas:maxVisited\
+  \ 5000 .\n    }\n    ?work wdt:P50 ?author\n   }\n  } # UNION END\n  {% endif %}\
+  \ {% endfor %}  {% endfor %}  } \n} AS %result \nWHERE {\n INCLUDE %result \n SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,he,jp,nl,no,ru,sv,zh\"\
+  \ . }\n}\n"

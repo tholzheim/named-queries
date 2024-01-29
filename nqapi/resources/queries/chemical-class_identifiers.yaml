@@ -1,0 +1,8 @@
+name: chemical-class_identifiers
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?IDpred\
+  \ ?IDpredLabel\n  ?id ?idUrl\n  ?IDpredDescription\n{\n  target: ?IDdir ?id .\n\
+  \  ?IDpred wikibase:directClaim ?IDdir ;\n            wdt:P31 wd:Q19833835 .\n \
+  \ OPTIONAL {\n    ?IDpred wdt:P1630 ?formatterurl .\n  }\n  BIND(IRI(REPLACE(?formatterurl,\
+  \ '\\\\\\\\$1', str(?id))) AS ?idUrl).\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . }\n}\nORDER BY ASC(?IDpredLabel)\n\
+  LIMIT 500\n"

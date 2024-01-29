@@ -1,0 +1,15 @@
+name: organizations_citations-per-year
+query: "#defaultView:LineChart\nSELECT\n  ?year_of_citation\n  ?number_of_citations\n\
+  \  ?organization ?organizationLabel  \nWITH {\n  # Bind organizations to variable\n\
+  \  SELECT ?organization WHERE {\n    VALUES ?organization { {% for q in qs %} wd:{{\
+  \ q }} {% endfor %} }\n  }\n} AS %organizations\nWITH {\n  # Find works author by\
+  \ the organization\n  SELECT\n    DISTINCT ?work ?organization\n  WHERE {\n    INCLUDE\
+  \ %organizations\n    ?work wdt:P50 / (wdt:P108 | wdt:P463 | (wdt:P1416/wdt:P361*))\
+  \ ?organization . \n  }\n} AS %works\nWITH {\n  # Count citations per year per organization\n\
+  \  SELECT\n    ?year_of_citation\n    (COUNT(?citing_work) AS ?number_of_citations)\n\
+  \    ?organization\n  WHERE {\n    INCLUDE %works\n    ?citing_work wdt:P2860 ?work\
+  \ . \n    ?citing_work wdt:P577 ?publication_date .\n    BIND(STR(YEAR(?publication_date))\
+  \ AS ?year_of_citation)\n  }\n  GROUP BY ?year_of_citation ?organization\n} AS %results\n\
+  WHERE {\n  # Since 1990\n  # FILTER (?year_of_citation >= \"1990\")\n  \n  # Label\
+  \ the results\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY ?year_of_citation\n\n"

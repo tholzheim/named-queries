@@ -1,0 +1,11 @@
+name: chemical-element_isotopes
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?isotope\
+  \ ?isotopeLabel ?protons ?neutrons ?mass ?massUnit ?massUnitLabel ?halflife ?halflifeUnit?halflifeUnitLabel\n\
+  WHERE {\n  VALUES ?element { target: }\n  ?element wdt:P1086 ?protons .\n  ?isotope\
+  \ wdt:P279 ?element ;\n           wdt:P1148 ?neutrons ;\n           p:P2067 ?massStat\
+  \ ;\n           p:P2114 ?halflifeStat .\n  ?massStat psv:P2067 ?massValNode .\n\
+  \  ?massValNode wikibase:quantityAmount ?mass ;\n               wikibase:quantityUnit\
+  \ ?massUnit .\n  ?halflifeStat psv:P2114 ?halflifeValNode .\n  ?halflifeValNode\
+  \ wikibase:quantityAmount ?halflife ;\n                   wikibase:quantityUnit\
+  \ ?halflifeUnit .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} ORDER BY ?neutrons\n"

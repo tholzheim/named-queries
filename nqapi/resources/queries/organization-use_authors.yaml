@@ -1,0 +1,13 @@
+name: organization-use_authors
+query: "PREFIX target1: <http://www.wikidata.org/entity/{{ q1 }}>\nPREFIX target2:\
+  \ <http://www.wikidata.org/entity/{{ q2 }}>\n\nSELECT\n  ?works\n  ?author ?authorLabel\
+  \ ?authorDescription (CONCAT(\"/author/\", SUBSTR(STR(?author), 32)) AS ?authorUrl)\n\
+  \  ?example_work ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work),\
+  \ 32)) AS ?example_workUrl)\nWITH {\n  SELECT DISTINCT ?author WHERE {\n    ?author\
+  \ ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* target1: .\n  } \n} AS %researchers\n\
+  WITH {\n  SELECT\n    ?author\n    (COUNT(DISTINCT ?work) AS ?works)\n    (SAMPLE(?work)\
+  \ AS ?example_work)\n  WHERE {\n    INCLUDE %researchers\n    ?work wdt:P50 ?author\
+  \ ;\n          wdt:P4510 target2: .\n  }\n  GROUP BY ?author\n} AS %researchers_and_works\n\
+  WHERE {\n  INCLUDE %researchers_and_works\n\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\n\
+  ORDER BY DESC (?works)\n"

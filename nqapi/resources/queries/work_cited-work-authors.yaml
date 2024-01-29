@@ -1,0 +1,13 @@
+name: work_cited-work-authors
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\n# List of authors with works that are cited by the specified work\nSELECT\n\
+  \  ?cited_works\n\n  ?author ?authorLabel ?authorDescription\n  (CONCAT(\"/author/\"\
+  , SUBSTR(STR(?author), 32)) AS ?authorUrl)\n\n  ?cited_work_example ?cited_work_exampleLabel\n\
+  \   (CONCAT(\"/work/\", SUBSTR(STR(?cited_work_example), 32)) AS ?cited_work_exampleUrl)\n\
+  WITH {\n  SELECT\n    (COUNT(?cited_work) AS ?cited_works)\n    ?author\n    (SAMPLE(?cited_work)\
+  \ AS ?cited_work_example)\n  WHERE {\n    # Find works that are cited by the queried\
+  \ work\n    target: wdt:P2860 ?cited_work .\n    ?cited_work wdt:P50 ?author .\n\
+  \  }\n  GROUP BY ?author\n  # Limit the number of results to avoid downloading too\
+  \ much data\n  ORDER BY DESC(?cited_works)\n  LIMIT 1000\n} AS %result\nWHERE {\n\
+  \  # Label the result\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?cited_works)"

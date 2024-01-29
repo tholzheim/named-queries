@@ -1,0 +1,7 @@
+name: sponsor_topics-of-sponsored-works
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?count ?topic ?topicLabel\nWITH {\n  SELECT (COUNT(?work) AS\
+  \ ?count) ?topic\n  WHERE {\n    ?work wdt:P859+ target: .\n    ?work wdt:P921 ?topic\
+  \ .\n  } \n  GROUP BY ?topic\n  ORDER BY DESC(?count)\n  LIMIT 200\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" }\n} \nORDER BY DESC(?count)\n"

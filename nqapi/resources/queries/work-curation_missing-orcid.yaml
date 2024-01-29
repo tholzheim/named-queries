@@ -1,0 +1,8 @@
+name: work-curation_missing-orcid
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\n\
+  \  ?author ?authorLabel ?authorDescription\n  (CONCAT(\"/author/\", SUBSTR(STR(?author),\
+  \ 32)) AS ?authorUrl)\n\n  (\"ORCID search \u2197\" AS ?orcid_search)\n  (CONCAT(\"\
+  https://orcid.org/orcid-search/search/?searchQuery=\", ENCODE_FOR_URI(?authorLabel))\
+  \ AS ?orcid_searchUrl)\n\nWHERE {\n  target: wdt:P50 ?author .\n  FILTER NOT EXISTS\
+  \ { ?author wdt:P496 ?orcid . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\n"

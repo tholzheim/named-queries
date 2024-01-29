@@ -1,0 +1,12 @@
+name: sponsor_recently-published-sponsored-works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?publication_date\
+  \ ?number_of_citations \n?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work),\
+  \ 32)) AS ?workUrl)\n?quote\nWITH {\n  SELECT (MIN(?date) AS ?publication_date)\
+  \ (COUNT(?citing_work) as ?number_of_citations) ?work (SAMPLE(?quote_) AS ?quote)\n\
+  \  WHERE {\n    ?work p:P859+ ?sponsor_statement .\n    ?sponsor_statement ps:P859+\
+  \ target: .\n    OPTIONAL { ?sponsor_statement prov:wasDerivedFrom/pr:P1683 ?quote_\
+  \ . }\n    OPTIONAL {\n      ?work wdt:P577 ?datetime .\n      BIND(xsd:date(?datetime)\
+  \ AS ?date)\n    }\n    OPTIONAL { ?citing_work wdt:P2860 ?work }\n  } \n  GROUP\
+  \ BY ?work\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label {\
+  \ bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" }\n} \nORDER BY DESC(?publication_date)\
+  \ DESC(?number_of_citations)\nLIMIT 1000\n"

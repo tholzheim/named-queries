@@ -1,0 +1,10 @@
+name: author_associated-images
+query: "#defaultView:ImageGrid\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT DISTINCT ?image WHERE {\n  {\n    # Images of the person\n   \
+  \ target: wdt:P18 ?image .\n  }\n  UNION {\n    # Images from whatever property\
+  \ value is linked.\n    \n    # Excluded \"different from\" property and take all\
+  \ other properties\n    target: !wdt:P1889 ?item .\n\n    ?item wdt:P18 ?image .\
+  \ \n    \n    # All people are humans, so these images are excluded.\n    FILTER\
+  \ (?item != wd:Q5)\n  }\n  UNION {\n    # Images associated with works of the author,\
+  \ both direct images,\n    # images of topics of the works and images of coauthors.\n\
+  \    target: ^wdt:P50 / (wdt:P921* | wdt:P50) / wdt:P18 ?image .\n  }\n}   \n"

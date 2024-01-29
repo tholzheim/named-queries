@@ -1,0 +1,10 @@
+name: series_topics
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?count ?topic ?topicLabel\nWITH {\n  SELECT (COUNT(*) AS ?count)\
+  \ ?topic\n  WHERE {\n    # Topics of series\n    { target: wdt:P921 ?topic . }\n\
+  \    \n    # Topics of collections in series\n    UNION { ?collection wdt:P179 target:\
+  \ ; wdt:P921 ?topic . }\n    \n    # Topics of works in collections in series\n\
+  \    UNION { ?work wdt:P1433/wdt:P179 target: ; wdt:P921 ?topic . }\n  }\n  GROUP\
+  \ BY ?topic\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" }\n}\n\
+  ORDER BY DESC(?count)\nDESC(?count)\nLIMIT 100\n"

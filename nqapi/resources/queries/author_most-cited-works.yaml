@@ -1,0 +1,8 @@
+name: author_most-cited-works
+query: "#defaultView:Table\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \n# Author's most cited works\nSELECT ?count ?work ?workLabel \nWITH {\n  SELECT\
+  \ (count(?citing_work) as ?count) ?work WHERE {\n    ?work wdt:P50 target: .\n \
+  \   OPTIONAL { ?citing_work wdt:P2860 ?work . }\n  }\n  GROUP BY ?work\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,jp\". }        \n}  \nORDER BY DESC(?count)\n\
+  LIMIT 500\n"

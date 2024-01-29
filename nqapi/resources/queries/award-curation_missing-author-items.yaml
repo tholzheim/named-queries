@@ -1,0 +1,18 @@
+name: award-curation_missing-author-items
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n(COUNT(?work)\
+  \ AS ?count) \n?string\n(CONCAT(\n  'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \  ENCODE_FOR_URI(?string)) AS ?author_resolver_url)\nWITH {\n  SELECT DISTINCT\
+  \ ?author_name {\n    ?recipient p:P166 ?award_statement . \n    ?award_statement\
+  \ ps:P166 target: .\n\n    ?recipient skos:altLabel | rdfs:label ?author_name_ .\n\
+  \n    # The SELECT-DISTINCT-BIND trick here is due to Stanislav Kralin\n    # https://stackoverflow.com/questions/53933564\n\
+  \    BIND (STR(?author_name_) AS ?author_name)\n  }\n  LIMIT 2000\n} AS %RAWstrings\n\
+  WITH\n# This part is due to Dipsacus fullonum, as per https://w.wiki/5Brk\n{\n \
+  \ # Calculate capitalization variants of these raw strings\n  SELECT \n    DISTINCT\
+  \ \n      ?string\n  WHERE\n  {\n    {\n      INCLUDE %RAWstrings\n      BIND(STR(?author_name)\
+  \ AS ?string) # the raw strings\n    }\n    UNION\n    {\n      INCLUDE %RAWstrings\n\
+  \      BIND(UCASE(STR(?author_name)) AS ?string) # uppercased versions of the raw\
+  \ strings\n    }\n    UNION\n    {\n      INCLUDE %RAWstrings\n      BIND(LCASE(STR(?author_name))\
+  \ AS ?string) # lowercased versions of the raw strings\n    }\n  }\n} AS %NORMALIZEDstrings\n\
+  WHERE {\n  # Find works that have \"author name string\" values equal to these normalized\
+  \ strings\n  INCLUDE %NORMALIZEDstrings\n  ?work wdt:P2093 ?string. \n}\nGROUP BY\
+  \ ?string\nORDER BY DESC (?count)\n"

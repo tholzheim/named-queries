@@ -1,0 +1,9 @@
+name: pathway_participants
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?part ?partLabel\
+  \ ?partDescription ?type\nWITH {\n  SELECT ?part (GROUP_CONCAT(DISTINCT ?type_label;\
+  \ separator=\", \") AS ?type)\n  WHERE {\n    VALUES ?process { wd:Q4915012 wd:Q2996394\
+  \ }\n    target: wdt:P31 ?process ;\n             wdt:P527 ?part .\n    OPTIONAL\
+  \ { \n      ?part wdt:P31 ?type_ .\n      ?type_ rdfs:label ?type_label .\n    \
+  \  FILTER (LANG(?type_label) = 'en')\n    }\n  } GROUP BY ?part\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n} ORDER BY ASC(?partLabel)\n"

@@ -1,0 +1,17 @@
+name: organization_employees-and-affiliated
+query: "# title: Employees and affiliated with a specified organization\n\nPREFIX\
+  \ target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (SAMPLE(?number_of_works_)\
+  \ AS ?works)\n  (SAMPLE(?wikis_) AS ?wikis)\n  ?researcher ?researcherLabel ?researcherDescription\n\
+  \  (SAMPLE(?orcid_) AS ?orcid)\nWITH {\n  SELECT DISTINCT ?researcher WHERE {\n\
+  \    ?researcher ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* target: .\n  }\
+  \ \n} AS %researchers\nWITH {\n  SELECT\n    (COUNT(?work) AS ?number_of_works_)\
+  \ ?researcher\n  WHERE {\n    INCLUDE %researchers\n\n    # No biological pathways;\
+  \ they skew the statistics too much \n    MINUS { ?work wdt:P31 wd:Q4915012 } \n\
+  \n    # This OPTIONAL query should be after the MINUS query, otherwise\n    # researchers\
+  \ might not show if they do not have any papers.\n    OPTIONAL { ?work wdt:P50 ?researcher\
+  \ . }\n  } \n  GROUP BY ?researcher\n} AS %researchers_and_number_of_works\nWHERE\
+  \ {\n  INCLUDE %researchers_and_number_of_works\n  OPTIONAL { ?researcher wdt:P496\
+  \ ?orcid_ . }\n  OPTIONAL { ?researcher wikibase:sitelinks ?wikis_ }\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,nl,no,ru,sv,zh\"\
+  \ . } \n}\nGROUP BY ?researcher ?researcherLabel ?researcherDescription \nORDER\
+  \ BY DESC(?works)\n"

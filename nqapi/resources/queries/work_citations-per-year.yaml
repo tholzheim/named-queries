@@ -1,0 +1,20 @@
+name: work_citations-per-year
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  (STR(?year_) AS ?year)\n  (SUM(?count_) AS ?count)\n  ?kind\n\
+  WHERE {\n  {\n    VALUES ?year_ { 2004 2005 2006 2007 2008 2009 2010 2011 2012 2013\n\
+  \                    2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 }\n    BIND(0\
+  \ AS ?count_)\n    BIND(\"_\" AS ?kind)\n  }\n  UNION \n  {\n    SELECT\n      ?year_\n\
+  \      (COUNT(DISTINCT ?citing_work) AS ?count_)\n      ?kind\n    WHERE {\n   \
+  \   ?citing_work wdt:P2860 target: .\n  \n      # Detect self-citations\n      BIND(IF(EXISTS\
+  \ { target: wdt:P50 ?selfauthor . ?citing_work  wdt:P50 ?selfauthor } ,\n      \
+  \  \"detected incoming self-citations\",\n        \"citations from others or non-detected\
+  \ self-citations\") AS ?kind)\n\n      # Year of citation\n      ?citing_work wdt:P577\
+  \ ?date .\n      BIND(YEAR(?date) AS ?year_)\n    }\n    GROUP BY ?year_ ?kind\n\
+  \  }\n  UNION \n  {\n    SELECT\n      ?year_\n      (COUNT(DISTINCT ?cited_work)\
+  \ AS ?count_)\n      ?kind\n    WHERE {\n      target: wdt:P2860 ?cited_work .\n\
+  \  \n      # Detect self-citations\n      BIND(IF(EXISTS { ?cited_work wdt:P50 ?selfauthor\
+  \ . target: wdt:P50 ?selfauthor },\n        \"detected outgoing self-citations\"\
+  ,\n        \"outgoing citations to others or non-detected self-citations\") AS ?kind)\n\
+  \n      # Year of citation\n      ?cited_work wdt:P577 ?date .\n      BIND(YEAR(?date)\
+  \ AS ?year_)\n    }\n    GROUP BY ?year_ ?kind\n  }\n}\nGROUP BY ?year_ ?kind\n\
+  ORDER BY DESC(?year_)\n"

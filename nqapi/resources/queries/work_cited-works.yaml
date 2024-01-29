@@ -1,0 +1,11 @@
+name: work_cited-works
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\n# List of works that is cited by the specified work\nSELECT ?citations\
+  \ ?publication_date ?cited_work ?cited_workLabel \nWITH {\n  SELECT (MIN(?date)\
+  \ AS ?publication_date) (COUNT(DISTINCT ?citing_cited_work) AS ?citations) ?cited_work\
+  \ \n  WHERE {\n    target: wdt:P2860 ?cited_work .\n    OPTIONAL {\n      ?cited_work\
+  \ wdt:P577 ?datetime .\n      BIND(xsd:date(?datetime) AS ?date)\n    }\n    OPTIONAL\
+  \ { ?citing_cited_work wdt:P2860 ?cited_work }\n  }\n  GROUP BY ?cited_work\n} AS\
+  \ %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,it,jp,nl,no,ru,sv,zh\" . } \n} \nORDER BY DESC(?citations)\
+  \ DESC(?date)"

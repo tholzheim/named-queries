@@ -1,0 +1,8 @@
+name: venue_authorship-gender-distribution
+query: "# title: Authorship gender distribution for a specific venue\n\nPREFIX target:\
+  \ <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count ?gender ?genderLabel\
+  \ \nWITH {\n  SELECT (COUNT(?author) AS ?count) ?gender WHERE {\n    ?work wdt:P1433\
+  \ target: .\n    ?work wdt:P50 ?author .\n    ?author wdt:P21 ?gender .\n  } \n\
+  \  GROUP BY ?gender\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . } \n} \n ORDER BY\
+  \ DESC(?count)\n"

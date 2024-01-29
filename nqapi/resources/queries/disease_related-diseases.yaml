@@ -1,0 +1,15 @@
+name: disease_related-diseases
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?gene_count\n  ?symptom_count\n  ?disease ?diseaseLabel\n  ?genes\n  ?symptoms\n\
+  {\n  {\n    SELECT ?disease (COUNT(?gene) AS ?gene_count) (GROUP_CONCAT(?gene_label;\
+  \ separator=\" // \") AS ?genes) WHERE {\n      target: wdt:P2293 ?gene .\n    \
+  \  ?gene wdt:P2293 ?disease . \n      FILTER (target: != ?disease)\n      ?gene\
+  \ rdfs:label ?gene_label\n      FILTER(lang(?gene_label) = \"en\")\n    }\n    GROUP\
+  \ BY ?disease\n  }\n  UNION\n  {\n    SELECT\n      ?disease (COUNT(?symptom) AS\
+  \ ?symptom_count) (GROUP_CONCAT(?symptom_label; separator=\" // \") AS ?symptoms)\n\
+  \    {\n      target: wdt:P780 ?symptom .\n      ?disease wdt:P780 ?symptom . \n\
+  \      FILTER (target: != ?disease)\n      ?symptom rdfs:label ?symptom_label .\
+  \ FILTER(lang(?symptom_label) = \"en\")\n    }\n    GROUP BY ?disease\n  }\n\n \
+  \ # Aggregate count\n  BIND((COALESCE(?symptom_count, 0) + COALESCE(?gene_count,\
+  \ 0)) AS ?count)\n\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en\". }\n}\nORDER BY DESC(?count)"

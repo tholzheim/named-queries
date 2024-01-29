@@ -1,0 +1,6 @@
+name: license_types-of-work
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?type ?typeLabel ?typeDescription\nWITH {\n  SELECT\n    (COUNT(*) AS ?count)\n\
+  \    ?type\n \n  WHERE {\n    [] wdt:P275 target: ; \n       wdt:P31 ?type .\n \
+  \ }\n  GROUP BY ?type\n} AS %types\nWHERE {\n  INCLUDE %types\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?count)"

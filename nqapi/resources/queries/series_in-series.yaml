@@ -1,0 +1,12 @@
+name: series_in-series
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?publication_date\
+  \ ?number_of_papers ?short_name ?ordinal ?collection ?collectionLabel\nWITH {\n\
+  \  SELECT\n    (COUNT(?work) AS ?number_of_papers)\n    (MIN(?datetimes) AS ?publication_datetime)\n\
+  \    (SAMPLE(?short_name_) AS ?short_name)\n    ?collection\n    (SAMPLE(?ordinal)\
+  \ AS ?ordinal)\n  WHERE {\n    ?collection wdt:P179 target: .\n    OPTIONAL { ?work\
+  \ wdt:P1433 ?collection . }\n    OPTIONAL { ?collection wdt:P1813 ?short_name_ .\
+  \ }\n    OPTIONAL { ?collection wdt:P577 ?datetimes . }\n    OPTIONAL{\n      ?collection\
+  \ p:P179/pq:P1545 ?ordinal.\n    }\n  }\n  GROUP BY ?collection\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  BIND(xsd:date(?publication_datetime) AS ?publication_date)\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ }\n}\nORDER BY DESC(?publication_date) DESC(?number_of_papers)\n"

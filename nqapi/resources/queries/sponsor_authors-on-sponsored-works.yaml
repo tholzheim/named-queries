@@ -1,0 +1,10 @@
+name: sponsor_authors-on-sponsored-works
+query: "# title: Authors on works sponsored or funded from a specific entity.\n\n\
+  PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?publication_count\n\
+  \  ?author ?authorLabel (CONCAT(\"/author/\", SUBSTR(STR(?author), 32)) AS ?authorUrl)\n\
+  \  ?example_work ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work),\
+  \ 32)) AS ?example_workUrl)\nWITH {\n  SELECT ?author (count(?work) as ?publication_count)\
+  \ (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    ?work wdt:P859+ target: .\n \
+  \   ?work wdt:P50 ?author .\n  }\n  GROUP BY ?author\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ }\n} \nORDER BY DESC(?publication_count)\n"

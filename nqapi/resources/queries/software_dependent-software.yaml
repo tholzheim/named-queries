@@ -1,0 +1,9 @@
+name: software_dependent-software
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT \n  ?count\
+  \ \n  ?software ?softwareLabel ?softwareDescription (CONCAT(\"/software/\", SUBSTR(STR(?software),\
+  \ 32)) AS ?softwareUrl)\nWITH {\n  SELECT \n    (COUNT(?other_software) AS ?count)\n\
+  \    ?software \n  {\n    ?software wdt:P1547+ target: .\n    OPTIONAL {\n     \
+  \ ?other_software wdt:P1547+ ?software .\n    } \n  }\n  GROUP BY ?software\n  ORDER\
+  \ BY DESC(?count)\n  LIMIT 500\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  }\nORDER BY DESC(?count)"

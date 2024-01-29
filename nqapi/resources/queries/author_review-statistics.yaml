@@ -1,0 +1,12 @@
+name: author_review-statistics
+query: "# Venue statistics for a specific reviewer\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?count (SAMPLE(?short_name_) AS ?short_name)\n  ?venue ?venueLabel\n\
+  \  ?topics ?topicsUrl\nWITH {\n  SELECT\n    (COUNT(DISTINCT ?work) as ?count)\n\
+  \    ?venue\n    (GROUP_CONCAT(DISTINCT ?topic_label; separator=\", \") AS ?topics)\n\
+  \    (CONCAT(\"../topics/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?topic), 32); separator=\"\
+  ,\")) AS ?topicsUrl)\n  WHERE {\n    ?work wdt:P4032 target: .\n    ?work wdt:P1433\
+  \ ?venue .\n    OPTIONAL {\n      ?venue wdt:P921 ?topic .\n      ?topic rdfs:label\
+  \ ?topic_label . FILTER(LANG(?topic_label) = 'en') }\n  }\n  GROUP BY ?venue\n}\
+  \ AS %result\nWHERE {\n  INCLUDE %result\n  OPTIONAL { ?venue wdt:P1813 ?short_name_\
+  \ . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }  \n} \nGROUP BY ?count ?venue ?venueLabel ?topics ?topicsUrl\nORDER BY DESC(?count)\n"

@@ -1,0 +1,9 @@
+name: award_images-of-recipients
+query: "#defaultView:ImageGrid\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?year\n  ?recipient ?recipientLabel \n  ?image\nWITH {\n  SELECT\
+  \ ?recipient ?year (SAMPLE(?image_) AS ?image) WHERE {\n    ?recipient p:P166 ?award_statement\
+  \ . \n    ?award_statement ps:P166 target: .\n    OPTIONAL {\n      ?award_statement\
+  \ pq:P585 ?time .\n\t  BIND(YEAR(?time) AS ?year)\n\t}\n    ?recipient wdt:P18 ?image_\
+  \ .\n  }\n  GROUP BY ?recipient ?year\n} AS %result\nWHERE {\n  INCLUDE %result\
+  \ \n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  \ . }  \n}\nORDER BY DESC(?year)\n  "

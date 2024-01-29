@@ -1,0 +1,18 @@
+name: event-series_topics
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?score ?topic\
+  \ ?topicLabel ?topicDescription\n(CONCAT(\"/topic/\", SUBSTR(STR(?topic), 32)) AS\
+  \ ?topicUrl)\nWITH {\n  SELECT\n    DISTINCT ?person\n  WHERE {\n    ?event (wdt:P179\
+  \ | wdt:P31) target: .\n    {\n      # speaker\n      ?event wdt:P823 ?person .\n\
+  \    }\n    UNION\n    {\n      # organizer\n      ?event wdt:P664 ?person .\n \
+  \   }\n    UNION\n    {\n      # participant\n      ?person wdt:P1344 | ^wdt:P710\
+  \ ?event .\n    }\n    UNION\n    {\n      # author\n      ?person ^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 ?event .\n    }\n  }\n} AS %people  \nWITH {\n  SELECT\n    (SUM(?score_)\
+  \ AS ?score) ?topic\n  WHERE {\n\n    # For some reason a path query does not work\
+  \ here.\n    { ?event wdt:P179 target: . }\n    UNION\n    { ?event wdt:P31 target:\
+  \ . }\n\n    {\n      ?event wdt:P921 ?topic .\n      BIND(50 AS ?score_)\n    }\n\
+  \    UNION\n    {\n      INCLUDE %people\n      ?person ^wdt:P50 / wdt:P921 ?topic\
+  \ .\n      BIND(1 AS ?score_)\n    }\n    UNION\n    {\n      ?event ^wdt:P4745\
+  \ / ^wdt:P1433 / wdt:P921 ?topic .\n      BIND(7 AS ?score_)\n    }\n  }\n  GROUP\
+  \ BY ?topic\n} AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?score)\nLIMIT 200\n"

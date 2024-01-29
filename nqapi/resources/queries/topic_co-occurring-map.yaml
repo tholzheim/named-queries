@@ -1,0 +1,11 @@
+name: topic_co-occurring-map
+query: "#defaultView:Map\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  ?location ?locationLabel\n  ?geo\n  ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT\n    ?location ?geo\n    (SAMPLE(?work) AS ?example_work)\n  WHERE\
+  \ {\n    # Find works that are marked with main subject of the topic.\n    ?work\
+  \ wdt:P921 / ( wdt:P31*/wdt:P279* | wdt:P361+ | wdt:P1269+ ) target: .\n    \n \
+  \   # Identify co-occuring topic that is geo-locatable. \n    ?work wdt:P921 ?location\
+  \ .\n    ?location wdt:P625 ?geo .\n  }\n  GROUP BY ?location ?geo\n} AS %results\n\
+  WHERE {\n  INCLUDE %results\n  \n  # Label the results\n  SERVICE wikibase:label\
+  \ {\n    bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  .\n  }\n}\n"

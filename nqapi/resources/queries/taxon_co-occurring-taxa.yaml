@@ -1,0 +1,14 @@
+name: taxon_co-occurring-taxa
+query: "#title: Taxa that co-occur with the target taxon in the literature\nPREFIX\
+  \ target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count (CONCAT(\"/topics/\"\
+  ,SUBSTR(STR(target:), 32), \",\", SUBSTR(STR(?taxon), 32)) AS ?countUrl)\n     \
+  \  ?taxon ?taxonLabel (CONCAT(\"/taxon/\", SUBSTR(STR(?taxon), 32)) AS ?taxonUrl)\n\
+  \       ?example_work ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work),\
+  \ 32)) AS ?example_workUrl)\nWITH {\n  SELECT (COUNT(?work) AS ?count) ?taxon (SAMPLE(?work)\
+  \ AS ?example_work) WHERE {\n    # Find works for the specific queried topic\n\t\
+  ?work wdt:P921 target: .\n    \n    # Find co-occuring topics\n    ?work wdt:P921\
+  \ ?taxon .\n    \n    # Filter for taxa\n    ?taxon wdt:P105 ?taxonrank .\n    \n\
+  \    # Avoid listing the queried topic itself\n    FILTER (target: != ?taxon)\n\
+  \  }\n  GROUP BY ?taxon\n} AS %result\nWHERE {\n  # Label the results\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . } \n}\nORDER BY DESC(?count)\nLIMIT 200\n"

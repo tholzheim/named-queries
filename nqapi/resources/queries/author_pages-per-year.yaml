@@ -1,0 +1,16 @@
+name: author_pages-per-year
+query: "#defaultView:BarChart\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nselect ?year ?number_of_pages ?work_label where {\n  {\n    select ?year\
+  \ (sample(?pages) as ?number_of_pages) ?work_label where {\n      {\n        select\
+  \ (str(?year_) as ?year) (0 as ?pages) (\"_\" as ?work_label) where {\n        \
+  \  ?year_item wdt:P31 wd:Q577 . \n          ?year_item wdt:P585 ?date .\n      \
+  \    bind(year(?date) as ?year_)\n          {\n            select (min(?year_) as\
+  \ ?earliest_year) (max(?year_) as ?latest_year) where {\n              ?work wdt:P50\
+  \ target: .\n              ?work wdt:P577 ?publication_date . \n              bind(year(?publication_date)\
+  \ as ?year_)\n            }\n          }\n          filter (?year_ >= ?earliest_year\
+  \ && ?year_ <= ?latest_year)\n        }\n      }\n      union {\n        ?work wdt:P50\
+  \ target: .\n        ?work wdt:P1104 ?pages .\n        ?work wdt:P577 ?date . \n\
+  \        ?work rdfs:label ?long_work_label . filter(lang(?long_work_label) = 'en')\n\
+  \        bind(substr(?long_work_label, 1, 20) as ?work_label)\n        bind(str(year(?date))\
+  \ as ?year) \n      }\n\t} \n\tgroup by ?year ?work ?work_label\n\torder by ?year\
+  \ \n  }\n}\n"

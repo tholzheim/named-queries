@@ -1,0 +1,9 @@
+name: award_recent-publications-by-recipients
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?publication_date\
+  \ ?work ?workLabel ?recipient ?recipientLabel\nWITH {\n  SELECT\n    (MAX(?publication_datetimes)\
+  \ AS ?publication_datetime)\n    ?work ?recipient\n  WHERE {\n    ?recipient wdt:P166\
+  \ target: .\n    ?work wdt:P50 ?recipient .\n    OPTIONAL { ?work wdt:P577 ?publication_datetimes\
+  \ . }\n  }\n  GROUP BY ?work ?recipient\n} AS %result\nWHERE {\n  INCLUDE %result\
+  \ \n  BIND(xsd:date(?publication_datetime) AS ?publication_date)\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  \ . }  \n}\nORDER BY DESC(?publication_date)\nLIMIT 500\n"

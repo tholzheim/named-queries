@@ -1,0 +1,6 @@
+name: works_list-of-works
+query: "SELECT ?work ?workLabel ?example_author ?example_authorLabel\nWITH {\n  SELECT\
+  \ ?work (SAMPLE(?author) AS ?example_author) WHERE {\n    VALUES ?work { {% for\
+  \ q in qs %} wd:{{ q }} {% endfor %} }\n    OPTIONAL { ?work wdt:P50 ?author }\n\
+  \  }\n  GROUP BY ?work\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ {\n    bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}"

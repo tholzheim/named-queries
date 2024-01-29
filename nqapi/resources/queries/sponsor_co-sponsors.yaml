@@ -1,0 +1,11 @@
+name: sponsor_co-sponsors
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: Co-funders\
+  \ to a specific funder including an example funded work\nSELECT ?count \n?sponsor\
+  \ ?sponsorLabel (CONCAT(\"/sponsor/\", SUBSTR(STR(?sponsor), 32)) AS ?sponsorUrl)\n\
+  ?example_work ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work),\
+  \ 32)) AS ?example_workUrl)\nWITH {\n  SELECT (COUNT(?work) AS ?count) ?sponsor\
+  \ (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    ?work wdt:P859+ target: .\n \
+  \   ?work wdt:P859+ ?sponsor .\n    FILTER (target: != ?sponsor)\n  }\n  GROUP BY\
+  \ ?sponsor\n} AS %result\nWHERE {\n  # Label the result\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" }\n\
+  }\nORDER BY DESC(?count)\n"

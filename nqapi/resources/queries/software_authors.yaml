@@ -1,0 +1,9 @@
+name: software_authors
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?author ?authorLabel ?authorDescription\n  ?example_work ?example_workLabel\n\
+  WITH{\n  SELECT\n    (COUNT(?work) AS ?count)\n    ?author\n    (SAMPLE(?work) AS\
+  \ ?example_work)\n  WHERE {\n    ?work (wdt:P2283 | wdt:P4510) / wdt:P279* target:\
+  \ ;\n          wdt:P50 ?author .\n  }\n  GROUP BY ?author\n  ORDER BY DESC(?count)\n\
+  \  LIMIT 500\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,nl,no,ru,sv,zh\" . }\n}\n\
+  ORDER BY DESC(?count)\n"

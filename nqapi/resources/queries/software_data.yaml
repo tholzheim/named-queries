@@ -1,0 +1,32 @@
+name: software_data
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?description ?value ?valueUrl\nWHERE {\n  BIND(target: AS ?software)\n  {\n  \
+  \  BIND(1 AS ?order)\n    BIND(\"Title\" AS ?description)\n    ?software wdt:P1476\
+  \ ?value .\n  }\n  UNION\n  {\n    SELECT\n      (2 AS ?order)\n      (\"Developers\"\
+  \ AS ?description)\n      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n\
+  \      (CONCAT(\"../authors/\", GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n\
+  \    {\n      BIND(1 AS ?dummy)\n      target: wdt:P178 ?iri .\n      BIND(SUBSTR(STR(?iri),\
+  \ 32) AS ?q) \n      ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string)\
+  \ = 'en')\n      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP\
+  \ BY ?dummy\n  }\n  UNION\n  {\n    BIND(2 AS ?order)\n    BIND(\"Programming language\"\
+  \ AS ?description)\n    ?software wdt:P277 ?iri .\n    BIND(SUBSTR(STR(?iri), 32)\
+  \ AS ?q) \n    ?iri rdfs:label ?value_string .\n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(STR(?value_string) AS ?value)\n    BIND(CONCAT(\"../topic/\"\
+  , ?q) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(3 AS ?order)\n    BIND(\"License\"\
+  \ AS ?description)\n    ?software wdt:P275 ?iri .\n    BIND(SUBSTR(STR(?iri), 32)\
+  \ AS ?q) \n    ?iri rdfs:label ?value_string .\n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(STR(?value_string) AS ?value)\n    BIND(CONCAT(\"../license/\"\
+  , ?q) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(4 AS ?order)\n    BIND(\"Publication\
+  \ date\" AS ?description)\n    ?software p:P577 / psv:P577 ?publication_date_value\
+  \ .\n    ?publication_date_value wikibase:timePrecision ?time_precision ;\n    \
+  \                        wikibase:timeValue ?publication_date .\n    BIND(IF(?time_precision\
+  \ = 9, YEAR(?publication_date), xsd:date(?publication_date)) AS ?value)\n  }\n\n\
+  \  UNION\n  {\n    SELECT\n      (5 AS ?order)\n      (\"Uses\" AS ?description)\n\
+  \      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n      (CONCAT(\"../topics/\"\
+  , GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n\
+  \      target: wdt:P366 ?iri .\n      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n     \
+  \ ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string) = 'en')\n\
+  \      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP BY ?dummy\n\
+  \  }\n  UNION\n  {\n    BIND(11 AS ?order)\n    BIND(\"Homepage\" AS ?description)\n\
+  \    ?software wdt:P856 ?valueUrl .\n    BIND(STR(?valueUrl) AS ?value)\n  }\n}\
+  \ \nORDER BY ?order\n"

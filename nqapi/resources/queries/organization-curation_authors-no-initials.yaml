@@ -1,0 +1,18 @@
+name: organization-curation_authors-no-initials
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# Find frequent\
+  \ unresolved author names that are coauthors with\n# people associated with an organization.\n\
+  \nSELECT\n  ?works\n  ?researcher ?researcherLabel (CONCAT(\"/author/\", SUBSTR(STR(?researcher),\
+  \ 32)) AS ?researcherUrl)\n  ?author_name\n  (CONCAT(\n      \"https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=\"\
+  ,\n      ENCODE_FOR_URI(?author_name ), \"&filter=wdt%3AP50+wd%3A\", ?qid ) AS ?resolver_url)\n\
+  \nWITH {\n  SELECT DISTINCT ?researcher_ WHERE {\n    ?researcher_ ( wdt:P108 |\
+  \ wdt:P463 | wdt:P1416 ) / wdt:P361* target: .\n  } \n} AS %researchers\nWITH {\n\
+  #  SELECT DISTINCT ?author_name (COUNT(DISTINCT ?work) as ?count) ?author (REPLACE(STR(?author),\
+  \ \".*Q\", \"Q\") AS ?qid) WHERE {\n\n  SELECT\n    (COUNT(DISTINCT ?work) AS ?works)\n\
+  \    ?author_name\n    (SAMPLE(?researcher_) AS ?researcher)\n    (REPLACE(STR(?researcher),\
+  \ \".*Q\", \"Q\") AS ?qid)\n  WHERE {\n    INCLUDE %researchers\n    ?work wdt:P50\
+  \ ?researcher_ ; \n          wdt:P2093 ?author_name .\n    FILTER(!regex (LCASE(?author_name),\
+  \ \"^.*?((\\\\\\\\b\\\\\\\\w{1}\\\\\\\\b)|[.]).*$\")).\n  } \n  GROUP BY ?author_name\n\
+  \  ORDER BY DESC(?works)\n  LIMIT 200\n} AS %researchers_and_number_of_works\nWHERE\
+  \ {\n  INCLUDE %researchers_and_number_of_works\n          \n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,nl,no,ru,sv,zh\"\
+  \ . } \n}\nORDER BY DESC(?works)\n"

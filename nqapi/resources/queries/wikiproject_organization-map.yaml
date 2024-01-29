@@ -1,0 +1,19 @@
+name: wikiproject_organization-map
+query: "#defaultView:Map\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT ?organization ?organizationLabel ?geo ?count ?layer\nWITH {\n  SELECT DISTINCT\
+  \ ?work WHERE {\n  # Works on the topic\n    { ?work wdt:P6104 target: .}\n    \
+  \  union \n      { ?work wdt:P5008 target: .}\n      ?work wdt:P50 [].\n  }\n  LIMIT\
+  \ 20000\n} AS %works\nWITH {\n  SELECT DISTINCT ?organization ?geo (COUNT(DISTINCT\
+  \ ?work) AS ?count) WHERE {\n    INCLUDE %works\n    # Authors who have published\
+  \ works on the topic\n    ?work wdt:P50 ?author . \n    ?author ( wdt:P108 | wdt:P463\
+  \ | wdt:P1416 ) / wdt:P361* ?organization . \n    # Use the headquarters location\
+  \ by default but keep the coordinate location as a fallback\n    OPTIONAL{?organization\
+  \ p:P159/pq:P625 ?hq_geo}\n    OPTIONAL{?organization wdt:P625 ?coord_geo}\n   \
+  \ BIND(IF(BOUND(?hq_geo), ?hq_geo, ?coord_geo) AS ?geo) .\n    FILTER(BOUND(?geo))\
+  \ .\n  }\n  GROUP BY ?organization ?geo\n  ORDER BY DESC (?count)\n  LIMIT 2000\n\
+  } AS %organizations\nWHERE {\n  INCLUDE %organizations\n  BIND(IF( (?count < 1),\
+  \ \"No results\", IF((?count < 2), \"1 result\", IF((?count < 11), \"1 < results\
+  \ \u2264 10\", IF((?count < 101), \"10 < results \u2264 100\", IF((?count < 1001),\
+  \ \"100 < results \u2264 1000\", IF((?count < 10001), \"1000 < results \u2264 10000\"\
+  , \"10000 or more results\") ) ) ) )) AS ?layer )\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }        \n }\nORDER BY DESC (?count)\n"

@@ -1,0 +1,19 @@
+name: wikiproject_context
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n#defaultView:Graph\n\
+  SELECT ?node ?nodeLabel ?nodeImage ?childNode ?childNodeLabel ?childNodeImage ?rgb\
+  \ \nWITH {\n  SELECT DISTINCT ?property WHERE {\n      ?property a wikibase:Property;\n\
+  \                wdt:P31 wd:Q18610173 ;\n                wdt:P31 wd:Q26940804 .\
+  \ \n    }\n} AS %properties\nWITH {\n  SELECT DISTINCT ?node ?childNode WHERE {\n\
+  \      BIND(target: AS ?node)\n      ?node ?p ?i.\n      ?childNode ?x ?p.\n   \
+  \   ?childNode rdf:type wikibase:Property.\n      FILTER(STRSTARTS(STR(?i), \"http://www.wikidata.org/entity/Q\"\
+  ))\n      FILTER(STRSTARTS(STR(?childNode), \"http://www.wikidata.org/entity/P\"\
+  ))\n    }\n  LIMIT 5000\n} AS %nodes\nWITH {\n  SELECT DISTINCT ?childNode ?node\
+  \ ?rgb WHERE {\n      BIND(\"EFFBD8\" AS ?rgb)\n      target: ?p ?childNode.\n \
+  \     ?node ?x ?p.\n      ?node rdf:type wikibase:Property.\n      FILTER(STRSTARTS(STR(?childNode),\
+  \ \"http://www.wikidata.org/entity/Q\"))\n    }\n  LIMIT 5000\n} AS %childNodes\n\
+  WHERE {\n  {\n    INCLUDE %nodes\n  }\n  UNION\n  {\n    INCLUDE %childNodes\n \
+  \ }\n\n  OPTIONAL { \n    INCLUDE %properties\n    ?property wikibase:directClaim\
+  \ ?nodeclaim.\n    ?node ?nodeclaim ?nodeImage. \n  }\n\n  OPTIONAL { \n    INCLUDE\
+  \ %properties\n    ?property wikibase:directClaim ?childNodeclaim.\n    ?childNode\
+  \ ?childNodeclaim ?childNodeImage. \n  }\n  \n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }        \n}\n"

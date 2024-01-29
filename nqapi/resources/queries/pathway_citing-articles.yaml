@@ -1,0 +1,10 @@
+name: pathway_citing-articles
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?citations ?publication_date ?citing_work ?citing_workLabel\nWITH\
+  \ {\n  SELECT\n    (MIN(?date) AS ?publication_date)\n    (COUNT(?citing_citing_work)\
+  \ AS ?citations)\n    ?citing_work\n  WHERE {\n    ?citing_work wdt:P2860 target:\
+  \ .\n    OPTIONAL {\n      ?citing_work wdt:P577 ?datetime .\n      BIND(xsd:date(?datetime)\
+  \ AS ?date)\n    }\n    OPTIONAL { ?citing_citing_work wdt:P2860 ?citing_work }\n\
+  \  }\n  GROUP BY ?citing_work\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n\
+  }\nORDER BY DESC(?citations) DESC(?date)\n"

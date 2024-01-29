@@ -1,0 +1,7 @@
+name: taxon_proteome
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?protein\
+  \ ?proteinLabel ?proteinDescription\n  ?gene ?geneLabel\nWITH {\n  SELECT ?protein\
+  \ ?gene ?chromosome WHERE {\n    ?protein wdt:P31 wd:Q8054 ;\n          wdt:P703\
+  \ target: .\n  }\n} AS %results {\n  INCLUDE %results\n  ?protein wdt:P702 ?gene\
+  \ .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n}\n"

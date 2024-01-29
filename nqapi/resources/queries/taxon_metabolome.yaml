@@ -1,0 +1,13 @@
+name: taxon_metabolome
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\n\
+  \  ?metabolite ?metaboliteLabel ?metaboliteChemicalStructure ?metaboliteDescription\n\
+  WITH {\n  SELECT DISTINCT ?children WHERE {\n      ?children (wdt:P171*) target:.\n\
+  \  }\n} AS %taxa \nWITH {\n  SELECT DISTINCT ?metabolite ?metaboliteChemicalStructure\
+  \ WHERE {\n    INCLUDE %taxa\n            { ?metabolite wdt:P703 ?children }\n \
+  \   UNION\n    { ?metabolite wdt:P1582 ?children }\n    VALUES ?chemical { wd:Q11173\
+  \ wd:Q59199015 wd:Q56256086 wd:Q15711994 }.\n    ?metabolite wdt:P31|wdt:P279/wdt:P31\
+  \ ?chemical .\n    OPTIONAL { ?metabolite wdt:P233 ?canSmiles }\n    OPTIONAL {\
+  \ ?metabolite wdt:P2017 ?isoSmiles }\n    BIND(COALESCE(?isoSmiles, ?canSmiles)\
+  \ AS ?metaboliteChemicalStructure)\n  }\n} AS %results {\n  INCLUDE %results\n \
+  \ SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n}\n"

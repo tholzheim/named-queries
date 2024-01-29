@@ -1,0 +1,36 @@
+name: cito-index_statistics
+query: "SELECT ?count ?description\nWITH {\n  SELECT (COUNT(DISTINCT ?citationStatement)\
+  \ AS ?count) WHERE { [] p:P2860 ?citationStatement . ?citationStatement pq:P3712\
+  \ / wdt:P31 wd:Q96471816 . }\n} AS %annotedCitations\nWITH {\n  SELECT (COUNT(*)\
+  \ AS ?count) WHERE { [] p:P2860 ?citationStatement . ?citationStatement pq:P3712\
+  \ / wdt:P31 wd:Q96471816 . }\n} AS %annotions\nWITH {\n  SELECT (COUNT(DISTINCT\
+  \ ?citingArticle) AS ?count) WHERE { ?citingArticle p:P2860 / pq:P3712 / wdt:P31\
+  \ wd:Q96471816 . }\n} AS %annotedCitingArticles\nWITH {\n  SELECT (COUNT(DISTINCT\
+  \ ?citedArticle) AS ?count) WHERE {\n    ?citingArticle p:P2860 ?citationStatement\
+  \ .\n    ?citationStatement pq:P3712 / wdt:P31 wd:Q96471816 ;\n                \
+  \       ps:P2860 ?citedArticle .\n  }\n} AS %annotedCitedArticles\nWITH {\n  SELECT\
+  \ (COUNT(DISTINCT ?venue) AS ?count) WHERE {\n    ?citingArticle p:P2860 / pq:P3712\
+  \ / wdt:P31 wd:Q96471816 ;\n                   wdt:P1433 ?venue .\n  }\n} AS %citoJournals\n\
+  WITH {\n  SELECT (COUNT(DISTINCT ?venue) AS ?count) WHERE {\n    ?citingArticle\
+  \ p:P2860 ?citationStatement .\n    ?citationStatement pq:P3712 / wdt:P31 wd:Q96471816\
+  \ ;\n                       ps:P2860 ?citedArticle .\n    ?citedArticle wdt:P1433\
+  \ ?venue .\n  }\n} AS %citedJournals\nWITH {\n  SELECT (COUNT(DISTINCT ?citoArticle)\
+  \ AS ?count) WHERE {\n    ?citoArticle wdt:P31 wd:Q109229154 .\n  }\n} AS %citoArticles\n\
+  WITH {\n  SELECT (COUNT(DISTINCT ?venue) AS ?count) WHERE {\n    ?citoArticle wdt:P31\
+  \ wd:Q109229154 ;\n                 wdt:P1433 ?venue .\n  }\n} AS %citoJournalsExplicit\n\
+  WITH {\n  SELECT (COUNT(DISTINCT ?citoDataset) AS ?count) WHERE {\n    ?citoDataset\
+  \ wdt:P31 wd:Q117357566 .\n  }\n} AS %citoDatasets\nWHERE {\n  {\n    INCLUDE %annotions\n\
+  \    BIND(\"Total number of annotations\" AS ?description)\n  }\n  UNION\n  {\n\
+  \    INCLUDE %annotedCitations\n    BIND(\"Total number of annotated citations\"\
+  \ AS ?description)\n  }\n  UNION\n  {\n    INCLUDE %annotedCitingArticles\n    BIND(\"\
+  Total number of articles providing annotated citations\" AS ?description)\n  }\n\
+  \  UNION\n  {\n    INCLUDE %annotedCitedArticles\n    BIND(\"Total number of articles\
+  \ receiving annotated citations\" AS ?description)\n  }\n  UNION\n  {\n    INCLUDE\
+  \ %citoJournals\n    BIND(\"Number of citing venues with annotated citations\" AS\
+  \ ?description)\n  }\n  UNION\n  {\n    INCLUDE %citedJournals\n    BIND(\"Number\
+  \ of cited venues with annotated citations\" AS ?description)\n  }\n  UNION\n  {\n\
+  \    INCLUDE %citoArticles\n    BIND(\"Number of article with explicit CiTO annotation\"\
+  \ AS ?description)\n  }\n  UNION\n  {\n    INCLUDE %citoDatasets\n    BIND(\"Number\
+  \ of data sets with explicit CiTO annotation\" AS ?description)\n  }\n  UNION\n\
+  \  {\n    INCLUDE %citoJournalsExplicit\n    BIND(\"Number of venues with explicit\
+  \ CiTO annotation\" AS ?description)\n  }\n}\nORDER BY DESC(?count)\n"

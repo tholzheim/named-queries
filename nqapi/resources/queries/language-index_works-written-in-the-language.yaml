@@ -1,0 +1,7 @@
+name: language-index_works-written-in-the-language
+query: "SELECT\n  ?count\n  ?language ?languageLabel ?languageDescription (CONCAT(\"\
+  /language/\", SUBSTR(STR(?language), 32)) AS ?languageUrl)\nWITH {\n  SELECT\n \
+  \   (COUNT(*) AS ?count)\n    ?language\n  WHERE {\n    [] wdt:P407 ?language  \
+  \ \n  }\n  GROUP BY ?language \n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  }\nORDER BY DESC(?count)\n\n  "

@@ -1,0 +1,13 @@
+name: venue_recently-published-works
+query: "#title: Recent works published in venue\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?publication_date\n  ?work ?workLabel\n  (GROUP_CONCAT(DISTINCT\
+  \ ?author_label; separator=\", \") AS ?authors)\n  (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT\
+  \ SUBSTR(STR(?author), 32); separator=\",\")) AS ?authorsUrl)\nWITH {\n  SELECT\
+  \ DISTINCT ?work (MIN(?publication_date_) AS ?publication_date) WHERE {\n    ?work\
+  \ wdt:P1433 target: .\n    OPTIONAL {\n      ?work wdt:P577 ?publication_datetime\
+  \ .\n      BIND(xsd:date(?publication_datetime) AS ?publication_date_)\n    }\n\
+  \  } GROUP BY ?work\n    ORDER BY DESC(?publication_date)\n    LIMIT 1000\n} AS\
+  \ %ARTICLES WHERE {\n  INCLUDE %ARTICLES\n  OPTIONAL {\n    ?work wdt:P50 ?author\
+  \ .\n    ?author rdfs:label ?author_label .\n    FILTER (LANG(?author_label) = 'en')\n\
+  \  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n} GROUP BY ?publication_date ?work ?workLabel\nORDER BY DESC(?publication_date)\n"

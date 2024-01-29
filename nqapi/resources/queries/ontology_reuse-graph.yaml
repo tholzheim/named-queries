@@ -1,0 +1,16 @@
+name: ontology_reuse-graph
+query: "#defaultView:Graph\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  ?source ?sourceLabel (CONCAT(\"../ontology/\", ?qs) AS ?sourceUrl)\n\
+  \  ?target ?targetLabel (CONCAT(\"../ontology/\", ?qt) AS ?targetUrl)\nWHERE {\n\
+  \  { # Ontologies that are used by the target: ontology\n    BIND (target: AS ?source)\n\
+  \    ?source wdt:P2283 ?target .\n    BIND(SUBSTR(STR(?source), 32) AS ?qs)\n  \
+  \  BIND(SUBSTR(STR(?target), 32) AS ?qt)\n    ?source rdfs:label ?source_string\
+  \ .\n    FILTER (LANG(?source_string) = 'en')\n    BIND(COALESCE(?source_string,\
+  \ ?qt) AS ?sourceLabel)\n    ?target rdfs:label ?target_string .\n    FILTER (LANG(?target_string)\
+  \ = 'en')\n    BIND(COALESCE(?target_string, ?qt) AS ?targetLabel)\n  }\n  UNION\n\
+  \  { # Ontologies that use the target: ontology\n    BIND (target: AS ?target)\n\
+  \    ?source wdt:P2283 ?target .\n    BIND(SUBSTR(STR(?source), 32) AS ?qs)\n  \
+  \  BIND(SUBSTR(STR(?target), 32) AS ?qt)\n    ?source rdfs:label ?source_string\
+  \ .\n    FILTER (LANG(?source_string) = 'en')\n    BIND(COALESCE(?source_string,\
+  \ ?qt) AS ?sourceLabel)\n    ?target rdfs:label ?target_string .\n    FILTER (LANG(?target_string)\
+  \ = 'en')\n    BIND(COALESCE(?target_string, ?qt) AS ?targetLabel)\n  }  \n}\n"

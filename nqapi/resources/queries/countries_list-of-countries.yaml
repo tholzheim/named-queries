@@ -1,0 +1,12 @@
+name: countries_list-of-countries
+query: "SELECT \n  ?number_of_publications\n  ?country ?countryLabel\n  ?example_author\
+  \ ?example_authorLabel\n  ?example_work ?example_workLabel\nWITH {\n  SELECT ?country\
+  \ WHERE {\n    VALUES ?country { {% for q in qs %} wd:{{ q }} {% endfor %} }\n \
+  \ }\n} AS %countries\nWITH {\n  SELECT \n    ?country \n    (COUNT(DISTINCT ?work)\
+  \ AS ?number_of_publications)\n    (SAMPLE(?work) AS ?example_work)\n    (SAMPLE(?author)\
+  \ AS ?example_author)\n  WHERE {\n    INCLUDE %countries\n    OPTIONAL {\n     \
+  \ ?organization wdt:P17 ?country .\n      ?author wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361*\
+  \ ?organization .\n      ?work wdt:P50 ?author .\n    }\n  }\n  GROUP BY ?country\n\
+  } AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER\
+  \ BY DESC(?number_of_publications)"

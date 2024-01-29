@@ -1,0 +1,9 @@
+name: topic_uses
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?use ?useLabel (CONCAT(\"/use/\", SUBSTR(STR(?use), 32)) AS ?useUrl)\n  (\"\U0001F50E\
+  \" AS ?zoom)\n  (CONCAT(SUBSTR(STR(target:), 32), \"/use/\", SUBSTR(STR(?use), 32))\
+  \ AS ?zoomUrl)\n  ?useDescription\n\n  ?example_work ?example_workLabel\nWITH {\n\
+  \  SELECT\n    (COUNT(?work) AS ?count)\n    ?use\n    (SAMPLE(?work) AS ?example_work)\n\
+  \  {\n    ?work wdt:P921 target: ;\n          wdt:P4510 ?use .\n  }\n  GROUP BY\
+  \ ?use\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?count)\n"

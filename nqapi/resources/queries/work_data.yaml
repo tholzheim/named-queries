@@ -1,0 +1,121 @@
+name: work_data
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?description ?value ?valueUrl\nWHERE {\n  BIND(target: AS ?work)\n  {\n    BIND(1\
+  \ AS ?order)\n    BIND(\"Title\" AS ?description)\n    ?work wdt:P1476 ?value .\n\
+  \  }\n  UNION\n  {\n    BIND(1.5 AS ?order)\n    BIND(\"Type\" AS ?description)\n\
+  \    ?work wdt:P31 ?iri .\n    BIND(SUBSTR(STR(?iri), 32) AS ?q) \n    ?iri rdfs:label\
+  \ ?value_string . \n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string,\
+  \ ?q) AS ?value)\n  }\n  UNION\n  {\n    SELECT\n      (2 AS ?order)\n      (\"\
+  Authors\" AS ?description)\n      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n\
+  \      (CONCAT(\"../authors/\", GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n\
+  \    {\n      BIND(1 AS ?dummy)\n      target: wdt:P50 ?iri .\n      BIND(SUBSTR(STR(?iri),\
+  \ 32) AS ?q) \n      ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string)\
+  \ = 'en')\n      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP\
+  \ BY ?dummy\n  }\n  UNION\n  {\n    SELECT\n      (3 AS ?order)\n      (\"Editors\"\
+  \ AS ?description)\n      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n\
+  \      (CONCAT(\"../authors/\", GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n\
+  \    {\n      BIND(1 AS ?dummy)\n      target: wdt:P98 ?iri .\n      BIND(SUBSTR(STR(?iri),\
+  \ 32) AS ?q) \n      ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string)\
+  \ = 'en')\n      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP\
+  \ BY ?dummy\n  }\n  UNION\n  {\n    BIND(2.5 AS ?order)\n    BIND(\"Language\" AS\
+  \ ?description)\n    ?work wdt:P407 ?iri .\n    BIND(SUBSTR(STR(?iri), 32) AS ?q)\
+  \ \n    ?iri rdfs:label ?value_string .\n    FILTER (LANG(?value_string) = 'en')\n\
+  \    BIND(STR(?value_string) AS ?value)\n    BIND(CONCAT(\"../language/\", ?q) AS\
+  \ ?valueUrl)\n  }\n  UNION\n  {\n    SELECT\n      (3 AS ?order)\n      (\"Reviewers\"\
+  \ AS ?description)\n      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n\
+  \      (CONCAT(\"../authors/\", GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n\
+  \    {\n      BIND(1 AS ?dummy)\n      target: wdt:P4032 ?iri .\n      BIND(SUBSTR(STR(?iri),\
+  \ 32) AS ?q) \n      ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string)\
+  \ = 'en')\n      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP\
+  \ BY ?dummy\n  }\n  UNION\n  {\n    BIND(4 AS ?order)\n    BIND(\"Published in\"\
+  \ AS ?description)\n    ?work wdt:P1433 ?iri .\n    BIND(SUBSTR(STR(?iri), 32) AS\
+  \ ?q) \n    ?iri rdfs:label ?value_string . \n    FILTER (LANG(?value_string) =\
+  \ 'en')\n    BIND(COALESCE(?value_string, ?q) AS ?value)\n    BIND(CONCAT(\"../venue/\"\
+  , ?q) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(4 AS ?order)\n    BIND(\"Series\"\
+  \ AS ?description)\n    ?work wdt:P179 ?iri .\n    BIND(SUBSTR(STR(?iri), 32) AS\
+  \ ?q) \n    ?iri rdfs:label ?value_string . \n    FILTER (LANG(?value_string) =\
+  \ 'en')\n    BIND(COALESCE(?value_string, ?q) AS ?value)\n    BIND(CONCAT(\"../series/\"\
+  , ?q) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(6 AS ?order)\n    BIND(\"Publication\
+  \ date\" AS ?description)\n    ?work p:P577 / psv:P577 ?publication_date_value .\n\
+  \    ?publication_date_value wikibase:timePrecision ?time_precision ;\n        \
+  \                    wikibase:timeValue ?publication_date .\n    BIND(IF(?time_precision\
+  \ = 9, YEAR(?publication_date), xsd:date(?publication_date)) AS ?value)\n  }\n \
+  \ UNION\n  {\n    BIND(7 AS ?order)\n    BIND(\"Publisher\" AS ?description)\n \
+  \   ?work wdt:P123 ?iri .\n    BIND(SUBSTR(STR(?iri), 32) AS ?q) \n    ?iri rdfs:label\
+  \ ?value_string . \n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string,\
+  \ ?q) AS ?value)\n    BIND(CONCAT(\"../publisher/\", ?q) AS ?valueUrl)\n  }\n  UNION\n\
+  \  {\n    SELECT\n      (8 AS ?order)\n      (\"Topics\" AS ?description)\n    \
+  \  (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n      (CONCAT(\"../topics/\"\
+  , GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n\
+  \      target: wdt:P921 ?iri .\n      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n     \
+  \ ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string) = 'en')\n\
+  \      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP BY ?dummy\n\
+  \  }\n  UNION\n  {\n    SELECT\n      (9 AS ?order)\n      (\"Uses\" AS ?description)\n\
+  \      (GROUP_CONCAT(?value_; separator=\", \") AS ?value)\n      (CONCAT(\"../uses/\"\
+  , GROUP_CONCAT(?q; separator=\",\")) AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n\
+  \      target: wdt:P4510 ?iri .\n      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n    \
+  \  ?iri rdfs:label ?value_string . \n      FILTER (LANG(?value_string) = 'en')\n\
+  \      BIND(COALESCE(?value_string, ?q) AS ?value_)\n    }\n    GROUP BY ?dummy\n\
+  \  }\n  UNION\n  {\n    BIND(10 AS ?order)\n    BIND(\"DOI\" AS ?description)\n\
+  \    ?work wdt:P356 ?valueUrl_ .\n    BIND(CONCAT(\"https://doi.org/\", ENCODE_FOR_URI(?valueUrl_))\
+  \ AS ?valueUrl)\n    BIND(CONCAT(?valueUrl_, \" \u2197\") AS ?value)\n  }\n  UNION\n\
+  \  {\n    BIND(11 AS ?order)\n    BIND(\"Homepage\" AS ?description)\n    ?work\
+  \ wdt:P856 ?valueUrl .\n    BIND(STR(?valueUrl) AS ?value)\n  }\n  UNION\n  {\n\
+  \    BIND(12 AS ?order)\n    BIND(\"Full text\" AS ?description)\n    ?work wdt:P953\
+  \ ?valueUrl .\n    BIND(CONCAT(STR(?valueUrl), \" \u2197\") AS ?value)\n  }\n  UNION\n\
+  \  {\n    BIND(13 AS ?order)\n    BIND(\"\U0001F6D1 Retracted\" AS ?description)\n\
+  \    { ?work wdt:P31 wd:Q45182324 . }\n    UNION\n    { ?work wdt:P793 wd:Q7316896\
+  \ . }\n  }\n  UNION\n  {\n    BIND(14 AS ?order)\n    BIND(\"\U0001F6D1 Retracted\
+  \ by\" AS ?description)\n    ?work wdt:P5824 ?iri .\n    BIND(SUBSTR(STR(?iri),\
+  \ 32) AS ?q) \n    ?iri rdfs:label ?value_string . \n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(COALESCE(?value_string, ?q) AS ?value)\n    BIND(CONCAT(\"../work/\"\
+  , ?q) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(15 AS ?order)\n    BIND(\"\u26A0\
+  \uFE0F Preprint\" AS ?description)\n    { ?work p:P31 ?statement . ?statement ps:P31\
+  \ wd:Q580922 . MINUS { ?statement pq:P642 [] } }\n  }\n  UNION\n  {\n    SELECT\
+  \ (COUNT(DISTINCT ?citationStatement) AS ?value) ?order ?description ?valueUrl WHERE\
+  \ {\n      VALUES ?work { wd:{{ q }} }\n      VALUES ?intention { wd:Q96472102 wd:Q101149476\
+  \ }\n      ?work ^ps:P2860 ?citationStatement . ?citationStatement pq:P3712 ?intention\
+  \ .\n      BIND(20 AS ?order)\n      BIND(\"Data or method used by\" AS ?description)\n\
+  \      BIND(\"./{{ q }}/cito\" AS ?valueUrl)\n    } GROUP BY ?order ?description\
+  \ ?valueUrl\n  }\n  UNION\n  {\n    SELECT (COUNT(DISTINCT ?citationStatement) AS\
+  \ ?value) ?order ?description ?valueUrl WHERE {\n      VALUES ?work { wd:{{ q }}\
+  \ }\n      VALUES ?intention { wd:Q107687829 wd:Q107710355 }\n      ?work ^ps:P2860\
+  \ ?citationStatement . ?citationStatement pq:P3712 ?intention .\n      BIND(21 AS\
+  \ ?order)\n      BIND(\"Disagreed with by\" AS ?description)\n      BIND(\"./{{\
+  \ q }}/cito\" AS ?valueUrl)\n    } GROUP BY ?order ?description ?valueUrl\n  }\n\
+  \  UNION\n  {\n    BIND(30 AS ?order)\n    BIND(\"\u26A0\uFE0F Preprint of\" AS\
+  \ ?description)\n    { ?work p:P31 ?statement .\n      ?statement pq:P642 ?pub ;\
+  \ ps:P31 wd:Q580922 .\n    BIND(SUBSTR(STR(?pub), 32) AS ?pubqid) \n    ?pub rdfs:label\
+  \ ?value_string . \n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string,\
+  \ ?pubqid) AS ?value)\n    BIND(CONCAT(\"../work/\", ?pubqid) AS ?valueUrl)}\n \
+  \ }\n  UNION\n  {\n    BIND(31 AS ?order)\n    BIND(\"\u26A0\uFE0F Cites retracted\
+  \ article\" AS ?description)\n    { ?work wdt:P2860 ?retracted . ?retracted wdt:P31\
+  \ wd:Q45182324 . }\n    UNION\n    { ?work wdt:P2860 ?retracted . ?retracted wdt:P793\
+  \ wd:Q7316896 . }\n    UNION\n    { ?work wdt:P2860 ?retracted . ?retracted wdt:P5824\
+  \ [] . }\n    ?retracted rdfs:label ?value_string . \n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(SUBSTR(STR(?retracted), 32) AS ?q) \n    BIND(COALESCE(?value_string,\
+  \ ?q) AS ?value)\n    BIND(CONCAT(\"../work/\", ?q) AS ?valueUrl)\n  }\n  UNION\n\
+  \  {\n    BIND(32 AS ?order)\n    BIND(\"Preprint\" AS ?description)\n    { ?preprint\
+  \ p:P31 ?statement .\n      ?statement pq:P642 ?work ; ps:P31 wd:Q580922 .\n   \
+  \ BIND(SUBSTR(STR(?preprint), 32) AS ?pubqid)\n    ?preprint rdfs:label ?value_string\
+  \ .\n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string, ?pubqid)\
+  \ AS ?value)\n    BIND(CONCAT(\"../work/\", ?pubqid) AS ?valueUrl)}\n  }\n  UNION\n\
+  \  {\n    BIND(33 AS ?order)\n    BIND(\"\u26A0\uFE0F Erratum of\" AS ?description)\n\
+  \    { ?work p:P31 ?statement .\n      ?statement pq:P642 ?pub ; ps:P31 wd:Q1348305\
+  \ .\n    BIND(SUBSTR(STR(?pub), 32) AS ?pubqid)\n    ?pub rdfs:label ?value_string\
+  \ .\n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string, ?pubqid)\
+  \ AS ?value)\n    BIND(CONCAT(\"../work/\", ?pubqid) AS ?valueUrl)}\n  }\n  UNION\n\
+  \  {\n    BIND(34 AS ?order)\n    BIND(\"\u26A0\uFE0F Retracts\" AS ?description)\n\
+  \    {\n    { ?work p:P31 ?statement .\n      ?statement pq:P642 ?pub ; ps:P31 wd:Q7316896\
+  \ . }\n    UNION\n    { ?work ^wdt:P5824 ?pub . }\n    BIND(SUBSTR(STR(?pub), 32)\
+  \ AS ?pubqid)\n    ?pub rdfs:label ?value_string .\n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(COALESCE(?value_string, ?pubqid) AS ?value)\n    BIND(CONCAT(\"\
+  ../work/\", ?pubqid) AS ?valueUrl)}\n  }\n  UNION\n  {\n    BIND(35 AS ?order)\n\
+  \    BIND(\"Replies to\" AS ?description)\n    ?work wdt:P2675 ?value_ .\n    BIND(SUBSTR(STR(?value_),\
+  \ 32) AS ?valueqid)\n    ?value_ rdfs:label ?value_string .\n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(COALESCE(?value_string, ?valueqid) AS ?value)\n    BIND(CONCAT(\"\
+  ../\", ?valueqid) AS ?valueUrl)\n  }\n  UNION\n  {\n    BIND(36 AS ?order)\n   \
+  \ BIND(\"Inspired by\" AS ?description)\n    ?work wdt:P941 ?value_ .\n    BIND(SUBSTR(STR(?value_),\
+  \ 32) AS ?valueqid)\n    ?value_ rdfs:label ?value_string .\n    FILTER (LANG(?value_string)\
+  \ = 'en')\n    BIND(COALESCE(?value_string, ?valueqid) AS ?value)\n    BIND(CONCAT(\"\
+  ../\", ?valueqid) AS ?valueUrl)\n  }\n} \nORDER BY ?order\n"

@@ -1,0 +1,10 @@
+name: author-curation_missing-coauthor-items
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  # Number\
+  \ of works with the coauthor\n  ?count\n\n  # The coauthor as a string, - rather\
+  \ than as an item\n  ?coauthor\n\n  # Build URL to the Author disambiguator tool\n\
+  \  (CONCAT(\n      'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \      ENCODE_FOR_URI(?coauthor)) AS ?resolver_url)\nWITH {\n  SELECT (COUNT(?work)\
+  \ as ?count) ?coauthor WHERE {\n    ?work wdt:P50 target: .\n    ?work wdt:P2093\
+  \ ?coauthor .\n  }\n  GROUP BY ?coauthor\n} AS %result\nWHERE {\n  INCLUDE %result\n\
+  \  # Label the results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?count)"

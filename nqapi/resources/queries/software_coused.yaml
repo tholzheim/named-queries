@@ -1,0 +1,9 @@
+name: software_coused
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count ?coused\
+  \ ?cousedLabel ?example_work ?example_workLabel\nWITH{\n  # Find works that are\
+  \ using a specific software,\n  # and find other software used in the found works\n\
+  \  SELECT\n    ?coused (COUNT(?work) as ?count) (SAMPLE(?work) AS ?example_work)\n\
+  \  WHERE {\n    ?work wdt:P4510 / wdt:P279* target: ;\n          wdt:P4510 ?coused\
+  \ .\n    FILTER (?coused != target:)\n  }\n  GROUP BY ?coused\n} AS %result\nWHERE\
+  \ {\n  # Label the result\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)  "

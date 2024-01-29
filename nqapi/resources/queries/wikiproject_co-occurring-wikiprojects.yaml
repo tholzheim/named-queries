@@ -1,0 +1,13 @@
+name: wikiproject_co-occurring-wikiprojects
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?count\n       ?wikiproject ?wikiprojectLabel (CONCAT(\"/wikiproject/\"\
+  , SUBSTR(STR(?wikiproject), 32)) AS ?wikiprojectUrl)\n       ?example_entity ?example_entityLabel\
+  \ (CONCAT(\"/\", SUBSTR(STR(?example_entity), 32)) AS ?example_entityUrl)\nWITH\
+  \ {\n  SELECT (COUNT(?work) AS ?count) ?wikiproject (SAMPLE(?work) AS ?example_entity)\
+  \ WHERE {\n    # Find works for the specific queried wikiproject\n\t  VALUES ?p\
+  \ { wdt:P6104 wdt:P5008 }\n\t  SERVICE bd:sample { ?work ?p target: . bd:serviceParam\
+  \ bd:sample.limit 100000 }\n    \n    # Find co-occuring wikiprojects\n    ?work\
+  \ ?p ?wikiproject .\n    \n    # Avoid listing the queried wikiproject\n      FILTER\
+  \ (target: != ?wikiproject)\n  }\n  GROUP BY ?wikiproject\n} AS %result\nWHERE {\n\
+  \  # Label the results\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\n"

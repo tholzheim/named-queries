@@ -1,0 +1,5 @@
+name: property_use
+query: "PREFIX target: <http://www.wikidata.org/prop/direct/{{ p }}>\n\nSELECT ?item\
+  \ ?itemLabel ?property_value ?property_valueLabel WHERE {\n  ?item target: ?property_value\
+  \ .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n}\nLIMIT 500\n"

@@ -1,0 +1,6 @@
+name: ontology_used-ontologies
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (GROUP_CONCAT(?value_;\
+  \ separator=\", \") AS ?value)\n  (CONCAT(\"../ontology/\", GROUP_CONCAT(?q; separator=\"\
+  ,\")) AS ?valueUrl)\nWHERE {\n  target: wdt:P2283 ?usedOntology .\n  BIND(SUBSTR(STR(?usedOntology),\
+  \ 32) AS ?q)\n  ?usedOntology rdfs:label ?value_string .\n  FILTER (LANG(?value_string)\
+  \ = 'en')\n  BIND(COALESCE(?value_string, ?q) AS ?value_)\n} GROUP BY ?usedOntology\n"

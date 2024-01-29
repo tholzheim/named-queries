@@ -1,0 +1,14 @@
+name: pathway_recent-articles
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?date ?work\
+  \ ?workLabel ?type ?topics\nWITH {\n  SELECT DISTINCT ?work \n    WHERE {\n    \
+  \  { ?work wdt:P921 / (wdt:P361+ | wdt:P1269+ | (wdt:P31* / wdt:P279*) ) target:\
+  \ . }\n      UNION { target: wdt:P2860 ?work . }\n    }\n} AS %works\nWITH {\n \
+  \ SELECT \n    (MAX(?dates) as ?datetime)\n    ?work\n    (GROUP_CONCAT(DISTINCT\
+  \ ?type_label; separator=\", \") AS ?type)\n    (GROUP_CONCAT(?topic_label; separator=\"\
+  \ // \") AS ?topics) \n  WHERE {\n    INCLUDE %works\n    OPTIONAL {\n      ?work\
+  \ wdt:P921 ?topic .\n      ?topic rdfs:label ?topic_label .\n      FILTER (lang(?topic_label)\
+  \ = 'en')\n    }\n    OPTIONAL { \n      ?work wdt:P31 ?type_ .\n      ?type_ rdfs:label\
+  \ ?type_label .\n      FILTER (LANG(?type_label) = 'en') \n    }\n    OPTIONAL {\
+  \ ?work wdt:P577 ?dates . }\n  }\n  GROUP BY ?work\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  BIND(xsd:date(?datetime) AS ?date)\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?date)\nLIMIT 500"

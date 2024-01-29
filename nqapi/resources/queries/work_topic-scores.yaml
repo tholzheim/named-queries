@@ -1,0 +1,12 @@
+name: work_topic-scores
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?score ?topic ?topicLabel\nWITH {\n  SELECT\n    (SUM(?score_)\
+  \ AS ?score)\n    ?topic\n  WHERE {\n    { \n      target: wdt:P921 ?topic .\n \
+  \     BIND(20 AS ?score_)\n    }\n    UNION\n    { \n     target: wdt:P921/wdt:P279\
+  \ ?topic .\n     BIND(3 AS ?score_)\n    }\n    UNION\n    {\n      # Topic of a\
+  \ cited work\n      target: wdt:P2860/wdt:P921 ?topic .\n      BIND(1 AS ?score_)\n\
+  \    }\n    UNION\n    {\n      SELECT (1 AS ?score_) ?topic WHERE {\n        ?citing_work\
+  \ wdt:P2860 target: .\n        ?citing_work wdt:P921 ?topic . \n      }\n    }\n\
+  \  }\n  GROUP BY ?topic\n} AS %results \nWHERE {\n  INCLUDE %results\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?score)\nLIMIT 200"

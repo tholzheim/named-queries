@@ -1,0 +1,14 @@
+name: organization-topic_recent-literature
+query: "PREFIX target1: <http://www.wikidata.org/entity/{{ q1 }}>\nPREFIX target2:\
+  \ <http://www.wikidata.org/entity/{{ q2 }}>\n\nSELECT\n  ?publication_date\n  ?work\
+  \ ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n  ?authors\
+  \ ?authorsUrl\nWITH {\n  SELECT \n    (xsd:date(MAX(?publication_date_)) AS ?publication_date)\n\
+  \    ?work\n    (GROUP_CONCAT(DISTINCT ?author_; separator=\", \") AS ?authors)\n\
+  \    (CONCAT(\"../../../authors/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?author), 32);\
+  \ separator=\",\")) AS ?authorsUrl)\n  {\n    { ?author ?p1 target1: . }\n    UNION\n\
+  \    {\n      ?author ?p2 ?something .\n      ?something wdt:P361 target1: .\n \
+  \   }\n    ?work wdt:P50 ?author;\n          wdt:P921 target2: .\n    ?author rdfs:label\
+  \ ?author_ .\n    FILTER (LANG(?author_) = 'en')\n    \n    ?work wdt:P577 ?publication_date_\
+  \ .\n  }\n  GROUP BY ?work\n  ORDER BY DESC (?publication_date)\n  LIMIT 200\n}\
+  \ AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC (?publication_date)\n"

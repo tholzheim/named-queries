@@ -1,0 +1,12 @@
+name: protein_cointeracting-proteins
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?protein ?proteinLabel (CONCAT(\"/protein/\", SUBSTR(STR(?protein), 32)) AS ?proteinUrl)\n\
+  \  ?species ?speciesLabel (CONCAT(\"/taxon/\", SUBSTR(STR(?species), 32)) AS ?speciesUrl)\n\
+  \  ?chemicals\nWITH {\n  SELECT\n    (COUNT(?chemical) AS ?count)\n    ?protein\n\
+  \    (GROUP_CONCAT(?chemical_label; separator=\" // \") AS ?chemicals)\n  WHERE\
+  \ {\n    target: wdt:P129 ?chemical .\n    FILTER (target: != ?protein)\n    ?protein\
+  \ wdt:P129 ?chemical . \n    ?chemical rdfs:label ?chemical_label FILTER(lang(?chemical_label)\
+  \ = \"en\")\n  }\n  GROUP BY ?protein\n} AS %result \nWHERE {\n  INCLUDE %result\n\
+  \  OPTIONAL { ?protein wdt:P703 ?species . }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\nLIMIT\
+  \ 500\n"

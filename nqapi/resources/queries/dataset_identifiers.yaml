@@ -1,0 +1,13 @@
+name: dataset_identifiers
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?Identifier\
+  \ ?IdentifierLabel\n  ?id (SAMPLE(?idUrls) as ?idUrl)\n  ?IdentifierDescription\n\
+  WITH {\n  SELECT ?Identifier ?id ?formatterurl WHERE {\n    target: ?IDdir ?id .\n\
+  \    ?Identifier wikibase:directClaim ?IDdir ;\n            wdt:P31/wdt:P279* wd:Q19847637\
+  \ .\n    OPTIONAL {\n      ?Identifier wdt:P1630 ?formatterurl .\n    }\n  } LIMIT\
+  \ 500\n} AS %RESULTS {\n  { SELECT * WHERE {\n      INCLUDE %RESULTS\n      FILTER\
+  \ (?Identifier = wd:P234)\n      BIND(IRI(REPLACE(?formatterurl, '\\\\\\\\$1', ENCODE_FOR_URI(str(?id))))\
+  \ AS ?idUrls).\n    }\n  } UNION {\n    SELECT * WHERE {\n      INCLUDE %RESULTS\n\
+  \      FILTER (?Identifier != wd:P234)\n      BIND(IRI(REPLACE(?formatterurl, '\\\
+  \\\\\\$1', str(?id))) AS ?idUrls).\n    }\n  }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nGROUP BY ?Identifier ?IdentifierLabel\
+  \ ?IdentifierDescription ?id\nORDER BY ASC(?IdentifierLabel)\n"

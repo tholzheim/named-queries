@@ -1,0 +1,12 @@
+name: chemical-class_class-hierarchy
+query: "#defaultView:Graph\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT DISTINCT ?class ?classLabel ?otherclass ?otherclassLabel ?rgb WITH {\n\
+  \  SELECT DISTINCT ?class ?otherclass ?rgb WHERE {\n    # find the subclasses\n\
+  \    { VALUES ?class { target: }\n      # subclasses that have subclasses themselves\n\
+  \      { ?otherclass wdt:P279 ?class . [] wdt:P279 ?otherclass  BIND( \"3182BD\"\
+  \ AS ?rgb) }\n      UNION\n      # subclasses that do not have subclasses\n    \
+  \  { ?otherclass wdt:P279 ?class . MINUS { [] wdt:P279 ?otherclass } BIND( \"E6550D\"\
+  \ AS ?rgb) }\n    }\n    UNION\n    # find the superclasses\n    { VALUES ?otherclass\
+  \ { target: }\n      ?otherclass wdt:P279 ?class .\n    }\n  } LIMIT 500\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en\". }\n}\n"

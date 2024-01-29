@@ -1,0 +1,7 @@
+name: clinical-trial-index_phases
+query: "#defaultView:BarChart\nSELECT\n  (STR(?year_) AS ?year)\n  ?count\n  ?phase\
+  \ ?phaseLabel\nWHERE {\n  { \n    SELECT\n      ?year_\n      (COUNT(*) AS ?count)\n\
+  \      ?phase\n    WHERE {\n      ?trial wdt:P6099 ?phase .\n      ?trial wdt:P580\
+  \ ?start_datetime .\n      BIND(YEAR(?start_datetime) AS ?year_) \n    }\n    GROUP\
+  \ BY ?year_ ?phase\n  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}"

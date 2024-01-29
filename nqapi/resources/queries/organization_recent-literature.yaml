@@ -1,0 +1,15 @@
+name: organization_recent-literature
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?publication_date\n  ?work ?workLabel\n  ?researchers ?researchersUrl\n\
+  WITH {\n  SELECT \n    (MIN(?publication_datetimes) AS ?publication_datetime) ?work\
+  \ \n    (GROUP_CONCAT(DISTINCT ?researcher_label; separator=', ') AS ?researchers)\n\
+  \    (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?researcher), 32);\
+  \ separator=\",\")) AS ?researchersUrl)\n  WHERE {                             \
+  \                            \n    ?researcher ( wdt:P108 | wdt:P463 | wdt:P1416\
+  \ ) / wdt:P361* target: .\n    ?work wdt:P50 ?researcher .\n    ?researcher rdfs:label\
+  \ ?researcher_label . FILTER (LANG(?researcher_label) = 'en')\n    OPTIONAL {\n\
+  \      ?work wdt:P577 ?publication_datetimes .\n    }\n  }\n  GROUP BY ?work\n \
+  \ ORDER BY DESC(?publication_datetime)\n  LIMIT 200  \n} AS %results\nWHERE {\n\
+  \  INCLUDE %results\n  BIND(xsd:date(?publication_datetime) AS ?publication_date)\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,nl,ru,zh\"\
+  . }\n}\nORDER BY DESC(?publication_date)\n"

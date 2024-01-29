@@ -1,0 +1,10 @@
+name: venue_most-cited-articles
+query: "# title: Most cited articles published in specific venue\n\nPREFIX target:\
+  \ <http://www.wikidata.org/entity/{{ q }}>\n\n#defaultView:Table\nSELECT\n  ?count\n\
+  \  ?work ?workLabel\n  ?example_citing_work ?example_citing_workLabel\nWITH {\n\
+  \  # Count citations\n  SELECT\n    (COUNT(?citing_work) AS ?count)\n    ?work\n\
+  \    (SAMPLE(?citing_work) AS ?example_citing_work)\n  WHERE {\n    ?work wdt:P1433\
+  \ target: .\n    ?citing_work wdt:P2860 ?work.\n  }\n  GROUP BY ?work\n  ORDER BY\
+  \ DESC(?count)\n  LIMIT 1000  \n} AS %result\nWHERE {\n  # Label results\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language \"\
+  [AUTO_LANGUAGE],en\" . } \n}\nORDER BY DESC(?count)\n"

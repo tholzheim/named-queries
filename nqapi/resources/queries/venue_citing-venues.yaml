@@ -1,0 +1,11 @@
+name: venue_citing-venues
+query: "# title: Venues citing articles from this specific journal\n\nPREFIX target:\
+  \ <http://www.wikidata.org/entity/{{ q }}>\n\n#defaultView:Table\nSELECT\n  ?count\n\
+  \  ?short_name\n  ?citing_journal ?citing_journalLabel \nWITH {\n  SELECT\n    (COUNT(?citing_work)\
+  \ AS ?count)\n    ?citing_journal\n    (SAMPLE(?short_name_) AS ?short_name)\n \
+  \ WHERE {\n    ?work wdt:P1433 target: .\n    ?citing_work wdt:P2860 ?work .\n \
+  \   ?citing_work wdt:P1433 ?citing_journal .\n    OPTIONAL { ?citing_journal wdt:P1813\
+  \ ?short_name_ . }\n  }\n  GROUP BY ?citing_journal\n  ORDER BY DESC(?count)\n \
+  \ LIMIT 1000\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ {\n    bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . } \n}\nORDER\
+  \ BY DESC(?count)\n"

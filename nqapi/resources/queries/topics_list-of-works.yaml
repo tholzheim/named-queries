@@ -1,0 +1,17 @@
+name: topics_list-of-works
+query: "# title: List of works on any combination of specific topics\nSELECT\n  ?count\
+  \ \n  (MIN(?publication_date_) AS ?publication_date)\n  ?work ?workLabel (CONCAT(\"\
+  /work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n  ?topics ?topicsUrl\nWITH {\n \
+  \ SELECT (COUNT(?topic) AS ?count) ?work\n    (GROUP_CONCAT(DISTINCT ?topic_label;\
+  \ separator=\" // \") AS ?topics) \n    (CONCAT(\"../topics/\", GROUP_CONCAT(DISTINCT\
+  \ SUBSTR(STR(?topic), 32); separator=\",\")) AS ?topicsUrl)                    \
+  \                \n  WHERE {\n    VALUES ?topic { {% for q in qs %} wd:{{ q }} {%\
+  \ endfor %} }\n    \n    # A broad query including \"(wdt:P361+ | wdt:P1269+ | (wdt:P31*\
+  \ / wdt:P279*) )\" seems to take\n    # long time and time out.\n    ?work wdt:P921\
+  \ ?topic  .\n    ?topic rdfs:label ?topic_label .\n    FILTER(LANG(?topic_label)\
+  \ = 'en')\n  }\n  GROUP BY ?work ?topics\n  HAVING(?count > 1)\n  ORDER BY DESC(?count)\n\
+  \  LIMIT 200\n} AS %results\nWHERE {\n  INCLUDE %results\n  OPTIONAL {\n    ?work\
+  \ wdt:P577 ?publication_datetime .\n    BIND(xsd:date(?publication_datetime) AS\
+  \ ?publication_date_)\n  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\nGROUP BY ?count ?work ?workLabel ?topics ?topicsUrl\n\
+  ORDER BY DESC(?count) DESC(?publication_date)\n"

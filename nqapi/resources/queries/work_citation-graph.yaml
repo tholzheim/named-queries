@@ -1,0 +1,30 @@
+name: work_citation-graph
+query: "#defaultView:Graph\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?citing_work ?citing_workLabel ?rgb \n  ?cited_work ?cited_workLabel\n\
+  WITH { \n  SELECT (COUNT(*) AS ?count) ?citing_work WHERE {\n    target: (^wdt:P2860\
+  \ | wdt:P2860) / (^wdt:P2860 | wdt:P2860)? ?citing_work .\n  }\n  GROUP BY ?citing_work\n\
+  \  ORDER BY DESC(?count)\n  LIMIT 40\n} AS %citing_works\nWITH { \n  SELECT (COUNT(*)\
+  \ AS ?count_) ?cited_work WHERE {\n    target: (^wdt:P2860 | wdt:P2860) / (^wdt:P2860\
+  \ | wdt:P2860)? ?cited_work .\n  }\n  GROUP BY ?cited_work\n  ORDER BY DESC(?count_)\n\
+  \  LIMIT 40\n} AS %cited_works\nWITH {\n  SELECT (MAX(?count) AS ?max_count) WHERE\
+  \ {\n    INCLUDE %citing_works\n    BIND(1 AS ?dummy)\n  } \n  GROUP BY ?dummy\n\
+  } AS %max_count\nWHERE {\n  INCLUDE %citing_works\n  INCLUDE %max_count\n  INCLUDE\
+  \ %cited_works\n  \n  ?citing_work wdt:P2860 ?cited_work .\n  \n  BIND(STR(xsd:integer(99\
+  \ * (1 - ?count / ?max_count))) AS ?grey)\n  BIND(CONCAT(SUBSTR(\"0\", 1, 2 - STRLEN(?grey)),\
+  \ ?grey) AS ?padded_grey)\n  BIND(CONCAT(?padded_grey, ?padded_grey, ?padded_grey)\
+  \ AS ?rgb)\n\n  { \n      ?citing_work (p:P50) ?citing_author_statement . \n   \
+  \   ?citing_author_statement pq:P1545 \"1\" .\n      ?citing_author_statement ps:P50\
+  \ ?citing_author .\n      ?citing_author rdfs:label ?citing_author_name .\n    \
+  \  filter(lang(?citing_author_name) = 'en')\n    }\n    union \n  \t{ \n      ?citing_work\
+  \ (p:P2093) ?citing_author_statement . \n      ?citing_author_statement pq:P1545\
+  \ \"1\" .\n      ?citing_author_statement ps:P2093 ?citing_author_name .\n    }\n\
+  \  \n    { \n      ?cited_work (p:P50) ?cited_author_statement . \n      ?cited_author_statement\
+  \ pq:P1545 \"1\" .\n      ?cited_author_statement ps:P50 ?cited_author .\n     \
+  \ ?cited_author rdfs:label ?cited_author_name .\n      filter(lang(?cited_author_name)\
+  \ = 'en')\n    }\n    union \n  \t{ \n      ?cited_work (p:P2093) ?cited_author_statement\
+  \ . \n      ?cited_author_statement pq:P1545 \"1\" .\n      ?cited_author_statement\
+  \ ps:P2093 ?cited_author_name .\n    }\n\n    ?citing_work wdt:P577 ?citing_date\
+  \ . \n    ?cited_work wdt:P577 ?cited_date . \n    bind(year(?citing_date) as ?citing_year)\n\
+  \    bind(year(?cited_date) as ?cited_year)\n    bind(concat(?citing_author_name,\
+  \ \", \", str(?citing_year)) as ?citing_workLabel)\n    bind(concat(?cited_author_name,\
+  \ \", \", str(?cited_year)) as ?cited_workLabel)\n}\nORDER BY DESC(?count)"

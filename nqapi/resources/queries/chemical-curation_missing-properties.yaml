@@ -1,0 +1,6 @@
+name: chemical-curation_missing-properties
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?property\
+  \ ?propertyLabel WHERE {\n  VALUES ?property {\n    wdt:P2177 wdt:P2102 wdt:P2101\
+  \ wdt:p3078 wdt:P2119\n    wdt:P3071 wdt:P2054 wdt:P2128 wdt:P1117\n  }\n  MINUS\
+  \ { target: ?property [] }\n  ?property ^wikibase:directClaim / wdt:P1629 / rdfs:label\
+  \ ?propertyLabel .\n  FILTER (lang(?propertyLabel) = \"en\")\n}\n"

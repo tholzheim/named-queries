@@ -1,0 +1,10 @@
+name: award-index_statistics
+query: "#defaultView:ScatterChart\n# Statistics on number of recipients for award\
+  \ wrt. gender\nSELECT ?males ?females ?award ?awardLabel \nWITH {\n  SELECT (COUNT(?recipient_male)\
+  \ AS ?males) (COUNT(?recipient_female) AS ?females) ?award WHERE {\n    ?award wdt:P31\
+  \ wd:Q11448906 .\n    { \n      ?recipient_male wdt:P166 ?award .\n      ?recipient_male\
+  \ wdt:P21 wd:Q6581097 .\n    }\n    UNION \n    {\n      ?recipient_female wdt:P166\
+  \ ?award .\n      ?recipient_female wdt:P21 wd:Q6581072 .\n    }  \n  }\n  GROUP\
+  \ BY ?award\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n} \nORDER BY DESC(?males) DESC(?female)"

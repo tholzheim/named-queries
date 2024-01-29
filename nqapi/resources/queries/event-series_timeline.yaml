@@ -1,0 +1,19 @@
+name: event-series_timeline
+query: "#defaultView:Timeline\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?time ?endtime ?event ?eventLabel ?image\n  ?description\n\
+  WITH {\n  SELECT DISTINCT ?event ?time ?endtime WHERE {\n    # It seems to be necessary\
+  \ to have this line together with the \n    # optional event time triples here.\n\
+  \    ?event wdt:P179 | wdt:P31 target: .\n    \n    OPTIONAL { ?event wdt:P580 ?starttime\
+  \ . }\n\n    # If the endtime is not set, then use now as the end time\n    # However\
+  \ this does not show well if the event is in the future\n    # and no end date has\
+  \ been set.\n    OPTIONAL { ?event wdt:P582 ?endtime . }\n    # BIND(COALESCE(?endtime_,\
+  \ NOW()) AS ?endtime)\n    \n    OPTIONAL { ?event wdt:P585 ?timepoint . }\n   \
+  \ \n    # If start time is defined the disregard timepoint\n    BIND(COALESCE(?starttime,\
+  \ ?timepoint) AS ?time)\n  }\n} AS %events1\nWITH {\n  # Include significant events\n\
+  \  SELECT ?event ?time ?description WHERE {\n    ?event wdt:P179 | wdt:P31 target:\
+  \ .\n    ?event p:P793 [ ps:P793 ?item ; pq:P585 ?time ] .\n    OPTIONAL {\n   \
+  \   ?item rdfs:label ?description .\n      FILTER (LANG(?description) = \"en\")\n\
+  \    }\n  }\n} AS %events2\nWHERE {\n  { INCLUDE %events1 }\n  UNION\n  { INCLUDE\
+  \ %events2 }\n          \n  OPTIONAL { ?event wdt:P18 ?image . }\n  SERVICE wikibase:label\
+  \ {\n    bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  .\n  }\n}\n"

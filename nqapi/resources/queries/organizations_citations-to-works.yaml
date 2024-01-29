@@ -1,0 +1,22 @@
+name: organizations_citations-to-works
+query: "#defaultView:LineChart\nSELECT\n  (?year_of_citation AS ?year)\n  (?number_of_citations/?number_of_works\
+  \ AS ?citations_to_works_ratio)\n  ?number_of_works\n  ?number_of_citations\n  ?organization\
+  \ ?organizationLabel  \nWITH {\n  # Bind organizations to variable\n  SELECT ?organization\
+  \ WHERE {\n    VALUES ?organization { {% for q in qs %} wd:{{ q }} {% endfor %}\
+  \ }\n  }\n} AS %organizations\nWITH {\n  # Find works associated with the organizations\n\
+  \  SELECT\n    # Should not count authors twice\n    DISTINCT ?work ?organization\n\
+  \  WHERE {\n    INCLUDE %organizations\n    ?author wdt:P108 | wdt:P463 | (wdt:P1416/wdt:P361*)\
+  \ ?organization . \n    ?work wdt:P50 ?author .\n  }\n} AS %works\nWITH {\n  # Count\
+  \ the number of works published per year per organization\n  SELECT\n    ?year_of_cited\
+  \ (COUNT(?work) AS ?number_of_works) ?organization\n  WHERE {\n    INCLUDE %works\n\
+  \    ?work wdt:P577 ?cited_publication_date .\n    BIND(STR(YEAR(?cited_publication_date))\
+  \ AS ?year_of_cited)\n  } \n  GROUP BY ?year_of_cited ?organization\n} AS %work_numbers\n\
+  WITH {\n  # Count the number of citations received per year per organization\n \
+  \ SELECT \n    ?year_of_citation (COUNT(?work) AS ?number_of_citations) ?organization\n\
+  \  WHERE {\n    INCLUDE %works\n    ?citing_work wdt:P2860 ?work . \n    ?citing_work\
+  \ wdt:P577 ?citing_publication_date .\n    BIND(STR(YEAR(?citing_publication_date))\
+  \ AS ?year_of_citation)\n  }\n  GROUP BY ?year_of_citation ?organization\n} AS %citation_numbers\n\
+  WHERE {\n  # Join the work and citation counts\n  INCLUDE %citation_numbers\n  INCLUDE\
+  \ %work_numbers\n  FILTER (?year_of_citation = ?year_of_cited)\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\n\
+  ORDER BY ?year_of_citation\n \n"

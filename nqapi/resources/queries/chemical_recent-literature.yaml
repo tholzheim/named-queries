@@ -1,0 +1,21 @@
+name: chemical_recent-literature
+query: "# title: recent literature about this chemical\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?date ?work ?workLabel ?type ?via ?topics\nWITH {\n  SELECT DISTINCT\
+  \ ?work  ?via ?topic WHERE {\n    { VALUES ?topic { target:}\n      ?work wdt:P921\
+  \ ?topic . BIND (\"main topic\" AS ?via) }\n    UNION\n    { ?work wdt:P921 ?topic\
+  \ . ?topic ((^wdt:P361)+) target: . BIND (\"part\" AS ?via) }\n    UNION\n    {\
+  \ ?work wdt:P921 ?topic . ?topic (wdt:P31* / wdt:P279* ) target: . BIND (\"subclass\"\
+  \ AS ?via). FILTER (?topic != target:) }\n    UNION\n    { ?work wdt:P921 ?topic\
+  \ . ?topic (wdt:P1269+ ) target: . BIND (\"facet\" AS ?via)}\n    UNION\n    {\n\
+  \      target: ?propp ?statement .\n      ?statement a wikibase:BestRank ;\n   \
+  \              prov:wasDerivedFrom/pr:P248 ?work .\n      BIND (\"statement\" AS\
+  \ ?via)\n    }\n  }\n} AS %works\nWITH {\n  SELECT (MAX(?dates) as ?datetime) ?work\
+  \ (GROUP_CONCAT(DISTINCT ?type_label; separator=\", \") AS ?type) ?via (GROUP_CONCAT(DISTINCT\
+  \ ?topic_label; separator=\" // \") AS ?topics) WHERE {\n    INCLUDE %works\n  \
+  \  ?work wdt:P921 ?topic . \n    OPTIONAL { ?work wdt:P31 ?type_ . ?type_ rdfs:label\
+  \ ?type_label . FILTER (LANG(?type_label) = 'en') }\n    OPTIONAL { ?work wdt:P577\
+  \ ?dates . }\n    ?topic rdfs:label ?topic_label .  FILTER (lang(?topic_label) =\
+  \ 'en')\n  }\n  GROUP BY ?work ?via\n} AS %result\nWHERE {\n  INCLUDE %result\n\
+  \  BIND(xsd:date(?datetime) AS ?date)\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?date)\n\
+  LIMIT 500\n"

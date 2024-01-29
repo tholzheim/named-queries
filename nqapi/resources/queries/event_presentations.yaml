@@ -1,0 +1,14 @@
+name: event_presentations
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?work\
+  \ ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n  ?authors\
+  \ ?authorsUrl\n  ?topics ?topicsUrl\nWITH {\n  SELECT \n    ?work\n    (GROUP_CONCAT(DISTINCT\
+  \ ?author_label; separator=\", \") AS ?authors)\n    (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT\
+  \ SUBSTR(STR(?author), 32); separator=\",\")) AS ?authorsUrl)    \n    (GROUP_CONCAT(DISTINCT\
+  \ ?topic_label; separator=\", \") AS ?topics)\n    (CONCAT(\"../topics/\", GROUP_CONCAT(DISTINCT\
+  \ SUBSTR(STR(?topic), 32); separator=\",\")) AS ?topicsUrl)\n  WHERE {\n    ?work\
+  \ wdt:P5072 target: .\n    OPTIONAL {\n      ?work wdt:P50 ?author .\n      ?author\
+  \ rdfs:label ?author_label . FILTER(LANG(?author_label) = \"en\")\n    }\n    OPTIONAL\
+  \ {\n      ?work wdt:P921 ?topic .\n      ?topic rdfs:label ?topic_label . FILTER(LANG(?topic_label)\
+  \ = \"en\")\n    }\n  }\n  GROUP BY ?work\n} AS %results\nWHERE {\n  INCLUDE %results\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n}\n"

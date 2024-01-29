@@ -1,0 +1,9 @@
+name: author_venue-statistics-chart
+query: "#defaultView:BubbleChart\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?count ?venue (SAMPLE(?venue_label_) AS ?venue_label) \nWITH {\n\
+  \  SELECT (COUNT(?work) as ?count) ?venue WHERE {\n    ?work wdt:P50 target: .\n\
+  \    ?work wdt:P1433 ?venue .\n  }\n  GROUP BY ?venue\n} AS %counts\nWHERE {\n \
+  \ INCLUDE %counts\n  ?venue rdfs:label ?long_venue_label FILTER(LANG(?long_venue_label)\
+  \ = 'en')\n  OPTIONAL { ?venue wdt:P1813 ?short_name . }\n  BIND(COALESCE(?short_name,\
+  \ ?long_venue_label) AS ?venue_label_)\n}\nGROUP BY ?venue ?count\nORDER BY DESC(?count)\
+  \  \n"

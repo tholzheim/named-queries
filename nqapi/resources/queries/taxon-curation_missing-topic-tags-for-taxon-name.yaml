@@ -1,0 +1,17 @@
+name: taxon-curation_missing-topic-tags-for-taxon-name
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ \n?item ?itemLabel (CONCAT(\"/work/\", SUBSTR(STR(?item), 32)) AS ?itemUrl) ?taxonname\n\
+  \  (REPLACE(STR(?item), \".*Q\", \"Q\") AS ?work) \n  (\"P921\" AS ?main_subject)\n\
+  \  (REPLACE(STR(target: ), \".*Q\", \"Q\") AS ?taxon)\n  (\"S887\" AS ?heuristic)\n\
+  \  (\"Q69652283\" AS ?deduced)\n\nWITH\n{ SELECT  ?item ?taxonname WHERE {\n  target:\
+  \ wdt:P225 ?taxonname .\n  target: wdt:P105 wd:Q7432 . # this filters for species-level\
+  \ (Q7432) taxon names; comment out or adapt as necessary\n\n  SERVICE wikibase:mwapi\n\
+  \  {\n    bd:serviceParam wikibase:endpoint \"www.wikidata.org\";\n      wikibase:api\
+  \ \"Generator\";\n      mwapi:generator \"search\";\n      mwapi:gsrsearch ?taxonname;\n\
+  \      mwapi:gsrlimit \"max\".\n    ?item wikibase:apiOutputItem mwapi:title.\n\
+  \  }\n  ?item wdt:P1476 ?title .\n  \n  MINUS {?item wdt:P921 target: }\n  MINUS\
+  \ {?item wdt:P921 [wdt:P171* target: ] } # this filters out works about subspecies\
+  \ of the target\n\n  FILTER (REGEX(LCASE(?title), LCASE(CONCAT( \"\\\\\\\\\", \"\
+  b\", ?taxonname ,\"\\\\\\\\\", \"b\"))))\n  }\n  LIMIT 200\n}\nAS %items\nWHERE\
+  \ {\n  INCLUDE %items\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}\nLIMIT 200\n"

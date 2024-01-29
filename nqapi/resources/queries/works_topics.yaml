@@ -1,0 +1,38 @@
+name: works_topics
+description:
+  Get topic distribution of the given works
+parameter:
+  work_ids:
+      label: qs
+      type: Qid
+      multivalued: True
+      description: Wikidata id of the event
+  lang:
+    label: lang
+    type: str
+    default_value: en
+    description: language of the labels that are queried
+query: |
+  #defaultView:BubbleChart
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  PREFIX wd: <http://www.wikidata.org/entity/>
+  PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+  SELECT
+    ?count
+    ?topic ?topicLabel
+  WHERE {
+    {
+      SELECT
+        (COUNT(?work) AS ?count)
+        ?topic 
+      WHERE {
+        VALUES ?work { {% for q in qs %} wd:{{ q }} {% endfor %} }
+        ?work wdt:P921 ?topic .
+      }
+      GROUP BY ?topic
+      ORDER BY ?count 
+      LIMIT 200
+    }
+    OPTIONAL{?topic rdfs:label ?topicLabel. FILTER(lang(?topicLabel) = "{{ lang }}")}
+    }
+  ORDER BY DESC(?count)

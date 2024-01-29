@@ -1,0 +1,11 @@
+name: work-curation_author-resolving
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (COUNT(?work)\
+  \ AS ?works) \n  ?author_name\n  (\"Author Disambiguator \u2197\" AS ?author_disambiguator)\n\
+  \  (CONCAT(\"https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=\"\
+  , \n          ENCODE_FOR_URI(?author_name)) AS ?author_disambiguatorUrl) \nWITH\
+  \ {\n  SELECT DISTINCT ?author WHERE {\n    target: wdt:P50 ?author .\n  }\n  LIMIT\
+  \ 200  \n} AS %authors\nWITH {\n  SELECT DISTINCT ?author_name WHERE {\n    {\n\
+  \    INCLUDE %authors\n    ?author skos:altLabel | rdfs:label | (^ps:P50 / pq:P1932)\
+  \ ?author_name . }\n    UNION\n    { target: wdt:P2093 ?author_name . } \n  }\n\
+  } AS %author_names\nWHERE {\n  INCLUDE %author_names\n  ?work wdt:P2093 ?author_name\
+  \ .\n}\nGROUP BY ?author_name\nORDER BY DESC (?works)\n"

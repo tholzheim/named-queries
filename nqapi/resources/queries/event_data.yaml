@@ -1,0 +1,15 @@
+name: event_data
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?description ?value ?valueUrl\nWHERE {\n  BIND(target: AS ?work)\n  {\n    BIND(1\
+  \ AS ?order)\n    BIND(\"Part of series\" AS ?description)\n    ?work wdt:P179 ?iri\
+  \ .\n    BIND(SUBSTR(STR(?iri), 32) AS ?q) \n    ?iri rdfs:label ?value_string .\
+  \ \n    FILTER (LANG(?value_string) = 'en')\n    BIND(COALESCE(?value_string, ?q)\
+  \ AS ?value)\n    BIND(CONCAT(\"../event-series/\", ?q) AS ?valueUrl)\n  }\n  UNION\n\
+  \  {\n    BIND(2 AS ?order)\n    BIND(\"Short name\" AS ?description)\n    ?work\
+  \ wdt:P1813 ?value .\n  }\n  UNION\n  {\n    SELECT\n      (3 AS ?order)\n     \
+  \ (\"Organizers\" AS ?description)\n      (GROUP_CONCAT(?value_; separator=\", \"\
+  ) AS ?value)\n      (CONCAT(\"../authors/\", GROUP_CONCAT(?q; separator=\",\"))\
+  \ AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n      target: wdt:P664 ?iri .\n\
+  \      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n      ?iri rdfs:label ?value_string .\n\
+  \      FILTER (LANG(?value_string) = 'en')\n      BIND(COALESCE(?value_string, ?q)\
+  \ AS ?value_)\n    }\n    GROUP BY ?dummy\n  }\n} \nORDER BY ?order\n"

@@ -1,0 +1,9 @@
+name: catalogue_items
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?number\n\
+  \  ?code\n  ?item ?itemLabel ?itemDescription\nWHERE {\n  # Find catalogue items\n\
+  \  ?item p:P972 ?catalogue_statement .\n  ?catalogue_statement ps:P972 target: .\n\
+  \n  # Optionally the catalogue code or the serial order\n  OPTIONAL { ?catalogue_statement\
+  \ pq:P528 | pq:P1545 ?code }\n\n  # For numerical sorting the catalogue code should\
+  \ be converted to an integer\n  BIND(xsd:integer(?code) AS ?number)\n\n  # Label\
+  \ the result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY ?number ?code\nLIMIT 1000\n"

@@ -1,0 +1,8 @@
+name: award_topics-of-works-by-recipients
+query: "#defaultView:BubbleChart\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n# Count the number of time works by award recipients have set a main\
+  \ topic\nSELECT ?count ?topic ?topicLabel \nWITH {\n  SELECT ?topic (COUNT(?work)\
+  \ AS ?count) WHERE {\n    ?recipient wdt:P166 target: .\n    ?work wdt:P50 ?recipient\
+  \ .\n    ?work wdt:P921 ?topic .\n  }\n  GROUP BY ?topic\n} AS %result\nWHERE {\n\
+  \  INCLUDE %result \n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,no,ru,sv,zh\" . }  \n}\nORDER BY DESC(?count)\nLIMIT 50"

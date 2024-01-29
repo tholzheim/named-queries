@@ -1,0 +1,8 @@
+name: organization_recent-citations
+query: "#defaultView:Table\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT DISTINCT ?publication_date ?citing_work ?citing_workLabel ?work ?workLabel\n\
+  WHERE {\n  ?researcher ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* target: .\n\
+  \  ?work wdt:P50 ?researcher .\n  ?citing_work wdt:P2860 ?work .\n  ?citing_work\
+  \ wdt:P577 ?publication_datetime .\n  BIND(xsd:date(?publication_datetime) AS ?publication_date)\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,nl,ru,sv,zh\"\
+  . }\n }\nORDER BY DESC(?publication_date)\nLIMIT 200\n"

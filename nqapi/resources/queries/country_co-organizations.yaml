@@ -1,0 +1,13 @@
+name: country_co-organizations
+query: "# title: Co-organizations for a specific country\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n#defaultView:Map\nSELECT ?coorganization ?coorganizationLabel ?geocoordinates\
+  \ ?example_coauthor ?example_coauthorLabel ?example_work ?example_workLabel\nWITH\
+  \ {  \n  SELECT\n    ?coorganization\n    (SAMPLE(?geocoordinates_) AS ?geocoordinates)\n\
+  \    (SAMPLE(?coauthor) AS ?example_coauthor)\n    (SAMPLE(?work) AS ?example_work)\n\
+  \  WHERE {\n    ?organization wdt:P17 target: .\n    ?author wdt:P108 | wdt:P463\
+  \ | wdt:P1416/wdt:P361* ?organization .\n    ?work wdt:P50 ?author, ?coauthor .\n\
+  \    ?coauthor wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?coorganization .\n   \
+  \ FILTER NOT EXISTS { ?coorganization wdt:P17 target: }\n    ?coorganization wdt:P625\
+  \ ?geocoordinates_ .\n  }\n  GROUP BY ?coorganization \n} AS %results\nWHERE {\n\
+  \  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}"

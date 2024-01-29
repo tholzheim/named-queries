@@ -1,0 +1,10 @@
+name: 404-chemical_related
+query: "SELECT ?mol ?molLabel ?InChIKey ?CAS ?ChemSpider ?PubChem_CID WITH {\n  SELECT\
+  \ ?mol ?InChIKey WHERE {\n    SERVICE wikibase:mwapi {\n        bd:serviceParam\
+  \ wikibase:endpoint \"www.wikidata.org\";\n        wikibase:api \"Search\";\n  \
+  \      mwapi:srsearch \"_shortkey_ haswbstatement:P235\";\n        mwapi:srlimit\
+  \ \"max\".\n        ?mol wikibase:apiOutputItem mwapi:title.\n      }\n    ?mol\
+  \ wdt:P235 ?InChIKey .\n    FILTER (regex(str(?InChIKey), \"^_shortkey_\"))\n  }\n\
+  } AS %MOLS {\n  INCLUDE %MOLS\n  OPTIONAL { ?mol wdt:P231 ?CAS }\n  OPTIONAL { ?mol\
+  \ wdt:P661 ?ChemSpider }\n  OPTIONAL { ?mol wdt:P662 ?PubChem_CID }\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en\". }\n}\n"

@@ -1,0 +1,10 @@
+name: series_authors
+query: "# Statistics for a serial grouped by author\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?number_of_works ?number_of_citations\n  ?author ?authorLabel\n\
+  \  ?example_work ?example_workLabel\nWITH {\n  SELECT\n    (COUNT(DISTINCT ?work)\
+  \ AS ?number_of_works) \n    (COUNT(?citing_work) AS ?number_of_citations)\n   \
+  \ (SAMPLE(?work) AS ?example_work)\n    ?author\n  WHERE {\n    ?collection wdt:P179\
+  \ target: .\n    ?work wdt:P1433 ?collection .\n    ?work wdt:P50 ?author .\n  \
+  \  OPTIONAL { ?citing_work wdt:P2860 ?work . }\n  }\n  GROUP BY ?author\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" }\n}\nORDER BY DESC(?number_of_works) DESC(?number_of_citations)\n"

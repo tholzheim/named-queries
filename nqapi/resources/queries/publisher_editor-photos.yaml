@@ -1,0 +1,10 @@
+name: publisher_editor-photos
+query: "#defaultView:ImageGrid\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?image\n  ?editor ?editorLabel \n  ?venues\nWITH {\n  SELECT\
+  \ DISTINCT\n    (SAMPLE(?image_) AS ?image)\n    ?editor \n    (GROUP_CONCAT(?venue_label;\
+  \ separator=\" // \") AS ?venues)\n  WHERE {\n    # Find editors for journals published\
+  \ by publisher\n    ?venue_ wdt:P123 target: .\n    ?venue_ wdt:P98 | wdt:P5769\
+  \ ?editor .\n    ?editor wdt:P18 ?image_ .\n    OPTIONAL {\n      ?venue_ rdfs:label\
+  \ ?venue_label . FILTER(LANG(?venue_label) = 'en')\n    }\n  }\n  GROUP BY ?editor\n\
+  } AS %result\nWHERE {\n  INCLUDE %result \n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,fr,jp,nl,sv,ru,zh\" . } \n}\n"

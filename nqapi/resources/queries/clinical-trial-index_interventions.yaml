@@ -1,0 +1,9 @@
+name: clinical-trial-index_interventions
+query: "SELECT\n  ?count\n  ?intervention ?interventionLabel\n  ?as_chemical ?as_chemicalLabel\n\
+  \  ?example_trial ?example_trialLabel\n WHERE {\n  {\n    SELECT\n      (COUNT(?trial)\
+  \ AS ?count)\n      ?intervention\n      (SAMPLE(?trial) AS ?example_trial)\n  \
+  \  WHERE {\n      ?trial wdt:P31 wd:Q30612 .\n      ?trial wdt:P4844 ?intervention\n\
+  \    }\n    GROUP BY ?intervention\n    ORDER BY DESC(?count)\n    LIMIT 500\n \
+  \ }\n  BIND(IF(EXISTS { ?intervention wdt:P31 wd:Q11173 }, ?intervention, \"\")\
+  \ AS ?as_chemical) \n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,pl,ru,sv,zh\". }\n}\nORDER BY DESC(?count)"

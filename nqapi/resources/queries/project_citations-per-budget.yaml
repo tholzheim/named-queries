@@ -1,0 +1,11 @@
+name: project_citations-per-budget
+query: "SELECT\n  ?cites_per_million\n  ?citations \n  ?budget ?currency ?currencyLabel\n\
+  \  ?short_name\n  ?project ?projectLabel\nWITH {\n  SELECT\n    (COUNT(?citing_work)\
+  \ / ?budget * 1000000 AS ?cites_per_million)\n    (COUNT(?citing_work) AS ?citations)\n\
+  \    ?budget ?currency\n    ?project\n  WHERE {\n    ?project p:P2769 / psv:P2769\
+  \ ?budget_value .\n    ?budget_value wikibase:quantityAmount ?budget .\n    ?budget_value\
+  \ wikibase:quantityUnit ?currency .\n    ?work wdt:P859 ?project .\n    ?citing_work\
+  \ wdt:P2860 ?work .\n  } \n  GROUP BY ?project ?budget ?currency\n} AS %results\n\
+  WHERE {\n  INCLUDE %results\n  OPTIONAL { ?project wdt:P1813 ?short_name }\n  SERVICE\
+  \ wikibase:label {\n    bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?cites_per_million)"

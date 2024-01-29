@@ -1,0 +1,13 @@
+name: topic_topics
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?count (CONCAT(\"/topics/{{ q }},\", SUBSTR(STR(?topic), 32)) AS\
+  \ ?countUrl)\n       ?topic ?topicLabel (CONCAT(\"/topic/\", SUBSTR(STR(?topic),\
+  \ 32)) AS ?topicUrl)\n       ?example_work ?example_workLabel (CONCAT(\"/work/\"\
+  , SUBSTR(STR(?example_work), 32)) AS ?example_workUrl)\nWITH {\n  SELECT (COUNT(?work)\
+  \ AS ?count) ?topic (SAMPLE(?work) AS ?example_work) WHERE {\n    # Find works for\
+  \ the specific queried topic\n\t  ?work wdt:P921/( wdt:P31*/wdt:P279* | wdt:P361+\
+  \ | wdt:P1269+) target: .\n    \n    # Find co-occuring topics\n    ?work wdt:P921\
+  \ ?topic .\n    \n    # Avoid listing the queried topic\n      FILTER (target: !=\
+  \ ?topic)\n  }\n  GROUP BY ?topic\n} AS %result\nWHERE {\n  # Label the results\n\
+  \  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . } \n}\nORDER BY DESC(?count)\n"

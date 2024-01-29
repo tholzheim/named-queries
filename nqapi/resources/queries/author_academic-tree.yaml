@@ -1,0 +1,31 @@
+name: author_academic-tree
+query: "#defaultView:Graph\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \n# Doctoral student/advisor network with a source from a spectific researcher\n\
+  PREFIX gas: <http://www.bigdata.com/rdf/gas#>\n\nSELECT DISTINCT ?student1 ?student1Label\
+  \ ?rgb ?supervisor1 ?supervisor1Label\nWHERE {\n  { \n    SELECT ?student1 ?supervisor1\
+  \ (MIN(?depth1) as ?depth)\n    WHERE {\n      SERVICE gas:service {\n        gas:program\
+  \ gas:gasClass \"com.bigdata.rdf.graph.analytics.BFS\" ;\n                gas:in\
+  \ target: ;\n                gas:traversalDirection \"Forward\" ;\n            \
+  \    gas:out ?student1 ;\n                gas:out1 ?depth1 ;\n                gas:out2\
+  \ ?supervisor1 ;\n                gas:linkType wdt:P185 ;\n      }\n    }\n    GROUP\
+  \ BY ?student1 ?supervisor1\n  }\n  UNION\n  { \n    SELECT ?student1 ?supervisor1\
+  \ (MIN(?depth1) as ?depth)\n    WHERE {\n      service gas:service {\n        gas:program\
+  \ gas:gasClass \"com.bigdata.rdf.graph.analytics.BFS\" ;\n                gas:in\
+  \ target: ;\n                gas:traversalDirection \"Forward\" ;\n            \
+  \    gas:out ?supervisor1 ;\n                gas:out1 ?depth1 ;\n              \
+  \  gas:out2 ?student1 ;\n                gas:linkType wdt:P184 ;\n      }\n    }\n\
+  \    GROUP BY ?student1 ?supervisor1\n  }\n  UNION\n  { \n    SELECT ?student1 ?supervisor1\
+  \ (MIN(?depth1) as ?depth)\n    WHERE {\n      SERVICE gas:service {\n        gas:program\
+  \ gas:gasClass \"com.bigdata.rdf.graph.analytics.BFS\" ;\n                gas:in\
+  \ target: ;\n                gas:traversalDirection \"Reverse\" ;\n            \
+  \    gas:out ?student1 ;\n                gas:out1 ?depth1 ;\n                gas:out2\
+  \ ?supervisor1 ;\n                gas:linkType wdt:P184 ;\n      }\n    }\n    GROUP\
+  \ BY ?student1 ?supervisor1\n  }\n  UNION\n  { \n    SELECT ?student1 ?supervisor1\
+  \ (MIN(?depth1) as ?depth)\n    WHERE {\n      SERVICE gas:service {\n        gas:program\
+  \ gas:gasClass \"com.bigdata.rdf.graph.analytics.BFS\" ;\n                gas:in\
+  \ target: ;\n                gas:traversalDirection \"Reverse\" ;\n            \
+  \    gas:out ?supervisor1 ;\n                gas:out1 ?depth1 ;\n              \
+  \  gas:out2 ?student1 ;\n                gas:linkType wdt:P185 ;\n      }\n    }\n\
+  \    GROUP BY ?student1 ?supervisor1\n  }\n  \n  BIND( IF( ?student1 = target:,\
+  \ \"3080BB\", \"ffffff\") AS ?rgb)\n\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,sv,jp,zh,ru,fr,de\" .  } \n}\n\n"

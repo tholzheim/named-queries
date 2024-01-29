@@ -1,0 +1,9 @@
+name: event-series_list
+query: "SELECT\n  ?events ?short_name\n  ?event_series ?event_seriesLabel ?event_seriesDescription\n\
+  \  (CONCAT(\"/event-series/\", SUBSTR(STR(?event_series), 32)) AS ?event_seriesUrl)\n\
+  WITH {\n  SELECT (COUNT(?event) AS ?events) ?event_series {  \n    { ?event_series\
+  \ wdt:P31 wd:Q47258130 . }\n    UNION \n    { ?event_series wdt:P31 wd:Q47459256\
+  \ . }\n    OPTIONAL { ?event_series ^wdt:P179 ?event }\n  }\n  GROUP BY ?event_series\n\
+  } AS %events\nWHERE {\n  INCLUDE %events\n  OPTIONAL { ?event_series wdt:P1813 ?short_name\
+  \ }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,fr\"\
+  . }\n}\nORDER BY DESC(?events)\n"

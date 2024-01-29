@@ -1,0 +1,6 @@
+name: countries_tmp
+query: "SELECT\n  ?country ?countryLabel ?countryDescription\n  ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT ?country WHERE {\n    VALUES ?country { {% for q in qs %} wd:{{\
+  \ q }} {% endfor %} }\n  }\n  GROUP BY ?country\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,es,fr,nl,no,ru,sv,zh\"\
+  . }\n}"

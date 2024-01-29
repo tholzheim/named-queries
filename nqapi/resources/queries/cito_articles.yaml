@@ -1,0 +1,8 @@
+name: cito_articles
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT (COUNT(?citingArticle)\
+  \ AS ?count) \n?citedArticle ?citedArticleLabel (CONCAT(\"/work/\", SUBSTR(STR(?citedArticle),\
+  \ 32)) AS ?citedArticleUrl) WHERE {\n  VALUES ?INTENTION { target: }\n  ?citingArticle\
+  \ p:P2860 ?citationStatement .\n  ?citationStatement ps:P2860 ?citedArticle ;\n\
+  \                     pq:P3712 ?INTENTION .\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n} GROUP BY ?citedArticle ?citedArticleLabel\n\
+  \  ORDER BY DESC(?count)\n"

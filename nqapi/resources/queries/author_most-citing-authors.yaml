@@ -1,0 +1,14 @@
+name: author_most-citing-authors
+query: "#defaultView:Table\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  ?count\n  ?citing_author ?citing_authorLabel\n\n  # Either show the\
+  \ ORCID iD or construct part of a URL to search on the ORCID homepage\n  (COALESCE(?orcid_,\
+  \ CONCAT(\"orcid-search/search/?searchQuery=\", ENCODE_FOR_URI(?citing_authorLabel)))\
+  \ AS ?orcid)\nWITH {\n  SELECT (COUNT(?citing_work) AS ?count) ?citing_author WHERE\
+  \ {\n    ?work wdt:P50 target: .\n    ?citing_work wdt:P2860 ?work . \n    MINUS\
+  \ { ?citing_work wdt:P50 target: }\n    ?citing_work wdt:P50 ?citing_author .\n\
+  \  }\n  GROUP BY ?citing_author \n  ORDER BY DESC(?count)\n  LIMIT 500\n} AS %counts\n\
+  WITH {\n  # An author might have multiple ORCID iDs\n  SELECT\n    ?count\n    ?citing_author\n\
+  \    (SAMPLE(?orcids) AS ?orcid_)\n  WHERE {\n    INCLUDE %counts\n    OPTIONAL\
+  \ { ?citing_author wdt:P496 ?orcids }\n  }\n  GROUP BY ?count ?citing_author\n}\
+  \ AS %result\nWHERE {\n  INCLUDE %result\n  \n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n} \nORDER BY DESC(?count)\n"

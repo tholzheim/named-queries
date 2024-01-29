@@ -1,0 +1,18 @@
+name: topic_country-citation-graph
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}> \n\n#defaultView:Graph\n\
+  SELECT DISTINCT ?citing_country ?citing_countryLabel ?citing_flag ?cited_country\
+  \ ?cited_countryLabel ?cited_flag\nWITH {\n  SELECT DISTINCT ?cited_country ?citing_country\
+  \ (COUNT(?citing_country) AS ?count)\n                                  WHERE {\n\
+  \    ?citing_work wdt:P50 ?citing_author . \n    ?citing_work wdt:P921 target: .\n\
+  \    ?cited_work wdt:P921 target: .\n    ?citing_work wdt:P2860 ?cited_work . \n\
+  \    ?cited_work wdt:P50 ?cited_author .  \n    FILTER (?citing_work != ?cited_work)\n\
+  \    FILTER NOT EXISTS {\n      ?citing_work wdt:P50 ?author .\n      ?citing_work\
+  \ wdt:P2860 ?cited_work .\n      ?cited_work  wdt:P50 ?author .\n    }\n    ?citing_author\
+  \ (wdt:P108|wdt:P1416) ?citing_organization . \n    ?cited_author (wdt:P108|wdt:P1416)\
+  \ ?cited_organization . \n    ?cited_organization wdt:P17 ?cited_country.\n    ?citing_organization\
+  \ wdt:P17 ?citing_country.\n    FILTER (?citing_country != ?cited_country)\n  }\n\
+  \  GROUP BY ?cited_country ?citing_country\n  ORDER BY DESC(?count)\n  LIMIT 42\
+  \ # Adjust number of connections to display\n} AS %results\nWHERE {\n  INCLUDE %results\n\
+  \  ?cited_country wdt:P41 ?cited_flag . \n  ?citing_country wdt:P41 ?citing_flag\
+  \ . \n SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }        \n }\n"

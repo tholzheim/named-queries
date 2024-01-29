@@ -1,0 +1,6 @@
+name: property_property-value-counts
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/prop/direct/{{\
+  \ p }}>\n\nSELECT ?count ?o ?oLabel \nWITH {\n  SELECT (COUNT(?s) AS ?count) ?o\
+  \ WHERE {\n    ?s target: ?o .\n  }\n  GROUP BY ?o\n  ORDER BY DESC(?count)\n  LIMIT\
+  \ 100\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language  \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . }\n}\nORDER BY DESC(?count)\n"

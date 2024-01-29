@@ -1,0 +1,12 @@
+name: use-curation_missing-co-uses
+query: "# tool: scholia\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  ?couses\n  ?citing_works\n  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work),\
+  \ 32)) AS ?workUrl)\nWITH {\n  # Count citations\n  SELECT\n    (COUNT(DISTINCT\
+  \ ?citing_work) AS ?citing_works)\n    ?work\n    (SAMPLE(?citing_work) AS ?example_citing_work)\n\
+  \    (COUNT(DISTINCT ?use) AS ?couses)\n  WHERE {\n    ?work wdt:P4510 target: .\n\
+  \    OPTIONAL { ?work wdt:P4510 ?use . FILTER (?use != target: )}\n    OPTIONAL\
+  \ { ?citing_work wdt:P2860 ?work. }\n  }\n  GROUP BY ?work\n\n  # Disabled to also\
+  \ show works with few co-uses\n  # HAVING (?couses < 1)\n\n  ORDER BY DESC(?count)\n\
+  \  LIMIT 100\n} AS %result\nWHERE {\n  # Label results\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label {\n    bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . } \n}\nORDER BY ?couses DESC(?citing_works)\n"

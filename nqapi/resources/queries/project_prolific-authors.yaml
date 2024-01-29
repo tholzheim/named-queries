@@ -1,0 +1,13 @@
+name: project_prolific-authors
+query: "# Prolific authors for a specific project\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?count ?author ?authorLabel ?orcid ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT DISTINCT ?work WHERE {\n    {\n      ?work wdt:P921 / (wdt:P527+\
+  \ | wdt:P1269+ | (wdt:P31* / wdt:P279*) ) target: .\n    } UNION { ?work wdt:P859/(wdt:P1344|^wdt:P710)*\
+  \ target: .\n    } UNION {\n      target: ?propp ?statement .\n      ?statement\
+  \ a wikibase:BestRank ;\n                 prov:wasDerivedFrom/pr:P248 ?work .\n\
+  \    }\n  }\n} AS %works\nWITH {\n  SELECT\n    ?author\n    (COUNT(?work) AS ?count)\n\
+  \    (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    INCLUDE %works\n    ?work\
+  \ wdt:P50 ?author .\n  }\n  GROUP BY ?author\n} AS %result\nWHERE {\n  INCLUDE %result\n\
+  \          \n  # Include optional ORCID iD\n  OPTIONAL { ?author wdt:P496 ?orcid\
+  \ . }\n  \n  # Label the results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\nLIMIT 50"

@@ -1,0 +1,40 @@
+
+name: publisher_editors
+description:
+  Get editors of given publisher
+parameter:
+  publisher_id:
+      label: qs
+      type: Qid
+      description: Wikidata id of the event
+  lang:
+    label: lang
+    type: str
+    default_value: en
+    description: language of the labels that are queried
+query: |
+  PREFIX target: <http://www.wikidata.org/entity/{{ q }}>
+
+  SELECT
+    ?number_of_editorships
+    ?editor ?editorLabel 
+    ?example_venue ?example_venueLabel
+  WHERE {
+    # Label the result
+    {
+      SELECT
+        (COUNT(?venue_) AS ?number_of_editorships)
+        ?editor
+        (SAMPLE(?venue_) AS ?example_venue)
+        # (GROUP_CONCAT(?journal_label; separator=" // ") AS ?venues)
+      WHERE {
+        # Find editors for a work published by publisher
+        ?venue_ wdt:P123 target: .
+        ?venue_ wdt:P98 | wdt:P5769 ?editor .
+        # ?venue_ rdfs:label ?venue_label . FILTER(LANG(?venue_label) = 'en')
+      } 
+      GROUP BY ?editor
+    }
+    OPTIONAL{?editor rdfs:label ?editorLabel. FILTER(lang(?editorLabel) = "{{ lang }}")}
+    OPTIONAL{?example_venue rdfs:label ?example_venueLabel. FILTER(lang(?example_venueLabel) = "{{ lang }}")}
+  }

@@ -1,0 +1,10 @@
+name: venue_authors
+query: "# title: Prolific authors for a specific journal\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?count ?author ?authorLabel ?orcid ?example_work ?example_workLabel\n\
+  WITH {\n  # Count the number of works author by the author publishing in the journal\n\
+  \  SELECT\n    ?author\n    (COUNT(?work) AS ?count)\n    (SAMPLE(?work) AS ?example_work)\n\
+  \  WHERE {\n    ?work wdt:P50 ?author ;\n          wdt:P1433 target: .\n  }\n  GROUP\
+  \ BY ?author\n} AS %result\nWHERE {\n  INCLUDE %result \n          \n  # Include\
+  \ optional ORCID iD\n  OPTIONAL { ?author wdt:P496 ?orcid . }\n  \n  # Label the\
+  \ results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . } \n}\nORDER BY DESC(?count)\nLIMIT 50\n"

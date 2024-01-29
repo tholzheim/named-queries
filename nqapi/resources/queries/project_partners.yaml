@@ -1,0 +1,7 @@
+name: project_partners
+query: "#defaultView:Map\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT ?partner ?partnerLabel ?location\nWITH {\n  SELECT DISTINCT ?partner ?location\
+  \ WHERE {\n    target: (^wdt:P1344 | wdt:P710)* / (wdt:P527 | wdt:P710 | wdt:P1416)\
+  \ ?partner .\n    ?partner wdt:P159* / wdt:P625 ?location .\n  }\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}"

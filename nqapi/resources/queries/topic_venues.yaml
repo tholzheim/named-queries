@@ -1,0 +1,10 @@
+name: topic_venues
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?count ?short_name \n?venue ?venueLabel (CONCAT(\"/venue/\", SUBSTR(STR(?venue),\
+  \ 32)) AS ?venueUrl)\nWITH {\n  SELECT (count(?work) as ?count) ?venue (SAMPLE(?short_name_)\
+  \ AS ?short_name) WHERE {\n    { ?work wdt:P921/wdt:P31*/wdt:P279* target: . }\n\
+  \    union { ?work wdt:P921/wdt:P361+ target: . }\n    union { ?work wdt:P921/wdt:P1269+\
+  \ target: . }\n    ?work wdt:P1433/wdt:P179* ?venue .\n    OPTIONAL { ?venue wdt:P1813\
+  \ ?short_name_ . }\n  }\n  GROUP BY ?venue\n} AS %result\nWHERE {\n  INCLUDE %result\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  \ . } \n}\nORDER BY DESC(?count)\nLIMIT 200\n"

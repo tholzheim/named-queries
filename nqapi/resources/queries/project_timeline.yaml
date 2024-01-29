@@ -1,0 +1,13 @@
+name: project_timeline
+query: "#defaultView:Timeline{\"hide\": [\"?end_time\", \"?start_time\"]}\n\nPREFIX\
+  \ target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT ?start_time\
+  \ ?end_time ?description WHERE {\n  {  \n    target: (wdt:P571 | wdt:P580) ?start_time\
+  \ ;\n      (wdt:P576 | wdt:P582) ?end_time .\n    BIND(\"Project time\" AS ?description)\n\
+  \  } \n  UNION \n  {  \n    target: (^wdt:P1344 | wdt:P710)+ ?project .\n    ?project\
+  \ (wdt:P571 | wdt:P580) ?start_time ;\n             (wdt:P576 | wdt:P582) ?end_time\
+  \ .\n    ?project rdfs:label ?projectName .\n    FILTER (lang(?projectName) = \"\
+  en\")\n    BIND(?projectName AS ?description)\n  }   \n  UNION \n  {\n    ?work\
+  \ wdt:P859/(wdt:P1344|^wdt:P710)* target: ;\n                wdt:P577 ?start_time\
+  \ .\n    BIND(\"Publication\" AS ?description)\n  }\n  UNION\n  {\n    ?event wdt:P859\
+  \ target: .\n    ?event wdt:P585 | wdt:P580 ?start_time .\n    BIND(\"\U0001F4C5\
+  \ Sponsored event\" AS ?description)\n  }\n}"

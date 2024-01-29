@@ -1,0 +1,13 @@
+name: event_future-events
+query: "SELECT ?time ?short_name \n?event ?eventLabel (CONCAT(\"/event/\", SUBSTR(STR(?event),\
+  \ 32)) AS ?eventUrl)\n?location ?locationLabel (CONCAT(\"/location/\", SUBSTR(STR(?location),\
+  \ 32)) AS ?locationUrl)\nWITH {\n  SELECT DISTINCT ?event WHERE {\n    # This union\
+  \ seems to be faster than a VALUES-based query\n    { ?event wdt:P31 / wdt:P279*\
+  \ wd:Q52260246 . }\n    UNION \n    { ?event wdt:P31 / wdt:P279* wd:Q46855 . }\n\
+  \  }\n} AS %events\nWITH {\n  SELECT \n    ?event \n    (xsd:date(MIN(?times)) AS\
+  \ ?time)\n    (SAMPLE(?locations) AS ?location)\n    (SAMPLE(?short_names) AS ?short_name)\n\
+  \  WHERE {\n    INCLUDE %events\n    \n    ?event wdt:P580 | wdt:P585 ?times .\n\
+  \    FILTER (?times > NOW())\n  \n    OPTIONAL { ?event wdt:P276 ?locations }\n\
+  \    OPTIONAL { ?event wdt:P1813 ?short_names }\n  }\n  GROUP BY ?event\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,de,fr,jp,nl,no,pl,ru,sv,zh\". }\n}\nORDER BY ?time\n"

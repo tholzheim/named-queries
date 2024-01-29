@@ -1,0 +1,11 @@
+name: use-index_most-used
+query: "SELECT ?count ?use ?useLabel (CONCAT(\"/use/\", SUBSTR(STR(?use), 32)) AS\
+  \ ?useUrl)\n?described_by_example ?described_by_exampleLabel ?example_use ?example_useLabel\n\
+  WITH {\n  SELECT\n    (COUNT(DISTINCT ?work) AS ?count)\n    ?use\n    (SAMPLE(?described_by)\
+  \ AS ?described_by_example)\n    (SAMPLE(?work) AS ?example_use)\n  WHERE {\n  \
+  \  ?work wdt:P2283 | wdt:P4510 ?use . \n    ?use wdt:P31/wdt:P279* wd:Q7397 . \n\
+  \    # Restricting to work takes too long time :(    \n    # ?work wdt:P31/wdt:P279*\
+  \ wd:Q386724 .\n    OPTIONAL { ?use wdt:P1343 ?described_by . }\n  }\n  GROUP BY\
+  \ ?use\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\nLIMIT\
+  \ 500"

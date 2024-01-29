@@ -1,0 +1,18 @@
+name: topic_publications-per-year
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  (STR(?year_) AS ?year)\n  (COUNT(?work) AS ?number_of_publications)\n\
+  \n  # Work type used to color the bar chart\n  ?type\nWITH {\n  # Find works with\
+  \ the topic. Also report the year\n  SELECT\n    ?work (MIN(?years) AS ?year_) (1\
+  \ AS ?dummy) (SAMPLE(?article_type_) AS ?article_type)\n  WHERE {\n    ?work wdt:P921\
+  \ / (wdt:P31*/wdt:P279* | wdt:P361+ | wdt:P1269+) target: .\n    ?work wdt:P577\
+  \ ?dates .\n    BIND(YEAR(?dates) AS ?years) .\n\n    ?work wdt:P31 ?article_type_\
+  \ .\n  }\n  GROUP BY ?work \n} AS %works\nWITH {\n  SELECT ?year_ WHERE {\n    #\
+  \ default values = 0\n    ?year_item wdt:P31 wd:Q577 . \n    ?year_item wdt:P585\
+  \ ?date .\n    BIND(YEAR(?date) AS ?year_)\n  }\n} AS %default_counts\nWITH {\n\
+  \  # Find earliest publication year\n  SELECT (MIN(?year_) AS ?earliest_year) WHERE\
+  \ {\n    INCLUDE %works\n  }\n  GROUP BY ?dummy\n} AS %earliest  \nWHERE {\n  {\n\
+  \    INCLUDE %works\n    ?article_type rdfs:label ?type . FILTER (LANG(?type) =\
+  \ \"en\")\n  }\n  UNION\n  {\n    INCLUDE %default_counts\n    BIND(\"_\" AS ?type)\n\
+  \  }\n  INCLUDE %earliest\n  BIND(YEAR(NOW()) AS ?this_year)\n  FILTER (?year_ >=\
+  \ ?earliest_year && ?year_ <= ?this_year && ?year_ >= YEAR(\"1900-01-01\"^^xsd:dateTime))\n\
+  }\nGROUP BY ?year_ ?type\nORDER BY ?year\n"

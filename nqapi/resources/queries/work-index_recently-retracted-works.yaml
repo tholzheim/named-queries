@@ -1,0 +1,14 @@
+name: work-index_recently-retracted-works
+query: "SELECT DISTINCT\n  ?retracted_work ?retracted_workLabel (CONCAT(\"/work/\"\
+  , SUBSTR(STR(?retracted_work), 32)) AS ?retracted_workUrl)\n  ?date\n  ?retraction\
+  \ ?retractionLabel (CONCAT(\"/work/\", SUBSTR(STR(?retraction), 32)) AS ?retractionUrl)\n\
+  WITH {\n  # Find retracted papers indicated by instance of retracted paper, \n \
+  \ # by retraction notice property or by significant event\n  SELECT DISTINCT ?retracted_work\
+  \ WHERE {\n    { ?retracted_work wdt:P31 wd:Q45182324 }\n    UNION\n    { ?retracted_work\
+  \ wdt:P5824 [] }\n    UNION\n    { ?retracted_work wdt:P793 wd:Q45203135 }\n  }\n\
+  } AS %retracted_works\nWHERE {\n  INCLUDE %retracted_works\n  OPTIONAL {\n    ?retracted_work\
+  \ wdt:P5824 ?retraction .\n    ?retraction wdt:P577 ?retraction_datetime\n  }\n\
+  \  OPTIONAL {\n    ?retracted_work p:P793 [ ps:P793 wd:Q45203135 ; pq:P585 ?keyevent_datetime\
+  \ ]\n  }\n  BIND(COALESCE(xsd:date(COALESCE(?retraction_datetime, ?keyevent_datetime)),\
+  \ \"Unknown date\") AS ?date)\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?date)"

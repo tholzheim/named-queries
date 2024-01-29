@@ -1,0 +1,8 @@
+name: disease_clinical-trials
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  DISTINCT\n\
+  \  ?start_date\n  ?trial ?trialLabel\n  ?intervention ?interventionLabel\n  ?sponsor\
+  \ ?sponsorLabel\nWHERE {\n  ?trial wdt:P31 wd:Q30612 ;\n  wdt:P1050 / wdt:P279*\
+  \ target: .\n  OPTIONAL {\n    ?trial wdt:P580 ?starttime\n    BIND(SUBSTR(STR(?starttime),\
+  \ 0, 11) AS ?start_date)\n  }\n  OPTIONAL { ?trial wdt:P4844 ?intervention }\n \
+  \ OPTIONAL { ?trial wdt:P859 ?sponsor }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,pl,ru,sv,zh\". }\n}\nORDER BY DESC(?starttime)"

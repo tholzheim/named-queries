@@ -1,0 +1,13 @@
+name: venues_citations-to-work-ratio
+query: "#defaultView:LineChart\nSELECT ?year (?citation_count / ?work_count AS ?citations_to_works_ratio)\
+  \ ?venue ?venueLabel \nWITH {\n  SELECT ?work ?venue\n  WHERE {\n    VALUES ?venue\
+  \ {    {% for q in qs %} wd:{{ q }} {% endfor %}    }\n    ?work wdt:P1433 ?venue\
+  \ .\n  }\n} AS %works\nWITH {\n  SELECT ?year (COUNT(?work) AS ?work_count) ?venue\
+  \ \n  WHERE {\n    INCLUDE %works\n    ?work wdt:P577 ?publication_datetime .\n\
+  \    BIND(STR(YEAR(?publication_datetime)) AS ?year)\n  }\n  GROUP BY ?year ?venue\n\
+  } AS %work_counts\nWITH {\n  SELECT ?year (COUNT(?work) AS ?citation_count) ?venue\
+  \ \n  WHERE {\n    INCLUDE %works\n    ?citing_work wdt:P2860 ?work .\n    ?citing_work\
+  \ wdt:P577 ?publication_datetime .\n    BIND(STR(YEAR(?publication_datetime)) AS\
+  \ ?year)\n  }\n  GROUP BY ?year ?venue\n} AS %citation_counts\nWHERE {\n  INCLUDE\
+  \ %work_counts\n  INCLUDE %citation_counts\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,es,fr,nl,no,ru,sv,zh\". }\n}\nORDER BY ?year"

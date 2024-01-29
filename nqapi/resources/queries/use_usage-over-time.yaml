@@ -1,0 +1,9 @@
+name: use_usage-over-time
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?year\n  (COUNT(?work) AS ?number_of_works)\n  ?useLabel\n\
+  WITH{\n  SELECT\n    (MIN(?year_) AS ?year) ?work ?use\n  WHERE {\n    ?use wdt:P279*\
+  \ target: .\n    ?work wdt:P4510 ?use ; \n          wdt:P577 ?publication_datetime\
+  \ .\n    BIND(STR(YEAR(?publication_datetime)) AS ?year_)\n  }\n  GROUP BY ?work\
+  \ ?use\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,nl,no,ru,sv,zh\" . }\n}\nGROUP BY ?year ?useLabel\n\
+  ORDER BY ?year\n"

@@ -1,0 +1,9 @@
+name: chemical_found-in-taxon
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?taxon ?taxonLabel (CONCAT(\"/taxon/\", SUBSTR(STR(?taxon), 32)) AS ?taxonUrl)\n\
+  ?source ?sourceLabel (CONCAT(\"/work/\", SUBSTR(STR(?source), 32)) AS ?sourceUrl)\n\
+  ?doi WHERE {\n  VALUES ?chemical { target: }\n  ?chemical p:P703 ?taxonStatement\
+  \ .\n  ?taxonStatement ps:P703 ?taxon .\n  OPTIONAL {\n      ?taxonStatement prov:wasDerivedFrom/pr:P248\
+  \ ?source .\n      OPTIONAL { ?source wdt:P356 ?doi . }\n    }\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n} ORDER BY ASC(?taxonLabel)\n\
+  \  LIMIT 250\n"

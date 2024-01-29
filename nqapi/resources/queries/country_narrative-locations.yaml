@@ -1,0 +1,12 @@
+name: country_narrative-locations
+query: "# title: Narrative locations for a specific country\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n#defaultView:Map{\"markercluster\":true}.\nSELECT \n  ?location ?locationLabel\
+  \ \n  ?work ?workLabel \n  ?geo\n  ?layer\nWITH {\n  SELECT DISTINCT ?location ?work\
+  \ ?geo ?layer WHERE {\n    ?location wdt:P17 target: .\n    \n    # Geocoordinates\
+  \ may possible be under a headquarter property\n    ?location wdt:P159? / wdt:P625\
+  \ ?geo.\n    ?work wdt:P840 ?location .\n    \n    # Filter encyclopedic articles\
+  \ - that may not be so relevant\n    FILTER NOT EXISTS { ?work wdt:P31 wd:Q17329259\
+  \ }\n\n    OPTIONAL { ?work wdt:P31 / rdfs:label ?layer . FILTER (LANG(?layer) =\
+  \ 'en') }\n  }\n} AS %results\nWHERE {\n  INCLUDE %results \n\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}"

@@ -1,0 +1,7 @@
+name: venue_citation-distribution
+query: "# title: Citation distribution for a venue\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n#defaultView:LineChart\nSELECT\n  ?number_of_citations (COUNT(?work)\
+  \ AS ?count)\nWHERE {\n  {\n    SELECT ?work (COUNT(?citing_work) AS ?number_of_citations)\n\
+  \    WHERE {\n      ?work wdt:P1433 target: .\n      OPTIONAL { ?citing_work wdt:P2860\
+  \ ?work . }\n    }\n    GROUP BY ?work \n  }\n} \nGROUP BY ?number_of_citations\n\
+  ORDER BY DESC(?number_of_citations)\n"

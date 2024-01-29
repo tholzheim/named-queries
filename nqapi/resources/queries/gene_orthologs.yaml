@@ -1,0 +1,7 @@
+name: gene_orthologs
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?ortholog\
+  \ ?orthologLabel ?orthologDescription\n  ?taxon ?taxonLabel ?taxonDescription\n\
+  WITH {\n  SELECT ?ortholog ?taxon\n  WHERE {\n    target: wdt:P31 wd:Q7187;\n  \
+  \       wdt:P684 ?ortholog .\n    ?ortholog wdt:P703 ?taxon .\n  }\n} AS %result\
+  \ \nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}"

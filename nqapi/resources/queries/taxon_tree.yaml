@@ -1,0 +1,22 @@
+name: taxon_tree
+query: "#defaultView:Graph\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?child ?childLabel\n  ?rgb \n  ?parent ?parentLabel\nWITH {\n\
+  \  SELECT ?child ?rgb ?parent WHERE {\n    { \n      # Parent taxa\n      SELECT\
+  \ ?child ?rgb ?parent  WHERE {\n        SERVICE gas:service {\n          gas:program\
+  \ gas:gasClass \"com.bigdata.rdf.graph.analytics.BFS\" ;\n                  gas:in\
+  \ target: ;\n                  # We should not do undirected here because this could\
+  \ result\n                  # in very big graphs.\n                  gas:traversalDirection\
+  \ \"Forward\" ;\n                  gas:out ?child ;\n                  gas:out1\
+  \ ?depth ;\n                  gas:out2 ?parent1 ;\n                  gas:linkType\
+  \ wdt:P171 ;\n        }\n        ?child wdt:P171 ?parent .\n        BIND(IF(?child\
+  \ = target:, \"FF0000\", \"FFFFFF\") AS ?rgb)\n      }\n    }\n    UNION \n    {\n\
+  \      # Child taxa\n      SELECT ?child ?rgb ?parent WHERE {\n        BIND(target:\
+  \ AS ?parent)\n        ?child wdt:P171 ?parent . \n        BIND(\"DDDDDD\" AS ?rgb)\n\
+  \      }\n      LIMIT 100\n    }\n  }\n} AS %results\nWHERE {\n  INCLUDE %results\
+  \ \n          \n  ?child rdfs:label ?child_label . FILTER(LANG(?child_label) = 'en')\n\
+  \  ?parent rdfs:label ?parent_label . FILTER(LANG(?parent_label) = 'en')\n  OPTIONAL\
+  \ {\n    ?child wdt:P105 / rdfs:label ?child_rank_label . FILTER (LANG(?child_rank_label)\
+  \ = 'en')\n  }\n  OPTIONAL {\n    ?parent wdt:P105 / rdfs:label ?parent_rank_label\
+  \ . FILTER (LANG(?parent_rank_label) = 'en')\n  }\n  BIND(CONCAT(?child_label, \"\
+  \ - \", COALESCE(?child_rank_label, \"???\")) AS ?childLabel)\n  BIND(CONCAT(?parent_label,\
+  \ \" - \", COALESCE(?parent_rank_label, \"???\")) AS ?parentLabel)\n\n}\n"

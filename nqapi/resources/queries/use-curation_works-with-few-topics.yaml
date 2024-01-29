@@ -1,0 +1,12 @@
+name: use-curation_works-with-few-topics
+query: "# tool: scholia\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  ?number_of_topics\n  ?citing_works\n  ?work ?workLabel (CONCAT(\"/work/\"\
+  , SUBSTR(STR(?work), 32)) AS ?workUrl)\nWITH {\n  # Count citations\n  SELECT\n\
+  \    (COUNT(DISTINCT ?citing_work) AS ?citing_works)\n    ?work\n    (SAMPLE(?citing_work)\
+  \ AS ?example_citing_work)\n    (COUNT(DISTINCT ?topic) AS ?number_of_topics)\n\
+  \  WHERE {\n    # subclasses included to get version of resources\n    ?work wdt:P4510\
+  \ / wdt:P279* target: .\n    \n    OPTIONAL { ?work wdt:P921 ?topic . }\n    OPTIONAL\
+  \ { ?citing_work wdt:P2860 ?work. }\n  }\n  GROUP BY ?work\n  # HAVING (?topics\
+  \ < 1)\n  ORDER BY DESC(?count)\n  LIMIT 200\n} AS %result\nWHERE {\n  # Label results\n\
+  \  INCLUDE %result\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . } \n}\nORDER BY ?number_of_topics DESC(?citing_works)\n"

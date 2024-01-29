@@ -1,0 +1,28 @@
+name: work_timeline
+query: "#defaultView:Timeline\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT DISTINCT ?datetime ?description WHERE {\n  {\n    target: wdt:P577\
+  \ ?datetime .\n    BIND(\"\U0001F31E publication date\" AS ?description)\n  }\n\
+  \  UNION \n  {\n    target: wdt:P2507 / wdt:P577 ?datetime .\n    BIND(\"\u2757\
+  \ erratum\" AS ?description)\n  }\n  UNION \n  {\n    target: wdt:P5824 / wdt:P577\
+  \ ?datetime .\n    BIND(\"\u26D4 retracted\" AS ?description)\n  }\n  UNION \n \
+  \ {\n    target: p:P793 ?event_statement .\n    ?event_statement ps:P793 ?event_type\
+  \ .\n    ?event_type rdfs:label ?description_ .\n    ?event_statement pq:P585 ?datetime\
+  \ .\n    FILTER (LANG(?description_) = \"en\")\n    \n    # Warning icon for retraction\n\
+  \    BIND(\n      IF(\n        ?event_type = wd:Q45203135,\n        CONCAT(\"\u26D4\
+  \ \", ?description_),\n        IF(\n          ?event_type = wd:Q56478588,\n    \
+  \      CONCAT(\"\u2753 \", ?description_),\n          ?description_\n          )\n\
+  \        ) AS ?description)\n  }\n  UNION\n  {\n    SELECT ?datetime ?description\
+  \ WHERE {\n      target: wdt:P2860 / wdt:P577 ?datetime\n      BIND(\"\U0001F4D6\
+  \u27A1\uFE0F cited work with earliest publication date\" AS ?description)\n    }\n\
+  \    ORDER BY ?datetime\n    LIMIT 1\n  }\n  UNION\n  {\n    SELECT ?datetime ?description\
+  \ WHERE {\n      target: wdt:P2860 / wdt:P577 ?datetime\n      BIND(\"\U0001F4D6\
+  \u27A1\uFE0F cited work with latest publication date\" AS ?description)\n    }\n\
+  \    ORDER BY DESC(?datetime)\n    LIMIT 1\n  }\n  UNION\n  {\n    SELECT ?datetime\
+  \ ?description WHERE {\n      target: ^wdt:P2860 / wdt:P577 ?datetime\n      BIND(\"\
+  \U0001F4D6\u2B05\uFE0F citing work with earliest publication date\" AS ?description)\n\
+  \    }\n    ORDER BY ?datetime\n    LIMIT 1\n  }\n  UNION\n  {\n    SELECT ?datetime\
+  \ ?description WHERE {\n      target: ^wdt:P2860 / wdt:P577 ?datetime\n      BIND(\"\
+  \U0001F4D6\u2B05\uFE0F citing work with latest publication date\" AS ?description)\n\
+  \    }\n    ORDER BY DESC(?datetime)\n    LIMIT 1\n  }\n    UNION\n  {\n    target:\
+  \ (wdt:P747 | ^wdt:P629) / wdt:P577 ?datetime\n    BIND(\"\U0001F31E Publication\
+  \ of edition\" AS ?description)\n  }\n}"

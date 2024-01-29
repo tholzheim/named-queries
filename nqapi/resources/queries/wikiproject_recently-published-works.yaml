@@ -1,0 +1,16 @@
+name: wikiproject_recently-published-works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?date ?work\
+  \ ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n  ?topicsUrl\
+  \ ?topics \nWITH {\n  SELECT DISTINCT ?work WHERE {\n    { ?work wdt:P6104 target:\
+  \ .}\n      union \n      { ?work wdt:P5008 target: .}\n  }\n} AS %works\nWITH {\n\
+  \  SELECT (MAX(?dates) as ?datetime) ?work (GROUP_CONCAT(DISTINCT ?topic_label;\
+  \ separator=\" // \") AS ?topics) \n                                    (CONCAT(\"\
+  ../topics/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?topic), 32); separator=\",\")) AS\
+  \ ?topicsUrl) \n  WHERE {\n    INCLUDE %works\n    ?work wdt:P921 ?topic . \n  \
+  \  OPTIONAL { ?work wdt:P577 ?dates . }\n    ?topic rdfs:label ?topic_label .  FILTER\
+  \ (lang(?topic_label) = 'en')\n  }\n  GROUP BY ?work\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n\n  # There is a problem with BC dates\n  # BIND(xsd:date(?datetime)\
+  \ AS ?date)\n  BIND(REPLACE(STR(?datetime), 'T.*', '') AS ?date)\n    \n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  }\nGROUP BY ?date ?work ?workLabel ?topicsUrl ?topics\nORDER BY DESC(?date)\nLIMIT\
+  \ 500\n"

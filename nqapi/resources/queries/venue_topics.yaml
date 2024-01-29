@@ -1,0 +1,8 @@
+name: venue_topics
+query: "# title: Count of topics in published work in specified venue\n\nPREFIX target:\
+  \ <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count ?topic ?topicLabel ?example_work\
+  \ ?example_workLabel\nWITH {\n  SELECT \n    (COUNT(?work) as ?count)\n    ?topic\n\
+  \    (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    ?work wdt:P1433 target: .\n\
+  \    ?work wdt:P921 ?topic .\n  }\n  GROUP BY ?topic\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . } \n}\nORDER BY DESC(?count)\n"

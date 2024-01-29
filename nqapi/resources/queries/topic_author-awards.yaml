@@ -1,0 +1,14 @@
+name: topic_author-awards
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?count \n\
+  ?award ?awardLabel (CONCAT(\"/award/\", SUBSTR(STR(?award), 32)) AS ?awardUrl)\n\
+  ?recipients ?recipientsUrl\nWITH {\n  SELECT (COUNT(?researcher) AS ?count) ?award\
+  \ \n  (GROUP_CONCAT(DISTINCT ?researcher_label; separator=\", \") AS ?recipients)\
+  \ \n  (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?researcher), 32);\
+  \ separator=\",\")) AS ?recipientsUrl)\n  WHERE {\n    { \n      SELECT DISTINCT\
+  \ ?researcher ?award WHERE {\n        hint:Query hint:optimizer \"None\" .\n   \
+  \     ?work wdt:P921 target: .\n        ?work wdt:P50 ?researcher .\n        ?researcher\
+  \ wdt:P166 ?award .\n      } \n      LIMIT 100\n    }\n    ?researcher rdfs:label\
+  \ ?researcher_label . FILTER (LANG(?researcher_label) = 'en')\n  }\n  GROUP BY ?award\
+  \ \n} AS %result\nWHERE {\n  INCLUDE %result\n    ?award rdfs:label ?awardLabel\
+  \ . FILTER (LANG(?awardLabel) = 'en')\n}\nGROUP BY ?count ?award ?awardLabel ?recipients\
+  \ ?recipientsUrl\nORDER BY DESC(?count)\n"

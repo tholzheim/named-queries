@@ -1,0 +1,11 @@
+name: chemical-class_found-in-taxon
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?chemicals\n\
+  \n  ?example_chemical ?example_chemicalLabel\n  (CONCAT(\"/chemical/\", SUBSTR(STR(?example_chemical),\
+  \ 32)) AS ?example_chemicalUrl)\n\n  ?taxon ?taxonLabel\n  (CONCAT(\"/taxon/\",\
+  \ SUBSTR(STR(?taxon), 32)) AS ?taxonUrl)\n  ?taxonDescription\nWITH {\n  SELECT\
+  \ DISTINCT \n    (COUNT(DISTINCT(?chemical)) AS ?chemicals)\n    ?taxon\n    (SAMPLE(?chemical)\
+  \ AS ?example_chemical)\n  WHERE {\n    ?chemical wdt:P279* target: ;\n        \
+  \      p:P703 ?taxonStatement .\n    ?taxonStatement ps:P703 ?taxon .\n  }\n  GROUP\
+  \ BY ?taxon\n  ORDER BY DESC(?chemicals)\n  LIMIT 250\n} AS %taxons\nWHERE {\n \
+  \ INCLUDE %taxons\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} \nORDER BY DESC(?chemicals)\n"

@@ -1,0 +1,11 @@
+name: cito_articles-by-year
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT (STR(?year_) AS ?year) (SUM(?count_) AS ?count)\nWHERE {\n  {\n\
+  \    VALUES ?year_ { 2000 2001 2002 2003 2004 2005 2006 2007 2008 2009\n       \
+  \            2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 }\n    BIND(0 AS\
+  \ ?count_)\n  }\n  UNION \n  {\n    SELECT\n      ?year_\n      (COUNT(DISTINCT\
+  \ ?citing_work) AS ?count_)\n      ?kind\n    WHERE {\n      VALUES ?INTENTION {\
+  \ target: }\n      ?citing_work wdt:P2860 ?citedArticle ;\n        p:P2860/pq:P3712\
+  \ ?INTENTION .\n\n      # Year of citation\n      ?citing_work wdt:P577 ?date .\n\
+  \      BIND(YEAR(?date) AS ?year_)\n    }\n    GROUP BY ?year_ ?kind\n  }\n}\nGROUP\
+  \ BY ?year_\nORDER BY DESC(?year_) \n"

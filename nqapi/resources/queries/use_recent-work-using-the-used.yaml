@@ -1,0 +1,9 @@
+name: use_recent-work-using-the-used
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?publication_date\
+  \ \n  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n\
+  WITH{\n  SELECT\n    ?publication_datetime\n    ?work\n  WHERE {\n    ?work wdt:P4510\
+  \ / wdt:P279* target: ;\n          wdt:P577 ?publication_datetime .\n  }\n  ORDER\
+  \ BY DESC(?publication_datetime)\n  LIMIT 1000\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  BIND(xsd:date(?publication_datetime) AS ?publication_date)\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" }\n\
+  }\nORDER BY DESC(?publication_date)\n"

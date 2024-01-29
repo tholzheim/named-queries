@@ -1,0 +1,22 @@
+endpoints:
+  qlever:
+    name: QLever
+    key: qlever
+    description: |
+      QLever endpoint hosting a Wikidata copy
+    homepage: https://qlever.cs.uni-freiburg.de
+    endpoint_url: https://qlever.cs.uni-freiburg.de/api/wikidata
+  wdqs:
+    name: Wikidata Query Service
+    key: wdqs
+    description: |
+      Wikidata Query Service (WDQS) is a software package and public service designed to provide a SPARQL endpoint which allows you to query against the Wikidata data set.
+    homepage: https://query.wikidata.org
+    endpoint_url: https://query.wikidata.org/sparql
+  qlever:
+    name: QLever
+    key: qlever
+    description: |
+      QLever endpoint hosting a Wikidata copy
+    homepage: https://qlever.cs.uni-freiburg.de
+    endpoint_url: https://qlever.cs.uni-freiburg.de/api/wikidata

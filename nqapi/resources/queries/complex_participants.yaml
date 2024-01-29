@@ -1,0 +1,10 @@
+name: complex_participants
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?quantity\
+  \ ?part ?partLabel ?partDescription ?type\nWITH {\n  SELECT ?part ?quantity (GROUP_CONCAT(DISTINCT\
+  \ ?type_label; separator=\", \") AS ?type)\n  WHERE {\n    VALUES ?complex { target:\
+  \ }\n    ?complex p:P527 ?partStatement .\n    ?partStatement ps:P527 ?part .\n\
+  \    OPTIONAL { ?partStatement pq:P1114 ?quantity }\n    OPTIONAL { \n      ?part\
+  \ wdt:P31 ?type_ .\n      ?type_ rdfs:label ?type_label .\n      FILTER (LANG(?type_label)\
+  \ = 'en')\n    }\n  } GROUP BY ?part ?quantity \n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n} ORDER BY ASC(?partLabel)\n"

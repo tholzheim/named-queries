@@ -1,0 +1,16 @@
+name: authors_citations-per-publication-year
+query: "#defaultView:BarChart\nSELECT ?year ?number_of_citations ?author_label WHERE\
+  \ {\n  {\n    SELECT ?year ?number_of_citations ?author ?author_label_\n    WHERE\
+  \ {\n      {\n        SELECT\n\t  ?author\n\t  ?year\n\n          # DISTINCT to\
+  \ avoid count citations whether ther are multiple\n\t  # publication dates\n\t \
+  \ (COUNT(DISTINCT ?citation) AS ?number_of_citations)\n\tWHERE {\n          hint:Query\
+  \ hint:optimizer \"None\".\n          VALUES ?author {  {% for q in qs %} wd:{{\
+  \ q }} {% endfor %}  }\n          ?work wdt:P50 ?author ;\n                wdt:P577\
+  \ ?publication_date .\n          ?citing_work wdt:P2860 ?work\n          BIND(STR(YEAR(?publication_date))\
+  \ AS ?year)\n\n\t  # We want to count the number of citations rather than the number\
+  \ of\n\t  # citing works or the number of cited works\n          BIND(CONCAT(STR(?work),\
+  \ STR(?citing_work)) AS ?citation)\n        }\n        GROUP BY ?author ?year \n\
+  \      } \n      ?author rdfs:label ?author_label_ .\n      FILTER (LANG(?author_label_)\
+  \ = 'en')\n    }\n  }\n  # Represent the author by name and Q identifier\n  BIND\
+  \ (CONCAT(?author_label_, \" (\", SUBSTR(STR(?author), 32), \")\") AS ?author_label)\n\
+  }\nORDER BY ?year\n"

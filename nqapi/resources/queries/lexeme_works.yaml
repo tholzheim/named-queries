@@ -1,0 +1,4 @@
+name: lexeme_works
+query: "SELECT DISTINCT ?work ?workLabel ?workDescription {\n  wd:{{ lexeme }} wdt:P1343\
+  \ | ^wdt:P6254 ?work\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,cz,da,de,es,fi,fr,it,nl,nn,ru,sv,zh\". }\n}"

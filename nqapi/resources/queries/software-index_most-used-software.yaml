@@ -1,0 +1,11 @@
+name: software-index_most-used-software
+query: "SELECT\n  ?count\n  ?software ?softwareLabel ?softwareUrl\n  ?described_by_example\
+  \ ?described_by_exampleLabel\n  ?example_use ?example_useLabel\nWITH {\n  SELECT\n\
+  \    (COUNT(DISTINCT ?work) AS ?count)\n    ?software\n    (CONCAT(\"/software/\"\
+  , SUBSTR(STR(?software), 32)) AS ?softwareUrl)\n    (SAMPLE(?described_by) AS ?described_by_example)\n\
+  \    (SAMPLE(?work) AS ?example_use)\n  WHERE {\n    ?work wdt:P4510 ?software .\
+  \ \n    ?software wdt:P31/wdt:P279* wd:Q7397 . \n    # Restricting to work takes\
+  \ too long time :(    \n    # ?work wdt:P31/wdt:P279* wd:Q386724 .\n    OPTIONAL\
+  \ { ?software wdt:P1343 ?described_by . }\n  }\n  GROUP BY ?software\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?count)\nLIMIT 500    "

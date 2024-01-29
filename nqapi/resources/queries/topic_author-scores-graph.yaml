@@ -1,0 +1,13 @@
+name: topic_author-scores-graph
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?score ?author ?authorLabel\nWITH {\n  SELECT \n    ?author\n\
+  \    (SUM(?score_) AS ?score)\n  WHERE {\n    { \n      ?author wdt:P101/wdt:P279*\
+  \ target: .\n      BIND(20 AS ?score_)\n    }\n    UNION\n    {\n      SELECT (3\
+  \ AS ?score_) ?author WHERE {\n        ?work wdt:P50 ?author ;\n              wdt:P921/wdt:P279*\
+  \ target: .\n      }\n    }\n    UNION\n    {\n      SELECT (1 AS ?score_) ?author\
+  \ WHERE {\n        ?cited_work wdt:P50 ?author .\n        ?citing_work wdt:P2860\
+  \ ?cited_work .\n        ?citing_work wdt:P921/wdt:P279* target: .\n      }\n  \
+  \  }\n  }\n  GROUP BY ?author\n  ORDER BY DESC(?score)\n  LIMIT 200\n} AS %results\
+  \ \nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,de,es,jp,no,ru,sv,zh\". }\n}\nORDER BY DESC(?score)\n\
+  LIMIT 200\n"

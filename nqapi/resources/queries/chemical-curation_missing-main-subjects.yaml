@@ -1,0 +1,17 @@
+name: chemical-curation_missing-main-subjects
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work),32)) AS ?workUrl)\n  ?chemicalname\n\
+  \  (CONCAT(SUBSTR(STR(?work),32), \"\\tP921\\t{{ q }}\\tS887\\tQ69652283\") AS ?quickStatements)\n\
+  \  (CONCAT(\"https://quickstatements.toolforge.org/#/v1=\",\n          SUBSTR(STR(?work),32),\
+  \ \"%7CP921%7C{{ q }}%7CS887%7CQ69652283\") AS ?quickStatementsUrl)\nWITH {\n  SELECT\
+  \  ?work ?chemicalname WHERE {\n    VALUES ?chemicalType {\n      wd:Q113145171\
+  \ # type of a chemical entity\n      wd:Q59199015 # group of stereoisomers\n   \
+  \ }\n    target: wdt:P31 ?chemicalType ; rdfs:label ?chemicalname .\n    FILTER(lang(?chemicalname)\
+  \ = \"en\")\n    SERVICE wikibase:mwapi {\n      bd:serviceParam wikibase:endpoint\
+  \ \"www.wikidata.org\";\n      wikibase:api \"Generator\";\n      mwapi:generator\
+  \ \"search\";\n      mwapi:gsrsearch ?chemicalname;\n      mwapi:gsrlimit \"max\"\
+  .\n      ?work wikibase:apiOutputItem mwapi:title.\n    }\n    ?work wdt:P1476 ?title\
+  \ .\n    MINUS {?work wdt:P921 target: }\n    FILTER (REGEX(LCASE(?title), LCASE(CONCAT(\
+  \ \"\\\\\\\\\", \"b\", ?chemicalname ,\"\\\\\\\\\", \"b\"))))\n  } LIMIT 200\n}\
+  \ AS %works WHERE {\n  INCLUDE %works\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\n"

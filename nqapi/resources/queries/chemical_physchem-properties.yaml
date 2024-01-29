@@ -1,0 +1,24 @@
+name: chemical_physchem-properties
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: physicochemical\
+  \ properties of this chemical\nSELECT DISTINCT ?propEntity ?propEntityLabel ?value\
+  \ ?units ?unitsLabel ?qualifiers ?source ?sourceLabel ?doi\nWITH {\n  SELECT DISTINCT\
+  \ ?propEntity ?value ?units ?source ?doi (GROUP_CONCAT(?qualifierStr; separator=\"\
+  , \") AS ?qualifiers) WHERE {\n    target: ?propp ?statement .\n    ?statement a\
+  \ wikibase:BestRank ;\n      ?proppsv [\n        wikibase:quantityAmount ?value\
+  \ ;\n        wikibase:quantityUnit ?units\n      ] .\n    OPTIONAL {\n      ?statement\
+  \ prov:wasDerivedFrom/pr:P248 ?source .\n      OPTIONAL { ?source wdt:P356 ?doi\
+  \ . }\n    }\n    ?property wikibase:claim ?propp ;\n            wikibase:statementValue\
+  \ ?proppsv ;\n            wdt:P1629 ?propEntity ;\n            wdt:P31 wd:Q21077852\
+  \ .\n    OPTIONAL {\n      {\n        ?qualifierProp wikibase:qualifier ?qualifier\
+  \ ;\n                       rdfs:label ?qProplabel; FILTER (lang(?qProplabel) =\
+  \ \"en\") .\n        ?qualifier a owl:DatatypeProperty .\n        ?statement ?qualifier\
+  \ ?qualifierVal .\n        BIND (CONCAT(str(?qProplabel), \": \", str(?qualifierVal))\
+  \ AS ?qualifierStr)\n      } UNION {\n        ?qualifierProp wikibase:qualifier\
+  \ ?qualifier ;\n                       rdfs:label ?qProplabel; FILTER (lang(?qProplabel)\
+  \ = \"en\") .\n        ?qualifier a owl:ObjectProperty .\n        ?statement ?qualifier\
+  \ ?qualifierVal .\n        ?qualifierVal rdfs:label ?qVallabel; FILTER (lang(?qVallabel)\
+  \ = \"en\") .\n        BIND (CONCAT(str(?qProplabel), \": \", str(?qVallabel)) AS\
+  \ ?qualifierStr)\n      }\n    }\n  } GROUP BY ?propEntity ?value ?units ?source\
+  \ ?doi\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n} \nORDER BY ASC(?propEntityLabel)\n\
+  \n"

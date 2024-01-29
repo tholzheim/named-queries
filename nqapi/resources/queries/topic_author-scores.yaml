@@ -1,0 +1,15 @@
+name: topic_author-scores
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?score \n\
+  ?author ?authorLabel (CONCAT(\"/author/\", SUBSTR(STR(?author), 32)) AS ?authorUrl)\n\
+  ?example_work ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work),\
+  \ 32)) AS ?example_workUrl)\nWITH {\n  SELECT\n    (SUM(?score_) AS ?score)\n  \
+  \  ?author\n    (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    { \n      ?author\
+  \ wdt:P101/wdt:P279* target: .\n      BIND(20 AS ?score_)\n    }\n    UNION\n  \
+  \  {\n      SELECT (3 AS ?score_) ?author ?work WHERE {\n        ?work wdt:P50 ?author\
+  \ ;\n              wdt:P921/wdt:P279* target: .\n      }\n    }\n    UNION\n   \
+  \ {\n      SELECT (1 AS ?score_) ?author ?work WHERE {\n        ?work wdt:P50 ?author\
+  \ .\n        ?citing_work wdt:P2860 ?work .\n        ?citing_work wdt:P921/wdt:P279*\
+  \ target: .\n      }\n    }\n  }\n  GROUP BY ?author\n  ORDER BY DESC(?score)\n\
+  \  LIMIT 200\n} AS %results \nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?score)\n"

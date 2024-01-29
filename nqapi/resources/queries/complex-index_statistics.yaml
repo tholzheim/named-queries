@@ -1,0 +1,8 @@
+name: complex-index_statistics
+query: "SELECT ?count ?description\nWITH {\n  SELECT (COUNT(*) AS ?count) WHERE {\
+  \ [] wdt:P31/wdt:P279* wd:Q22325163 ; wdt:P7718 []. }\n} AS %complexportal\nWITH\
+  \ {\n  SELECT (COUNT(*) AS ?count) WHERE { [] wdt:P31/wdt:P279* wd:Q22325163 ; wdt:P3937\
+  \ []. }\n} AS %reactome\nWHERE {\n  {\n    INCLUDE %complexportal\n    BIND(\"Total\
+  \ number of Complex Portal complexes\" AS ?description)\n  }\n  UNION\n  {\n   \
+  \ INCLUDE %reactome\n    BIND(\"Total number of Reactome complexes\" AS ?description)\n\
+  \  }\n}\nORDER BY DESC(?count)\n"

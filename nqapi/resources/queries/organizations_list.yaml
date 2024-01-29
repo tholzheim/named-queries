@@ -1,0 +1,9 @@
+name: organizations_list
+query: "SELECT\n  ?organization ?organizationLabel ?organizationDescription\n  ?location\
+  \ ?locationLabel\n  ?country ?countryLabel\nWITH {\n  SELECT\n    ?organization\n\
+  \    (SAMPLE(?location_) AS ?location)\n    (SAMPLE(?country_) AS ?country)\n  WHERE\
+  \ {\n    VALUES ?organization { {% for q in qs %} wd:{{ q }} {% endfor %} }\n  \
+  \  OPTIONAL { ?organization wdt:P131 | wdt:P159 ?location_ }\n    OPTIONAL { ?organization\
+  \ wdt:P17 ?country_ }\n  }\n  GROUP BY ?organization\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,es,fr,nl,no,ru,sv,zh\"\
+  . }\n}\n"

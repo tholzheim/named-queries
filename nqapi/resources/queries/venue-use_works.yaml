@@ -1,0 +1,8 @@
+name: venue-use_works
+query: "PREFIX target1: <http://www.wikidata.org/entity/{{ q1 }}>\nPREFIX target2:\
+  \ <http://www.wikidata.org/entity/{{ q2 }}>\n\nSELECT\n  ?publication_date\n  ?work\
+  \ ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\nWHERE {\n\
+  \  ?work wdt:P1433 target1: ;\n        wdt:P4510 target2: .\n  OPTIONAL {\n    ?work\
+  \ wdt:P577 ?publication_datetime .\n    BIND(xsd:date(?publication_datetime) AS\
+  \ ?publication_date)\n  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?publication_date)"

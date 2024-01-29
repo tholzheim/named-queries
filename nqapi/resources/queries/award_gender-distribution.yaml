@@ -1,0 +1,7 @@
+name: award_gender-distribution
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n ?count\
+  \ ?gender ?genderLabel \nWITH {\n  SELECT (COUNT(DISTINCT ?recipient) AS ?count)\
+  \ ?gender WHERE {\n    ?recipient wdt:P166 target: .\n    ?recipient wdt:P21 ?gender\
+  \ . \n  } \n  GROUP BY ?gender\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,ep,fr,jp,nl,no,ru,sv,zh\"\
+  \ . } \n} \nORDER BY DESC(?count)\n"

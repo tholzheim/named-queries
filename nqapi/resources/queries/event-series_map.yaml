@@ -1,0 +1,6 @@
+name: event-series_map
+query: "#defaultView:Map\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT ?event ?eventLabel ?geo ?image WHERE {\n  ?event (wdt:P179 | wdt:P31) target:\
+  \ .\n  ?event wdt:P276? / wdt:P625 ?geo .\n  OPTIONAL { ?event wdt:P18 ?image .\
+  \ }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\n"

@@ -1,0 +1,10 @@
+name: series_works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?number_of_citations\n\
+  \  ?publication_date\n  ?work ?workLabel\nWITH {\n  SELECT\n    (MIN(?datetimes)\
+  \ AS ?publication_datetime)\n    (COUNT(DISTINCT ?citing_work) AS ?number_of_citations)\n\
+  \    ?work\n  WHERE {\n    ?collection wdt:P179 target: .\n    ?work wdt:P1433 ?collection\
+  \ .\n    OPTIONAL { ?work wdt:P577 ?datetimes . }\n    OPTIONAL { ?citing_work wdt:P2860\
+  \ ?work . }\n  }\n  GROUP BY ?work\n} AS %result\nWHERE {\n  INCLUDE %result\n \
+  \ BIND(xsd:date(?publication_datetime) AS ?publication_date)\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" }\n}\nORDER BY DESC(?number_of_citations)\
+  \ DESC(?publication_date)\n"

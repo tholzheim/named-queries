@@ -1,0 +1,12 @@
+name: chemical_structural-identifiers
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: structural\
+  \ identifiers for this chemical structure\nSELECT\n  ?Structural_identifier ?Structural_identifierLabel\n\
+  \  ?idLit (SAMPLE(?idUrls) as ?idUrl)\nWITH {\n  SELECT ?Structural_identifier ?idLit\
+  \ ?formatterurl WHERE {\n    VALUES ?Structural_identifier { wd:P233 wd:P234 wd:P2017\
+  \ }\n    target: ?IDdir ?idLit .\n    ?Structural_identifier wikibase:directClaim\
+  \ ?IDdir ;\n            wdt:P31 wd:Q19833835 .\n    OPTIONAL {\n      ?Structural_identifier\
+  \ wdt:P1630 ?formatterurl .\n    }\n  } LIMIT 500\n} AS %RESULTS {\n  INCLUDE %RESULTS\n\
+  \  BIND(IRI(REPLACE(?formatterurl, '\\\\\\\\$1', str(?idLit))) AS ?idUrls).\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  }\nGROUP BY ?Structural_identifier ?Structural_identifierLabel ?idLit\nORDER BY\
+  \ ASC(?ID_TypeLabel)\n"

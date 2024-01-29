@@ -1,0 +1,14 @@
+name: author_list-of-publications
+query: "#defaultView:Table\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT\n  (MIN(?dates) AS ?date)\n  ?work ?workLabel\n  (GROUP_CONCAT(DISTINCT\
+  \ ?type_label; separator=\", \") AS ?type)\n  (SAMPLE(?pages_) AS ?pages)\n  ?venue\
+  \ ?venueLabel\n  (GROUP_CONCAT(DISTINCT ?author_label; separator=\", \") AS ?authors)\n\
+  \  (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?author), 32); separator=\"\
+  ,\")) AS ?authorsUrl)\nWHERE {\n  ?work wdt:P50 target: .\n  ?work wdt:P50 ?author\
+  \ .\n  OPTIONAL {\n    ?author rdfs:label ?author_label_ . FILTER (LANG(?author_label_)\
+  \ = 'en')\n  }\n  BIND(COALESCE(?author_label_, SUBSTR(STR(?author), 32)) AS ?author_label)\n\
+  \  OPTIONAL { ?work wdt:P31 ?type_ . ?type_ rdfs:label ?type_label . FILTER (LANG(?type_label)\
+  \ = 'en') }\n  ?work wdt:P577 ?datetimes .\n  BIND(xsd:date(?datetimes) AS ?dates)\n\
+  \  OPTIONAL { ?work wdt:P1104 ?pages_ }\n  OPTIONAL { ?work wdt:P1433 ?venue }\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }  \n}\nGROUP BY ?work ?workLabel ?venue ?venueLabel\nORDER BY DESC(?date)  \n"

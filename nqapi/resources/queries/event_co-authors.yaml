@@ -1,0 +1,19 @@
+name: event_co-authors
+query: "#defaultView:Graph\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT \n  ?author1 ?author1Label (SAMPLE(?image1_) AS ?image1) ?rgb\n\
+  \  ?author2 ?author2Label (SAMPLE(?image2_) AS ?image2)\nWITH {\n  SELECT\n    ?author1\n\
+  \    (SAMPLE(?dark_rgb_) AS ?dark_rgb)\n    (SAMPLE(?light_rgb_) AS ?light_rgb)\n\
+  \  WHERE {\n    # Find people at the event\n    { \n      target: (wdt:P823 | wdt:P664\
+  \ | ^wdt:P1344 | wdt:P710) ?author1 .\n      BIND (\"EEEEEE\" AS ?dark_rgb_)\n \
+  \   }\n    UNION \n    {\n      # author of article in proceedings, or program committee\
+  \ member\n      target:  (^wdt:P4745 / ^wdt:P1433 / wdt:P50) | wdt:P5804 ?author1\
+  \ .\n      BIND (\"FFFFFF\" AS ?light_rgb_)\n    }\n  }\n  GROUP BY ?author1\n}\
+  \ AS %authors\nWITH {\n  SELECT DISTINCT ?author1 ?author2 ?rgb WHERE {\n    INCLUDE\
+  \ %authors\n    target: (wdt:P823 | wdt:P664 | ^wdt:P1344 | wdt:P710 | ^wdt:P4745\
+  \ / ^wdt:P1433 / wdt:P50)  ?author2 .\n            \n    # Find co-authors\n   \
+  \ ?work wdt:P50 ?author1 , ?author2 .\n    FILTER (?author1 != ?author2)\n\n   \
+  \ BIND(COALESCE(?dark_rgb, ?light_rgb) AS ?rgb)\n  }\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n    \n  OPTIONAL { ?author1 wdt:P18 ?image1_ . }\n  OPTIONAL { ?author2\
+  \ wdt:P18 ?image2_ . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,sv,ru,zh\".\n  }\n}\nGROUP BY ?author1 ?author1Label\
+  \ ?rgb ?author2 ?author2Label  \n"

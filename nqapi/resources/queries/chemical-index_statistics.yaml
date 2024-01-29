@@ -1,0 +1,31 @@
+name: chemical-index_statistics
+query: "SELECT\n  (xsd:integer(?count_) AS ?count)\n  (CONCAT(\"Total chemicals with\
+  \ \", ?description_) AS ?description)\nWHERE {\n  BIND(\"haswbstatement:P31=Q113145171|P31=Q59199015\"\
+  \ AS ?constraint)\n  VALUES (?description_ ?property_query_term) {\n    (\"or without\
+  \ stereochemistry\" \"\")\n    (\"fully defined stereochemistry\" \"P31=Q113145171\"\
+  )\n    (\"undefined stereochemistry\" \"P31=Q59199015\")\n    (\"CAS registry number\"\
+  \ \"P231\")\n    (\"canonical SMILES\" \"P233\")\n    (\"InChI\" \"P234\")\n   \
+  \ (\"InChIKey\" \"P235\")\n    (\"chemical formula\" \"P274\")\n    # (\"ChEMBL\
+  \ ID\" \"P592\") # limit IDs\n    # (\"ChemSpider ID\" \"P661\") # limit IDs\n \
+  \   (\"PubChem ID\" \"P662\")\n    # (\"KEGG ID\" \"P665\") # limit IDs\n    (\"\
+  ChEBI ID\" \"P683\")\n    (\"found in taxon\" \"P703\")\n    (\"isomeric SMILES\"\
+  \ \"P2017\")\n    # (\"ZINC ID\" \"P2084\") # limit IDs\n    (\"crystal structure\"\
+  \ \"haswbstatement:P3636|P11375\")\n    (\"safety classification and labelling\"\
+  \ \"P4952\")\n    (\"mass spectrum\" \"haswbstatement:P4964|P6689\")\n    # (\"\
+  SMARTS notation\" \"P8533\") # not for now\n    (\"NMR spectrum\" \"P9405\")\n \
+  \   # hacky way to get quantity properties.\n    (\"pKa\" \"linksto:Property:P1117\"\
+  )\n    (\"mass\" \"linksto:Property:P2067\")\n    (\"solubility\" \"linksto:Property:P2177\"\
+  )\n    (\"melting point\" \"linksto:Property:P2101\")\n    (\"boiling point\" \"\
+  linksto:Property:P2102\")\n    (\"electric dipole moment\" \"linksto:Property:P2201\"\
+  )\n    (\"ionization energy\" \"linksto:Property:P2260\")\n    # (\"minimum explosive\
+  \ concentration\" \"linksto:Property:P2204\") # safety\n    # (\"time-weighted average\
+  \ exposure limit\" \"linksto:Property:P2404\") # safety\n    # (\"ceiling exposure\
+  \ limit\" \"linksto:Property:P2405\") # safety\n    # (\"maximum peak exposure limit\"\
+  \ \"linksto:Property:P2406\") # safety\n    # (\"short-term exposure limit\" \"\
+  linksto:Property:P2407\") # safety\n    # (\"solubility product constant\" \"linksto:Property:P11813\"\
+  ) # less than 5 statements\n  }\n  BIND(CONCAT(?property_query_term, \" \", ?constraint)\
+  \ AS ?search_query)\n  SERVICE wikibase:mwapi {\n    bd:serviceParam wikibase:endpoint\
+  \ \"www.wikidata.org\" ; \n                    wikibase:api \"Search\" ; \n    \
+  \                wikibase:limit \"once\" ; \n                    mwapi:srsearch\
+  \ ?search_query;\n                    mwapi:srlimit \"1\".\n    ?count_ wikibase:apiOutput\
+  \ \"//searchinfo[1]/@totalhits\".\n  }\n}\nORDER BY DESC(?count)\n"

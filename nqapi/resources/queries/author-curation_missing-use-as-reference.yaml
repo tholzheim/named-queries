@@ -1,0 +1,10 @@
+name: author-curation_missing-use-as-reference
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?citations\
+  \ ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\nWITH\
+  \ {\n  SELECT ?work (COUNT(DISTINCT ?statement) AS ?count) WHERE {\n    ?work wdt:P50\
+  \ target: .\n\tOPTIONAL { ?statement prov:wasDerivedFrom/pr:P248 ?work . }\n  }\
+  \ GROUP BY ?work\n} AS %works\nWITH {\n  SELECT (COUNT(?work1) as ?citations) ?work\
+  \ WHERE {\n    INCLUDE %works\n    FILTER (?count = 0)\n    # Works cited\n    OPTIONAL\
+  \ { ?work1 wdt:P2860 ?work }.\n  }\n  GROUP BY ?work\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n} ORDER BY DESC(?citations)\n  LIMIT 200\n"

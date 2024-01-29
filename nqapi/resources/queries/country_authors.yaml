@@ -1,0 +1,12 @@
+name: country_authors
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?number_of_citing_works\n\
+  \  ?author ?authorLabel\n  ?organization ?organizationLabel\n  ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT DISTINCT ?author WHERE {\n    ?author wdt:P27 | wdt:P1416/wdt:P17\
+  \ | wdt:P108/wdt:P17 target: .\n  }\n} AS %authors\nWITH {\n  SELECT\n    ?author\
+  \ \n    (COUNT(DISTINCT ?citing_work) AS ?number_of_citing_works)\n    (SAMPLE(?organization_)\
+  \ AS ?organization)\n    (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    INCLUDE\
+  \ %authors\n    ?work wdt:P50 ?author .\n    OPTIONAL { ?citing_work wdt:P2860 ?work\
+  \ . }\n    OPTIONAL {\n      ?author wdt:P1416 | wdt:P108 ?organization_ .\n   \
+  \   ?organization_ wdt:P17 target:\n    }\n  }\n  GROUP BY ?author \n} AS %results\n\
+  WHERE {\n  INCLUDE %results\n  service wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en\" . } \n}\nORDER BY DESC(?number_of_citing_works) \n"

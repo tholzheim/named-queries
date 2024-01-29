@@ -1,0 +1,12 @@
+name: language_recently-published-works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?publication_date\n\
+  \  ?work ?workLabel ?workDescription (CONCAT(\"/work/\", SUBSTR(STR(?work), 32))\
+  \ AS ?workUrl)\nWITH {\n  SELECT\n    ?publication_date_\n    ?work\n  WHERE {\n\
+  \    VALUES ?publication_date_ {\n      {% for day in range(-32, 1) %} {{ '\"{}T00:00:00Z\"\
+  ^^xsd:dateTime'.format((datetime.datetime.now().date() + datetime.timedelta(day)).isoformat())\
+  \ }} {% endfor %} \n    }\n    ?work wdt:P407 target: ;\n          wdt:P577 ?publication_date_\
+  \ ;\n  }\n  LIMIT 1000\n} AS %works_sample\nWITH {\n  SELECT\n    (xsd:date(MAX(?publication_date_))\
+  \ AS ?publication_date)\n    ?work\n  WHERE {\n    INCLUDE %works_sample\n  }\n\
+  \  GROUP BY ?work\n  ORDER BY DESC(?publication_date)\n  LIMIT 500\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?publication_date)\n\n  "

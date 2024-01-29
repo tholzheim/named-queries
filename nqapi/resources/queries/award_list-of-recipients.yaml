@@ -1,0 +1,11 @@
+name: award_list-of-recipients
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?year\n\
+  \  ?recipient ?recipientLabel ?recipientDescription\n  ?example_work ?example_workLabel\n\
+  WITH {\n  SELECT DISTINCT ?recipient ?year (SAMPLE(?work) AS ?example_work) WHERE\
+  \ {\n    ?recipient p:P166 ?award_statement . \n    ?award_statement ps:P166 target:\
+  \ .\n    OPTIONAL {\n      { ?award_statement pq:P585 ?time }\n      UNION\n   \
+  \   { ?award_statement pq:P580 ?time }\n      BIND(YEAR(?time) AS ?year)\n    }\n\
+  \    OPTIONAL { ?work wdt:P50 ?recipient . }\n  }\n  GROUP BY ?recipient ?year\n\
+  } AS %result\nWHERE {\n  INCLUDE %result \n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\" . }  \n}\n\
+  ORDER BY DESC(?year)\n"

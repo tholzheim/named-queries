@@ -1,0 +1,7 @@
+name: sponsor_project-budgets
+query: "# title: Scatterplot of project budgets associated with a funder\n\nPREFIX\
+  \ target: <http://www.wikidata.org/entity/{{ q }}>\n\n#defaultView:ScatterChart\n\
+  SELECT ?start_time ?budget ?project ?projectLabel WHERE {\n  ?project wdt:P859+\
+  \ target: .\n  ?project wdt:P2769 ?budget .\n  ?project (wdt:P580 | wdt:P571) ?start_time\
+  \ .\n  SERVICE wikibase:label {\n    bd:serviceParam wikibase:language \"en,da,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}"

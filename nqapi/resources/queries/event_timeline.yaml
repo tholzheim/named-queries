@@ -1,0 +1,8 @@
+name: event_timeline
+query: "#defaultView:Timeline\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?time ?item ?itemLabel ?image\nWHERE {\n  {\n    target: wdt:P580\
+  \ | wdt:P585 ?time .\n    OPTIONAL { target: wdt:P18 ?image . }\n    BIND(wd:Q24575110\
+  \ AS ?item)\n  }\n  UNION\n  {\n    target: wdt:P582 ?time .\n    OPTIONAL { target:\
+  \ wdt:P18 ?image . }\n    BIND(wd:Q24575125 AS ?item)\n  }\n  UNION \n  { target:\
+  \ p:P793 [ ps:P793 ?item ; pq:P585 ?time ] . }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\n\n"

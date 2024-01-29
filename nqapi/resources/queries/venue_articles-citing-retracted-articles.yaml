@@ -1,0 +1,17 @@
+name: venue_articles-citing-retracted-articles
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: Articles\
+  \ in a specific venue citing retracted articles\nSELECT DISTINCT\n  ?retracted_work\
+  \ ?retracted_workLabel\n  ?date\n  ?citing_work ?citing_workLabel\nWITH {\n  # Find\
+  \ retracted papers indicated by instance of retracted paper, \n  # by retraction\
+  \ notice property or by significant event\n  SELECT DISTINCT ?retracted_work WHERE\
+  \ {\n    # articles marked as \"retracted\"\n    { ?retracted_work wdt:P31 wd:Q45182324\
+  \ }\n    UNION\n    # articles linked to a retraction notice\n    { ?retracted_work\
+  \ wdt:P5824 [] }\n    UNION\n    # articles with a 'retraction' event\n    { ?retracted_work\
+  \ wdt:P793 wd:Q45203135 }\n  }\n} AS %retracted_works\nWHERE {\n  INCLUDE %retracted_works\n\
+  \  ?citing_work wdt:P2860 ?retracted_work ; wdt:P1433 target: .\n  OPTIONAL {\n\
+  \    ?retracted_work wdt:P5824 ?retraction .\n    ?retraction wdt:P577 ?retraction_datetime\n\
+  \    FILTER ( ?citing_work != ?retraction )\n  }\n  MINUS { ?citing_work wdt:P31\
+  \ wd:Q1348305 }\n  OPTIONAL {\n    ?retracted_work p:P793 [ ps:P793 wd:Q45203135\
+  \ ; pq:P585 ?keyevent_datetime ]\n  }\n  BIND(COALESCE(xsd:date(COALESCE(?retraction_datetime,\
+  \ ?keyevent_datetime)), \"Unknown date\") AS ?date)\n  SERVICE wikibase:label {\
+  \ bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?date)\n"

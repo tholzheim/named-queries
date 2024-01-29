@@ -1,0 +1,12 @@
+name: venue_most-cited-authors
+query: "# title: Most cited authors published in venue\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?count\n  ?author ?authorLabel\n  ?orcid\n  ?example_cited_work\
+  \ ?example_cited_workLabel\n  ?example_citing_work ?example_citing_workLabel\nWITH\
+  \ {\n  # Count the number of citations\n  SELECT\n    ?author\n    (COUNT(?cited_work)\
+  \ AS ?count)\n    (SAMPLE(?cited_work) AS ?example_cited_work)\n    (SAMPLE(?citing_work)\
+  \ AS ?example_citing_work)\n  WHERE {\n    ?cited_work wdt:P1433 target: .\n   \
+  \ ?citing_work wdt:P2860 ?cited_work .\n    ?cited_work wdt:P50 ?author .\n  }\n\
+  \  GROUP BY ?author\n} AS %result\nWHERE {\n  INCLUDE %result \n          \n  #\
+  \ Include optional ORCID iD\n  OPTIONAL { ?author wdt:P496 ?orcid . }\n  \n  # Label\
+  \ the results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . } \n}\nORDER BY DESC(?count)\nLIMIT 100\n"

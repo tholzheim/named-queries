@@ -1,0 +1,9 @@
+name: authors_list-of-jointly-authored-works
+query: "SELECT\n  ?coauthor_count\n  ?work ?workLabel\n  ?authors ?authorsUrl\nWITH\
+  \ {\n  SELECT \n    (COUNT(?author) AS ?coauthor_count)\n    ?work \n    (GROUP_CONCAT(?author_label;\
+  \ separator=\", \") AS ?authors)\n    (GROUP_CONCAT(SUBSTR(STR(?author), 32); separator=\"\
+  ,\") AS ?authorsUrl)\n  {\n    VALUES ?author { {% for q in qs %} wd:{{ q }} {%\
+  \ endfor %} }\n    ?work wdt:P50 ?author .\n    OPTIONAL { ?author rdfs:label ?author_label\
+  \ . FILTER(LANG(?author_label) = 'en') }\n  }\n  GROUP BY ?work\n  HAVING(?coauthor_count\
+  \ > 1)\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,es,fr,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?coauthor_count)"

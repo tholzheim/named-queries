@@ -1,0 +1,17 @@
+name: work_statements
+query: "#title: Statements referencing the {{ q }} article\n#defaultView:Table\n\n\
+  PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?item ?itemLabel\
+  \ ?property ?propertyLabel ?value ?valueLabel ?unit ?unitLabel\nWITH {\n  SELECT\
+  \ ?statement WHERE { \n\t  ?statement prov:wasDerivedFrom/pr:P248 target: .\n  }\n\
+  \  LIMIT 2000\n} AS %statements \nWITH {\n  SELECT distinct ?item ?property ?value\
+  \ ?unit\n  WHERE {\n    INCLUDE %statements\n    ?item ?p ?statement .\n    ?property\
+  \ wikibase:claim ?p . OPTIONAL { ?property wikibase:statementValueNormalized ?a1\
+  \ }\n    ?statement ?a1 ?value1 ; ?a2 ?value2 . BIND (COALESCE(?value1, ?value2)\
+  \ AS ?value) BIND (COALESCE(?a1, ?a2) AS ?a)\n    FILTER (!STRSTARTS(LCASE(STR(?value)),\
+  \ \"http://wikiba.se/ontology#\"))\n    FILTER (!STRSTARTS(LCASE(STR(?value)), \"\
+  http://www.wikidata.org/value/\"))\n    FILTER (!STRSTARTS(LCASE(STR(?value)), \"\
+  http://www.wikidata.org/reference/\"))\n    OPTIONAL {?statement ?psv_statement_predicate\
+  \ ?psv_statement .\n    ?statement_predicate_property wikibase:statementValue ?psv_statement_predicate.\n\
+  \    ?psv_statement wikibase:quantityUnit ?unit}\n  }\n} AS %result\nWHERE {\n \
+  \ INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,it,jp,nl,no,ru,sv,zh\" . } \n} \nORDER BY DESC(?itemLabel)\n"

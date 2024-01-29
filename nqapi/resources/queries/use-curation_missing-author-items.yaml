@@ -1,0 +1,21 @@
+name: use-curation_missing-author-items
+query: "SELECT\n  # Number of works with the author\n  ?count\n\n  # Author score\
+  \ - 3 points for authoring a work, 1 for being cited\n  ?score\n\n  # Author as\
+  \ a string\n  ?author\n\n  # Build URL to the Author disambiguator tool\n  (CONCAT(\n\
+  \      'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \      ENCODE_FOR_URI(?author)) AS ?resolver_url)\n\nWITH {\n  SELECT DISTINCT ?work\
+  \ WHERE {\n    ?work (wdt:P2283 | wdt:P4510) / wdt:P279* wd:{{ q }} .\n  }\n  LIMIT\
+  \ 100000\n} AS %works\nWITH {\n  SELECT\n    (COUNT(?work) AS ?count)\n    ?author\n\
+  \  WHERE {\n    INCLUDE %works\n    ?work wdt:P2093 ?author .\n  }\n  GROUP BY ?author\n\
+  } AS %counts\n\n# Generate a score for each author\nWITH {\n  SELECT (SUM(?score_)\
+  \ AS ?score) ?author\n  WHERE {\n    {\n      # Assign them 3 points if they are\
+  \ an author of a work using the resource\n      SELECT (3 AS ?score_) ?author WHERE\
+  \ {\n        [] wdt:P2093 ?author ;\n           (wdt:P2283 | wdt:P4510) / wdt:P279*\
+  \ wd:{{ q }} .\n      }\n      LIMIT 10000\n    }\n    UNION\n    {\n      # Assign\
+  \ them 1 point if they are the author of a work that is cited by a work using the\
+  \ resource\n      SELECT (1 AS ?score_) ?author WHERE {\n        [] wdt:P2860 /\
+  \ wdt:P2093 ?author ;\n           (wdt:P2283 | wdt:P4510) / wdt:P279* wd:{{ q }}\
+  \ .\n      }\n      LIMIT 10000\n    }\n  }\n  GROUP BY ?author\n} AS %scores\n\n\
+  WHERE {\n  INCLUDE %counts\n  INCLUDE %scores\n\n  # Label the result\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n\
+  }\nORDER BY DESC(?score) DESC(?count) \nLIMIT 500\n"

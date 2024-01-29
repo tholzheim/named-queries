@@ -1,0 +1,14 @@
+name: series_organizations
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?year ?count ?organization ?organizationLabel\nWITH {\n  SELECT\
+  \ (MIN(?year_) AS ?year) ?work WHERE {\n    ?collection wdt:P179 target: .\n   \
+  \ ?work wdt:P1433 ?collection .\n    ?work wdt:P577 ?datetimes .\n    BIND(STR(YEAR(?datetimes))\
+  \ AS ?year_)\n  } \n  GROUP BY ?work\n} AS %works                \nWITH {\n  SELECT\
+  \ ?year (COUNT(?work) AS ?count) ?organization\n  WHERE {\n    INCLUDE %works\n\t\
+  ?work wdt:P50 ?author .\n    \n    # For now, only employment relation\n    # We\
+  \ could add affiliation with \"| wdt:P1416/wdt:P361*\" \n    # Note that this extra\
+  \ term will double count.\n    ?author wdt:P108  ?organization . \n   }\n   GROUP\
+  \ BY ?year ?organization\n                  \n   # Exclude organizations with only\
+  \ a single count\n   # HAVING(?count > 1)\n} AS %result\nWHERE {\n INCLUDE %result\n\
+  \ SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  \ }\n}\nORDER BY ?year\n"

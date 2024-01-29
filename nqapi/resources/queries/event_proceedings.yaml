@@ -1,0 +1,46 @@
+name: event_proceedings
+description:
+  Get all scholarly articles published as proceedings of the given event
+version: 0.0.2
+parameter:
+  event_id:
+      label: q
+      type: Qid
+      description: Wikidata id of the event
+  lang:
+    label: lang
+    type: str
+    default_value: en
+    description: language of the labels that are queried
+
+query: |
+  PREFIX target: <http://www.wikidata.org/entity/{{ q }}> 
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+  PREFIX wdt: <http://www.wikidata.org/prop/direct/> 
+  SELECT
+    ?work ?workLabel
+    ?authors ?authorsUrl
+    ?topics ?topicsUrl
+  WHERE {
+    {
+      SELECT 
+        ?work
+        (GROUP_CONCAT(DISTINCT ?author_label; separator=", ") AS ?authors)
+        (CONCAT("../authors/", GROUP_CONCAT(DISTINCT SUBSTR(STR(?author), 32); separator=",")) AS ?authorsUrl) 
+        (GROUP_CONCAT(DISTINCT ?topic_label; separator=", ") AS ?topics)
+        (CONCAT("../topics/", GROUP_CONCAT(DISTINCT SUBSTR(STR(?topic), 32); separator=",")) AS ?topicsUrl)
+      WHERE {
+        ?work wdt:P1433 / wdt:P4745 target: .
+        OPTIONAL {
+          ?work wdt:P50 ?author .
+          ?author rdfs:label ?author_label . FILTER(LANG(?author_label) = "{{ lang }}")
+        }
+        OPTIONAL {
+          ?work wdt:P921 ?topic .
+          ?topic rdfs:label ?topic_label . FILTER(LANG(?topic_label) = "{{ lang }}")
+        }
+      }
+      GROUP BY ?work
+    }
+    OPTIONAL{?work rdfs:label ?workLabel. FILTER(lang(?workLabel) = "{{ lang }}")}
+  }

@@ -1,0 +1,15 @@
+name: chemical-element_recent-literature
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?date ?work\
+  \ ?workLabel ?type ?topics\nWITH {\n  SELECT DISTINCT ?work WHERE {\n    {\n   \
+  \   ?work wdt:P921 / (wdt:P527+ | wdt:P1269+ | (wdt:P31* / wdt:P279*) ) target:\
+  \ .\n    } UNION {\n      target: ?propp ?statement .\n      ?statement a wikibase:BestRank\
+  \ ;\n                 prov:wasDerivedFrom/pr:P248 ?work .\n    }\n  }\n} AS %works\n\
+  WITH {\n  SELECT (MAX(?dates) as ?datetime) ?work (GROUP_CONCAT(DISTINCT ?type_label;\
+  \ separator=\", \") AS ?type) (GROUP_CONCAT(DISTINCT ?topic_label; separator=\"\
+  \ // \") AS ?topics) WHERE {\n    INCLUDE %works\n    ?work wdt:P921 ?topic . \n\
+  \    OPTIONAL { ?work wdt:P31 ?type_ . ?type_ rdfs:label ?type_label . FILTER (LANG(?type_label)\
+  \ = 'en') }\n    OPTIONAL { ?work wdt:P577 ?dates . }\n    ?topic rdfs:label ?topic_label\
+  \ .  FILTER (lang(?topic_label) = 'en')\n  }\n  GROUP BY ?work\n} AS %result\nWHERE\
+  \ {\n  INCLUDE %result\n  BIND(xsd:date(?datetime) AS ?date)\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n\
+  }\nORDER BY DESC(?date)\nLIMIT 500\n"

@@ -1,0 +1,12 @@
+name: organization_awards
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?count\n  ?award ?awardLabel\n  ?recipients ?recipientsUrl\n\
+  WITH {\n  SELECT\n    (COUNT(?researcher) AS ?count)\n    ?award\n    (GROUP_CONCAT(?researcher_label;\
+  \ separator=\", \") AS ?recipients)\n    (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT\
+  \ SUBSTR(STR(?researcher), 32); separator=\",\")) AS ?recipientsUrl)\n  WHERE {\n\
+  \    hint:Query hint:optimizer \"None\" .\n    {\n      SELECT DISTINCT ?researcher\
+  \ WHERE {\n        ?researcher ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361* target:\
+  \ .\n      } \n    }\n    ?researcher wdt:P166 ?award .\n    ?researcher rdfs:label\
+  \ ?researcher_label . FILTER (LANG(?researcher_label) = 'en')\n  }\n  GROUP BY ?award\n\
+  } AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . } \n}\nORDER BY DESC(?count)\n"

@@ -1,0 +1,7 @@
+name: work-cito-intention_incoming
+query: "SELECT ?citingArticle ?citingArticleLabel \n?intention ?intentionLabel (CONCAT(\"\
+  /cito/\", SUBSTR(STR(?intention), 32)) AS ?intentionUrl) WHERE {\n  VALUES ?CITEDARTICLE\
+  \ { wd:{{ q }} }\n  VALUES ?intention { wd:{{ q2 }} }\n  ?citingArticle p:P2860\
+  \ ?citationStatement .\n  ?citationStatement pq:P3712 ?intention ;\n           \
+  \          ps:P2860 ?CITEDARTICLE .\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\n"

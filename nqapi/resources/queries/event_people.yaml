@@ -1,0 +1,21 @@
+name: event_people
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (?number_of_publications\
+  \ AS ?works)\n  ?person ?personLabel ?personDescription\n  ?roles\n  ?example_work\
+  \ ?example_workLabel\nWITH {\n  SELECT\n    (GROUP_CONCAT(DISTINCT ?role; separator=\"\
+  , \") AS ?roles) ?person\n  WHERE {\n    {\n      # speaker\n      target: wdt:P823\
+  \ ?person .\n      # BIND(wd:Q9379869 AS ?role)\n      BIND(\"speaker\" AS ?role)\n\
+  \    }\n    UNION\n    {\n      # organizer\n      target: wdt:P664 ?person .\n\
+  \      #BIND(wd:Q2029941 AS ?role)\n      BIND(\"organizer\" AS ?role)\n    }\n\
+  \    UNION\n    {\n      # participant\n      ?person wdt:P1344 | ^wdt:P710 target:\
+  \ .\n      BIND(\"participant\" AS ?role)\n    }\n    UNION\n    {\n      # editor\n\
+  \      ?person ^wdt:P98 / wdt:P4745 target: .\n      BIND(\"editor of proceedings\"\
+  \ AS ?role)\n    }\n    UNION\n    {\n      # author\n      ?person ^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 target: .\n      BIND(\"author\" AS ?role)\n    }\n    UNION\n   \
+  \ {\n      # program committee member\n      target: wdt:P5804 ?person .\n     \
+  \ BIND(\"program committee member\" AS ?role)\n    }\n  }\n  GROUP BY ?person\n\
+  } AS %people  \nWITH {\n  SELECT\n    (COUNT(?work) AS ?number_of_publications)\n\
+  \    ?roles\n    ?person (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    INCLUDE\
+  \ %people .\n    OPTIONAL { ?work wdt:P50 ?person . }\n  }\n  GROUP BY ?roles ?person\n\
+  } AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\". }\n}\nORDER\
+  \ BY DESC(?number_of_publications)\n"

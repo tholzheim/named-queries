@@ -1,0 +1,13 @@
+name: event_upcoming-deadlines
+query: "SELECT\n  ?date\n  ?short_name\n  ?event ?eventLabel (CONCAT(\"/event/\",\
+  \ SUBSTR(STR(?event), 32)) AS ?eventUrl)\n  ?location ?locationLabel (CONCAT(\"\
+  /location/\", SUBSTR(STR(?location), 32)) AS ?locationUrl)\nWITH {\n  SELECT\n \
+  \   ?datetime ?event\n    (SAMPLE(?location_) AS ?location) \n    (SAMPLE(?short_name_)\
+  \ AS ?short_name)\n  WHERE {\n    ?event p:P793 ?key_event_statement . \n    ?key_event_statement\
+  \ ps:P793 / wdt:P279 wd:Q2404808 ;\n                         pq:P585 ?datetime .\
+  \ \n    FILTER (NOW() < ?datetime)\n    OPTIONAL { ?event wdt:P276 ?location_ }\n\
+  \    OPTIONAL { ?event wdt:P1813 ?short_name_ }\n  }\n  GROUP BY ?datetime ?event\n\
+  \  ORDER BY(?datetime)\n  LIMIT 200  \n} AS %events\nWHERE {\n  INCLUDE %events\n\
+  \  \n  BIND(xsd:date(?datetime) AS ?date)\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}\n\
+  ORDER BY(?date)\n"

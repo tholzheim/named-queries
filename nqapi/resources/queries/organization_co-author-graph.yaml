@@ -1,0 +1,15 @@
+name: organization_co-author-graph
+query: "#defaultView:Graph\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?author1 ?author1Label ?image1 ?rgb\n  ?author2 ?author2Label\
+  \ ?image2 \nWITH {\n  SELECT\n    ?author1 (SAMPLE(?image1_) AS ?image1)\n    ?author2\
+  \ (SAMPLE(?image2_) AS ?image2)\n    (SAMPLE(?rgb_) AS ?rgb)\n  WHERE {\n    target:\
+  \ ^wdt:P361* / ^( wdt:P108 | wdt:P1416 | wdt:P463 ) ?author1 , ?author2 .\n    ?work\
+  \ wdt:P50 ?author1 , ?author2 .\n\n    # Only display co-authorship for certain\
+  \ types of documents\n    # Journal and conference articles, books, not (yet?) software\n\
+  \    VALUES ?publication_type { wd:Q13442814 wd:Q571 wd:Q26973022 wd:Q17928402 wd:Q947859\
+  \ wd:Q54670950 }\n    FILTER EXISTS { ?work wdt:P31 ?publication_type . }\n\n  \
+  \  # No self-links.\n    FILTER (?author1 != ?author2)\n\n    # Images\n    OPTIONAL\
+  \ { ?author1 wdt:P18 ?image1_ }\n    OPTIONAL { ?author2 wdt:P18 ?image2_ }\n\n\
+  \    # Coloring of the nodes\n    BIND(\"FFFFFF\" AS ?rgb_)\n  }\n  GROUP BY ?author1\
+  \ ?author2\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label {\
+  \ bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,sv,ru,zh\".\n  }\n}\n\n"

@@ -1,0 +1,12 @@
+name: clinical-trial_related-trials
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?score\n\
+  \  ?trial ?trialLabel\nWHERE {\n  {\n    SELECT\n      (SUM(?score_) AS ?score)\n\
+  \      ?trial\n    WHERE {\n      BIND(target: AS ?query_trial)\n      ?trial wdt:P31\
+  \ wd:Q30612 .\n      { \n        ?query_trial wdt:P1050 / ^wdt:P1050 ?trial .\n\
+  \        BIND(3 AS ?score_)\n      }\n      UNION \n      {\n        ?query_trial\
+  \ wdt:P4844 / ^wdt:P4844 ?trial .\n        BIND(2 AS ?score_)        \n      }\n\
+  \      UNION \n      {\n        ?query_trial wdt:P859 / ^wdt:P859 ?trial .\n   \
+  \     BIND(1 AS ?score_)        \n      }\n    }\n    GROUP BY ?trial\n    ORDER\
+  \ BY DESC(?score)\n    LIMIT 500\n  }\n  FILTER (target: != ?trial)\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,pl,ru,sv,zh\". }\n\
+  }\nORDER BY DESC(?score)"

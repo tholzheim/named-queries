@@ -1,0 +1,10 @@
+name: cito-index_articles-by-year
+query: "#defaultView:BarChart\nselect ?year (count(?work) as ?number_of_publications)\
+  \ ?role where {\n  {\n    select ?work (min(?years) as ?year) ?type_ ?venue where\
+  \ {\n      ?work wdt:P577 ?dates ;\n            p:P2860 / pq:P3712 / wdt:P31 wd:Q96471816\
+  \ .\n      bind(str(year(?dates)) as ?years) .\n      OPTIONAL {\n        ?work\
+  \ wdt:P31 wd:Q109229154 . bind(\"explicit\" as ?type_)\n        ?work wdt:P1433\
+  \ ?venue_ . ?venue_ rdfs:label ?venue . FILTER (LANG(?venue) = \"en\")\n       \
+  \ MINUS { ?venue_ wdt:P31 wd:Q1143604 }\n      }\n    }\n    group by ?work ?type_\
+  \ ?venue\n  }\n  bind(\n    coalesce(\n      if(bound(?type_), ?venue,\n      'other\
+  \ source')\n    ) as ?role\n  )\n}\ngroup by ?year ?role\norder by ?year\n"

@@ -1,0 +1,12 @@
+name: topic_authors
+query: "#defaultView:Table\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT\n  ?count\n  ?author ?authorLabel ?authorDescription (CONCAT(\"\
+  /author/\", SUBSTR(STR(?author), 32)) AS ?authorUrl)\n  (COALESCE(?orcid_, CONCAT(\"\
+  orcid-search/search/?searchQuery=\", ?authorLabel)) AS ?orcid) \nWITH {\n  SELECT\n\
+  \    ?author\n    (count(?work) as ?count)\n  WHERE {\n    { ?work wdt:P921/wdt:P31*/wdt:P279*\
+  \ target: . }\n    UNION\n    { ?work wdt:P921/wdt:P361+ target: . }\n    UNION\n\
+  \    { ?work wdt:P921/wdt:P1269+ target: . }\n    ?work wdt:P50 ?author .\n  }\n\
+  \  GROUP BY ?author\n  ORDER BY DESC(?count)\n  LIMIT 200\n} AS %result\nWHERE {\n\
+  \  INCLUDE %result\n          \n  # Include optional ORCID iD\n  OPTIONAL { ?author\
+  \ wdt:P496 ?orcid_ . }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . } \n}\nORDER BY DESC(?count)\n"

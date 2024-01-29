@@ -1,0 +1,21 @@
+name: chemical-element_data
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?description ?value ?valueUrl\nWHERE {\n  {\n    SELECT\n      (1 AS ?order)\n\
+  \      (\"Named after\" AS ?description)\n      (GROUP_CONCAT(?value_; separator=\"\
+  , \") AS ?value)\n      (CONCAT(\"../topic/\", GROUP_CONCAT(?q; separator=\",\"\
+  )) AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n      target: wdt:P138 ?iri .\n\
+  \      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n      ?iri rdfs:label ?value_string .\
+  \ \n      FILTER (LANG(?value_string) = 'en')\n      BIND(COALESCE(?value_string,\
+  \ ?q) AS ?value_)\n    }\n    GROUP BY ?dummy\n  }\n  UNION\n  {\n    SELECT\n \
+  \     (2 AS ?order)\n      (\"Discoverer\" AS ?description)\n      (GROUP_CONCAT(?value_;\
+  \ separator=\", \") AS ?value)\n      (CONCAT(\"../topic/\", GROUP_CONCAT(?q; separator=\"\
+  ,\")) AS ?valueUrl)\n    {\n      BIND(1 AS ?dummy)\n      target: wdt:P61 ?iri\
+  \ .\n      BIND(SUBSTR(STR(?iri), 32) AS ?q) \n      ?iri rdfs:label ?value_string\
+  \ . \n      FILTER (LANG(?value_string) = 'en')\n      BIND(COALESCE(?value_string,\
+  \ ?q) AS ?value_)\n    }\n    GROUP BY ?dummy\n  }\n  UNION\n  {\n    SELECT\n \
+  \     (3 AS ?order)\n      (\"Oxidation states\" AS ?description)\n      (GROUP_CONCAT(?value_;\
+  \ separator=\", \") AS ?value)\n    {\n      BIND(1 AS ?dummy)\n      target: wdt:P1121\
+  \ ?value_ .\n    }\n    GROUP BY ?dummy\n  }\n  UNION\n  {\n    SELECT\n      (4\
+  \ AS ?order)\n      (\"Electron configuration\" AS ?description)\n      (GROUP_CONCAT(?value_;\
+  \ separator=\", \") AS ?value)\n    {\n      BIND(1 AS ?dummy)\n      target: wdt:P8000\
+  \ ?value_ .\n    }\n    GROUP BY ?dummy\n  }\n} \nORDER BY ?order\n"

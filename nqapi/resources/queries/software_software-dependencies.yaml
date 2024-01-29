@@ -1,0 +1,15 @@
+name: software_software-dependencies
+query: "#description: Show software library, programming language and developer dependencies\n\
+  \nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n#defaultView:Graph\n\
+  SELECT ?resource1 ?resource1Label ?image1 ?rgb ?resource2 ?resource2Label ?image2\n\
+  WITH {\n  SELECT\n    ?resource1 (SAMPLE(?image1_) AS ?image1) ?rgb\n    ?resource2\
+  \ (SAMPLE(?image2_) AS ?image2)\n    {\n      {\n        # root node with coloring\n\
+  \        BIND(target: AS ?resource1)\n        BIND(\"3080BB\" AS ?rgb)\n      }\n\
+  \      UNION\n      {\n        # dependencies, programming language, developer\n\
+  \        target: ( wdt:P1547 | wdt:P277 | wdt:P178 | wdt:P2283 | wdt:P275 )+ ?resource1\
+  \ .\n        OPTIONAL { ?resource1 wdt:P18 ?image1_ }\n      }\n      target: (\
+  \ wdt:P1547 | wdt:P277 | wdt:P178 | wdt:P2283 | wdt:P275 )+ ?resource2 .\n     \
+  \ OPTIONAL { ?resource2 wdt:P18 ?image2_ }\n      ?resource1 ( wdt:P1547 | wdt:P277\
+  \ | wdt:P178 | wdt:P2283 | wdt:P275 ) ?resource2 .\n    }\n    GROUP BY ?resource1\
+  \ ?resource2 ?rgb\n} AS %result\n{\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n}\n"

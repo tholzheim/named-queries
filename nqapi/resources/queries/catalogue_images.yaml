@@ -1,0 +1,5 @@
+name: catalogue_images
+query: "#defaultView:ImageGrid\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?image\n  ?item ?itemLabel\nWHERE {\n  ?item wdt:P972 target:\
+  \ ;\n        wdt:P18 ?image .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\n"

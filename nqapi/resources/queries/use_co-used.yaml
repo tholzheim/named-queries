@@ -1,0 +1,13 @@
+name: use_co-used
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  \n  ?coused ?cousedLabel (CONCAT(\"/use/\", SUBSTR(STR(?coused), 32)) AS ?cousedUrl)\n\
+  \  (\"\U0001F50E\" AS ?zoom)\n  (CONCAT(\"../uses/{{ q }},\", SUBSTR(STR(?coused),\
+  \ 32)) AS ?zoomUrl)\n  ?cousedDescription\n  \n  ?example_work ?example_workLabel\
+  \ (CONCAT(\"/work/\", SUBSTR(STR(?example_work), 32)) AS ?example_workUrl)\nWITH\
+  \ {\n  # Find works that are using a specific software,\n  # and find other software\
+  \ used in the found works\n  SELECT\n    ?coused\n    (COUNT(DISTINCT ?work) as\
+  \ ?count)\n    (SAMPLE(?work) AS ?example_work)\n  WHERE {\n    ?work wdt:P4510\
+  \ / wdt:P279* target: ;\n          wdt:P4510 ?coused .\n    FILTER (?coused != target:)\n\
+  \  }\n  GROUP BY ?coused\n} AS %result\nWHERE {\n  # Label the result\n  INCLUDE\
+  \ %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  \ . }\n}\nORDER BY DESC(?count) \n"

@@ -1,0 +1,47 @@
+name: work_wikipedia-mentions
+query: "SELECT\n  ?title ?titleUrl\n  ?wikipedia ?wikipediaLabel\n  ?item ?itemLabel\
+  \ ?itemDescription \nWHERE {\n  {\n    SELECT ?title_ ?titleUrl ?item ?wikipedia\
+  \ {\n      SERVICE wikibase:mwapi {\n        bd:serviceParam wikibase:endpoint \"\
+  da.wikipedia.org\" ;\n                        wikibase:api \"Generator\" ;\n\t\t\
+  \tmwapi:generator \"search\" ;\n                        mwapi:gsrsearch '{{ q }}{%\
+  \ for doi in dois %} OR \"{{ doi }}\"{% endfor %}' ;\n                        mwapi:gsrlimit\
+  \ \"200\" .\n        ?title_ wikibase:apiOutput mwapi:title .\n\t?item wikibase:apiOutputItem\
+  \ mwapi:item .\n      }\n      BIND(URI(CONCAT(\"https://da.wikipedia.org/wiki/\"\
+  , ENCODE_FOR_URI(REPLACE(?title_, \" \", \"_\")))) AS ?titleUrl)\n      BIND(wd:Q181163\
+  \ AS ?wikipedia)\n    } \n  }\n  UNION\n  {\n    SELECT ?title_ ?titleUrl ?item\
+  \ ?wikipedia {\n      SERVICE wikibase:mwapi {\n        bd:serviceParam wikibase:endpoint\
+  \ \"de.wikipedia.org\" ;\n                        wikibase:api \"Generator\" ;\n\
+  \t\t\tmwapi:generator \"search\" ;\n                        mwapi:gsrsearch '{{\
+  \ q }}{% for doi in dois %} OR \"{{ doi }}\"{% endfor %}' ;\n                  \
+  \      mwapi:gsrlimit \"200\" .\n        ?title_ wikibase:apiOutput mwapi:title\
+  \ .\n\t?item wikibase:apiOutputItem mwapi:item .\n      }\n      BIND(URI(CONCAT(\"\
+  https://de.wikipedia.org/wiki/\", ENCODE_FOR_URI(REPLACE(?title_, \" \", \"_\"))))\
+  \ AS ?titleUrl)\n      BIND(wd:Q48183 AS ?wikipedia)\n    }     \n  }\n  UNION\n\
+  \  {\n    SELECT ?title_ ?titleUrl ?item ?wikipedia {\n      SERVICE wikibase:mwapi\
+  \ {\n        bd:serviceParam wikibase:endpoint \"en.wikipedia.org\" ;\n        \
+  \                wikibase:api \"Generator\" ;\n\t\t\tmwapi:generator \"search\"\
+  \ ;\n                        mwapi:gsrsearch '{{ q }}{% for doi in dois %} OR \"\
+  {{ doi }}\"{% endfor %}' ;\n                        mwapi:gsrlimit \"200\" .\n \
+  \       ?title_ wikibase:apiOutput mwapi:title .\n\t?item wikibase:apiOutputItem\
+  \ mwapi:item .\n      }\n      BIND(URI(CONCAT(\"https://en.wikipedia.org/wiki/\"\
+  , ENCODE_FOR_URI(REPLACE(?title_, \" \", \"_\")))) AS ?titleUrl)\n      BIND(wd:Q328\
+  \ AS ?wikipedia)\n    }     \n  }\n  UNION\n  {\n    SELECT ?title_ ?titleUrl ?item\
+  \ ?wikipedia {\n      SERVICE wikibase:mwapi {\n        bd:serviceParam wikibase:endpoint\
+  \ \"fr.wikipedia.org\" ;\n                        wikibase:api \"Generator\" ;\n\
+  \t\t\tmwapi:generator \"search\" ;\n                        mwapi:gsrsearch '{{\
+  \ q }}{% for doi in dois %} OR \"{{ doi }}\"{% endfor %}' ;\n                  \
+  \      mwapi:gsrlimit \"200\" .\n        ?title_ wikibase:apiOutput mwapi:title\
+  \ .\n\t?item wikibase:apiOutputItem mwapi:item .\n      }\n      BIND(URI(CONCAT(\"\
+  https://fr.wikipedia.org/wiki/\", ENCODE_FOR_URI(REPLACE(?title_, \" \", \"_\"))))\
+  \ AS ?titleUrl)\n      BIND(wd:Q8447 AS ?wikipedia)\n    }     \n  }\n  UNION\n\
+  \  {\n    SELECT ?title_ ?titleUrl ?item ?wikipedia {\n      SERVICE wikibase:mwapi\
+  \ {\n        bd:serviceParam wikibase:endpoint \"pt.wikipedia.org\" ;\n        \
+  \                wikibase:api \"Generator\" ;\n\t\t\tmwapi:generator \"search\"\
+  \ ;\n                        mwapi:gsrsearch '{{ q }}{% for doi in dois %} OR \"\
+  {{ doi }}\"{% endfor %}' ;\n                        mwapi:gsrlimit \"200\" .\n \
+  \       ?title_ wikibase:apiOutput mwapi:title .\n\t?item wikibase:apiOutputItem\
+  \ mwapi:item .\n      }\n      BIND(URI(CONCAT(\"https://pt.wikipedia.org/wiki/\"\
+  , ENCODE_FOR_URI(REPLACE(?title_, \" \", \"_\")))) AS ?titleUrl)\n      BIND(wd:Q11921\
+  \ AS ?wikipedia)\n    }     \n  }\n  hint:Prior hint:runFirst \"true\" .\n  BIND(CONCAT(?title_,\
+  \ \"&nbsp;\u2197\") AS ?title)\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n} "

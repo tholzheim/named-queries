@@ -1,0 +1,15 @@
+name: venue_co-author-graph
+query: "# title: Co-author graph for a specific venue\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n#defaultView:Graph\nSELECT ?author1 ?author1Label ?rgb ?author2 ?author2Label\n\
+  WITH {\n  # Find works published in the given venue\n  SELECT ?work WHERE {\n  \
+  \  ?work wdt:P1433 target: .\n  }\n} AS %works\nWITH {\n  # Limit the number of\
+  \ authors\n  SELECT (COUNT(?work) AS ?count1) ?author1 WHERE {\n    INCLUDE %works\n\
+  \    ?work wdt:P50 ?author1 .\n  }\n  GROUP BY ?author1\n  ORDER BY DESC(?count1)\n\
+  \  LIMIT 15\n} AS %authors1\nWITH {\n  # Limit the number of coauthors\n  SELECT\
+  \ DISTINCT ?author2 ?author1  (COUNT(?work) AS ?count2)  WHERE {\n    INCLUDE %works\n\
+  \    INCLUDE %authors1\n    ?work wdt:P50 ?author1 , ?author2 .\n    FILTER (?author1\
+  \ != ?author2) \n  }\n  GROUP BY ?author2 ?author1 \n  ORDER BY DESC(?count2)\n\
+  \  LIMIT 150\n} AS %authors2\nWHERE {\n#  INCLUDE %authors1\n  INCLUDE %authors2\n\
+  \  OPTIONAL { ?author1 wdt:P21 ?gender1 . }\n  BIND( IF(?gender1 = wd:Q6581097,\
+  \ \"3182BD\", \"E6550D\") AS ?rgb)\n  SERVICE wikibase:label {\n    bd:serviceParam\
+  \ wikibase:language \"en,fr,de,ru,es,zh,jp\".\n  }\n}\n"

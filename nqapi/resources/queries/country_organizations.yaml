@@ -1,0 +1,10 @@
+name: country_organizations
+query: "# title: Organizations for a specific country\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?number_of_authors\n  ?number_of_works\n  ?organization ?organizationLabel\n\
+  WITH {  \n  SELECT\n    ?organization\n    (COUNT(DISTINCT ?author) AS ?number_of_authors)\n\
+  \    (COUNT(DISTINCT ?work) AS ?number_of_works)\n  WHERE {\n    ?organization wdt:P17\
+  \ target: .\n    ?author wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?organization\
+  \ .\n    ?work wdt:P50 ?author .\n  }\n  GROUP BY ?organization \n} AS %results\n\
+  WHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?number_of_authors)\
+  \ DESC(?number_of_works)\n"

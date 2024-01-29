@@ -1,0 +1,8 @@
+name: venues_citations-per-year
+query: "#defaultView:LineChart\nSELECT ?year ?count ?venue ?venueLabel \nWITH {\n\
+  \  SELECT ?year (COUNT(?work) AS ?count) ?venue \n  WHERE {\n    VALUES ?venue {\
+  \   {% for q in qs %} wd:{{ q }} {% endfor %}   }\n    ?work wdt:P1433 ?venue .\n\
+  \    ?citing_work wdt:P2860 ?work .\n    ?citing_work wdt:P577 ?publication_datetime\
+  \ .\n  BIND(STR(YEAR(?publication_datetime)) AS ?year)\n  }\n  GROUP BY ?year ?venue\n\
+  } AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en\". }\n}\nORDER BY ?year\n"

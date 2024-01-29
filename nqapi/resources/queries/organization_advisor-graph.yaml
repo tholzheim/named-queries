@@ -1,0 +1,11 @@
+name: organization_advisor-graph
+query: "#defaultView:Graph\n\nPREFIX target: <http://www.wikidata.org/entity/{{ q\
+  \ }}>\n\nSELECT ?author1 ?author1Label ?rgb ?author2 ?author2Label \nWITH {\n  SELECT\
+  \ DISTINCT ?author1 ?author2 ?rgb WHERE {\n    VALUES ?organisation { target: }\n\
+  \    { ?author1 wdt:P108 ?organisation . } union { ?author1 wdt:P1416 [ wdt:P361*\
+  \ ?organisation ] .  }\n    { ?author2 wdt:P108 ?organisation . } union { ?author2\
+  \ wdt:P1416 [ wdt:P361* ?organisation ] .  }\n    {?author1 wdt:P184 ?author2 }\n\
+  \    UNION\n    {?author2 wdt:P185 ?author1 }\n    OPTIONAL { ?author1 wdt:P21 ?gender1\
+  \ }.\n    BIND ( IF(?gender1 = wd:Q6581097, \"3182BD\", \"E6550D\") AS ?rgb)\n \
+  \ }\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"en,da,de,es,fr,jp,sv,ru,zh\".\n  }\n}\n"

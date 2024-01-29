@@ -1,0 +1,11 @@
+name: publisher_journals
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (SAMPLE(?number_of_works_)\
+  \ AS ?number_of_works)\n  (MAX(?bfi) AS ?BFI)\n  ?journal ?journalLabel\n  (GROUP_CONCAT(?themes_labels;\
+  \ separator=\", \") as ?theme)\nWITH {\n  SELECT \n    ?journal\n    (COUNT(?work)\
+  \ AS ?number_of_works_)\n  WHERE {\n    ?journal wdt:P123 target: .\n    OPTIONAL\
+  \ { ?work wdt:P1433 ?journal . }\n  }\n  GROUP BY ?journal \n} AS %journals\nWHERE\
+  \ {\n  INCLUDE %journals\n  OPTIONAL {\n    ?journal wdt:P921 ?themes .\n    ?themes\
+  \ rdfs:label ?themes_labels .\n    FILTER (LANG(?themes_labels) = 'en')\n  }\n \
+  \ OPTIONAL { ?journal wdt:P1240 ?bfi . }\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . } \n} \nGROUP BY ?journal ?journalLabel\n\
+  ORDER BY DESC(?number_of_works)\n"

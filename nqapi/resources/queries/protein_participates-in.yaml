@@ -1,0 +1,9 @@
+name: protein_participates-in
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?type ?complex_or_process\
+  \ ?complex_or_processLabel\nWITH {\n  SELECT DISTINCT ?type ?complex_or_process\
+  \ WHERE {\n    VALUES ?part { target: }\n    VALUES ?process { wd:Q2996394 wd:Q4915012\
+  \ }\n    { ?part ^wdt:P527 ?complex_or_process . ?complex_or_process wdt:P31 wd:Q22325163\
+  \ ; BIND (\"complex\" AS ?type ) }\n    UNION\n    { ?part ^wdt:P527 ?complex_or_process\
+  \ . ?complex_or_process wdt:P31 ?process ; BIND (\"biological process\" AS ?type\
+  \ ) }\n  }\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label {\
+  \ bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n} ORDER BY ASC(?partLabel)\n"

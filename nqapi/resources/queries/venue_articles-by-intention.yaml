@@ -1,0 +1,17 @@
+name: venue_articles-by-intention
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n# Inspired from LEGOLAS - http://abel.lis.illinois.edu/legolas/\n# Shubhanshu\
+  \ Mishra, Vetle Torvik\nselect ?year (count(?work) as ?number_of_publications) ?intention\
+  \ where {\n  {\n    select (str(?year_) as ?year) (0 as ?pages) (\"_\" as ?intention)\
+  \ where {\n      # default values = 0\n      ?year_item wdt:P31 wd:Q577 . \n   \
+  \   ?year_item wdt:P585 ?date .\n      bind(year(?date) as ?year_)\n      {\n  \
+  \      select (min(?year_) as ?earliest_year)  (max(?year_) as ?latest_year) where\
+  \ {\n          VALUES ?JOURNAL { target: }\n          ?work wdt:P1433 ?JOURNAL .\n\
+  \          ?work wdt:P577 ?publication_date . \n          bind(year(?publication_date)\
+  \ as ?year_)\n        }\n      }\n      bind(year(now())+1 as ?next_year)\n    \
+  \  filter (?year_ >= ?earliest_year && ?year_ <= ?latest_year)\n    }\n  }\n  union\
+  \ {\n    select ?work ?intention (min(?years) as ?year) where {\n      VALUES ?JOURNAL\
+  \ { target: }\n      ?work wdt:P577 ?dates ;\n            p:P2860 / pq:P3712 / rdfs:label\
+  \ ?intention ;\n            wdt:P1433 ?JOURNAL .\n      bind(str(year(?dates)) as\
+  \ ?years) .\n      FILTER (LANG(?intention) = \"en\")\n    }\n    group by ?work\
+  \ ?intention\n  }\n}\ngroup by ?year ?intention\norder by ?year\n"

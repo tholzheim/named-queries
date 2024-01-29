@@ -1,0 +1,14 @@
+name: topic-curation_missing-pub-date
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n?citations\
+  \ \n?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n\
+  (?work AS ?wikidata_url)\nWITH {\n  SELECT (COUNT(?work) as ?count) ?work WHERE\
+  \ {\n  # Works on the topic\n    ?work wdt:P921 / (wdt:P361+ | wdt:P1269+ | (wdt:P31*\
+  \ / wdt:P279*) ) target: .\n  # Works that do not have a publication date statement\n\
+  \    FILTER NOT EXISTS { ?work wdt:P577 ?date . }\n  # Works that do not have an\
+  \ ISSN, i.e. that are not periodicals\n    FILTER NOT EXISTS { ?work wdt:P236 ?issn\
+  \ . }\n  }\n  GROUP BY ?work\n  ORDER BY DESC(?count)\n  LIMIT 2000\n} AS %works\n\
+  WITH {\n  SELECT (COUNT(?work1) as ?citations) ?work WHERE {\n  INCLUDE %works\n\
+  \  # Works cited\n    OPTIONAL { ?work1 wdt:P2860 ?work }.\n  }\n  GROUP BY ?work\n\
+  \  ORDER BY DESC(?citations)\n  LIMIT 200\n} AS %result\nWHERE {\n  INCLUDE %result\n\
+  \  \n  # Label the results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?citations)"

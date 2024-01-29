@@ -1,0 +1,9 @@
+name: clinical-trial-index_medical-conditions
+query: "SELECT\n  ?count\n  ?medical_condition ?medical_conditionLabel (CONCAT(\"\
+  /disease/\", SUBSTR(STR(?medical_condition), 32)) AS ?medical_conditionUrl)\n  ?example_trial\
+  \ ?example_trialLabel\nWHERE {\n  {\n    SELECT\n      (COUNT(?trial) AS ?count)\n\
+  \      ?medical_condition\n      (SAMPLE(?trial) AS ?example_trial)\n    WHERE {\n\
+  \      ?trial wdt:P31 wd:Q30612 .\n      ?trial wdt:P1050 ?medical_condition\n \
+  \   }\n    GROUP BY ?medical_condition\n    ORDER BY DESC(?count)\n    LIMIT 500\n\
+  \  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,pl,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?count)"

@@ -1,0 +1,11 @@
+name: topic-curation_missing-co-topic
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?count\n\
+  \  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\nWITH\
+  \ {\n  # Count citations\n  SELECT\n    (COUNT(?citing_work) AS ?count)\n    ?work\n\
+  \    (SAMPLE(?citing_work) AS ?example_citing_work)\n    (COUNT(DISTINCT ?topic)\
+  \ AS ?topics)\n  WHERE {\n    ?work wdt:P921 target: .\n    OPTIONAL { ?work wdt:P921\
+  \ ?topic . FILTER (?topic != target: )}\n    OPTIONAL { ?citing_work wdt:P2860 ?work.\
+  \ }\n  }\n  GROUP BY ?work\n  HAVING (?topics < 1)\n  ORDER BY DESC(?count)\n  LIMIT\
+  \ 100\n} AS %result\nWHERE {\n  # Label results\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ {\n    bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . } \n}\nORDER\
+  \ BY DESC(?count) ?topics"

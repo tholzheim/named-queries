@@ -1,0 +1,16 @@
+name: location_nearby-organizations
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: Nearby\
+  \ academic institutions around a specified geographic entity.\nSELECT\n  ?distance\
+  \ ?unit ?unitLabel\n  ?organization ?organizationLabel ?organizationDescription\
+  \ (CONCAT(\"/organization/\", SUBSTR(STR(?organization), 32)) AS ?organizationUrl)\n\
+  WITH {\n  # Universities, research centers, etc.\n  SELECT ?university WHERE {\n\
+  \    VALUES ?university { wd:Q3918 wd:Q1371037 wd:Q7315155  wd:Q31855 }\n  }\n}\
+  \ AS %universities\nWITH {\n  # Academic institutions on all levels\n  SELECT DISTINCT\
+  \ ?organization ?other_geo WHERE {\n    INCLUDE %universities\n    ?organization\
+  \ wdt:P361* / wdt:P31 / wdt:P279* ?university .\n    ?organization wdt:P625 ?other_geo\
+  \ .\n  }\n} AS %organizations\nWITH {\n  # Compute distance.\n  SELECT ?organization\
+  \ ?distance ?unit WHERE {\n    INCLUDE %organizations\n    target: wdt:P159* / wdt:P625\
+  \ ?geo .\n    BIND(geof:distance(?other_geo, ?geo) AS ?distance)\n    BIND(wd:Q828224\
+  \ AS ?unit)\n    FILTER(?distance < 250)\n  }\n} AS %results\nWHERE {\n  INCLUDE\
+  \ %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY ?distance\n"

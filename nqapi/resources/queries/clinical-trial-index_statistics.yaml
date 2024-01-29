@@ -1,0 +1,9 @@
+name: clinical-trial-index_statistics
+query: "SELECT ?count ?description\nWHERE {\n  {\n    { SELECT (COUNT(*) AS ?count)\
+  \ WHERE { [] wdt:P31 wd:Q30612 . } }\n    BIND(\"Number of clinical trials\" AS\
+  \ ?description)\n  }\n  UNION\n  {\n    { SELECT (COUNT(*) AS ?count) WHERE { []\
+  \ wdt:P3098 [] . } }\n    BIND(\"Links to ClinicalTrials.gov\" AS ?description)\n\
+  \  }\n  UNION\n  {\n    { SELECT (COUNT(*) AS ?count) WHERE { [] wdt:P6099 [] .\
+  \ } }\n    BIND(\"Number of clinical trial phases links\" AS ?description)\n  }\n\
+  \  UNION\n  {\n    { SELECT (COUNT(*) AS ?count) WHERE { [] wdt:P6220 [] . } }\n\
+  \    BIND(\"Links to OpenTrials\" AS ?description)\n  }\n}\nORDER BY DESC(?count)"

@@ -1,0 +1,18 @@
+name: author_events
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (xsd:date(MIN(?start))\
+  \ AS ?date)  \n  ?event ?eventLabel\n  (CONCAT(\"/event/\", SUBSTR(STR(?event),\
+  \ 32)) AS ?eventUrl)\n  (GROUP_CONCAT(DISTINCT ?role; separator=\", \") AS ?roles)\n\
+  \  (GROUP_CONCAT(DISTINCT ?location_label; separator=\", \") AS ?locations)\nWHERE\
+  \ {\n    BIND(target: AS ?person)\n    {  # speaker\n      ?event wdt:P823 ?person\
+  \ .\n      BIND(\"speaker\" AS ?role)\n    } UNION {  # organizer\n      ?event\
+  \ wdt:P664 ?person .\n      BIND(\"organizer\" AS ?role)\n    } UNION {  # participant\n\
+  \      ?person wdt:P1344 | ^wdt:P710 ?event  .\n      BIND(\"participant\" AS ?role)\n\
+  \    } UNION {  # editor\n      ?person ^wdt:P98 / wdt:P4745 ?event  .\n      BIND(\"\
+  editor of proceedings\" AS ?role)\n    } UNION {  # author\n      ?person ^wdt:P50\
+  \ / wdt:P1433 / wdt:P4745 ?event  .\n      BIND(\"author\" AS ?role)\n    } UNION\
+  \ {  # program committee member\n      ?event wdt:P5804 ?person .\n      BIND(\"\
+  program committee member\" AS ?role)\n    }\n    OPTIONAL { ?event wdt:P276 ?location\
+  \ . ?location rdfs:label ?location_label . FILTER (LANG(?location_label) = 'en')}\n\
+  \    OPTIONAL { ?event wdt:P580 | wdt:P585 ?start }\n \n    SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }\n}\nGROUP BY ?event ?eventLabel\nORDER BY DESC(?date) \n"

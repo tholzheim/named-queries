@@ -1,0 +1,8 @@
+name: work_cito-incoming-chart
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT ?intention ?intentionLabel (COUNT(DISTINCT ?citingArticle) AS\
+  \ ?count) WHERE {\n  VALUES ?CITEDARTICLE { target: }\n  ?citingArticle p:P2860\
+  \ ?citationStatement .\n  ?citationStatement pq:P3712 ?intention ;\n           \
+  \          ps:P2860 ?CITEDARTICLE .\n  ?intention wdt:P31 wd:Q96471816 .\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  } GROUP BY ?intention ?intentionLabel\n  ORDER BY DESC(?count)\n"

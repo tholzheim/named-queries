@@ -1,0 +1,10 @@
+name: organizations_works-per-year
+query: "#defaultView:LineChart\nSELECT ?year (COUNT(?work) AS ?number_of_works) ?organization\
+  \ ?organizationLabel  \nWHERE {\n  {\n    SELECT DISTINCT ?year ?work ?organization\
+  \ WHERE {\n      hint:Query hint:optimizer \"None\".\n      VALUES ?organization\
+  \ { {% for q in qs %} wd:{{ q }} {% endfor %} }\n      ?author wdt:P108 | wdt:P463\
+  \ | (wdt:P1416/wdt:P361*) ?organization . \n      ?work wdt:P50 ?author .\n    \
+  \  ?work wdt:P577 ?publication_date .\n      BIND(STR(YEAR(?publication_date)) AS\
+  \ ?year)\n    }\n    GROUP BY ?work ?year ?organization\n  } \n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en\". }\n}\nGROUP BY ?year ?organization\
+  \ ?organizationLabel\nORDER BY ?year\n\n"

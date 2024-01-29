@@ -1,0 +1,14 @@
+name: organizations_topic-tree-map
+query: "#defaultView:TreeMap\nSELECT\n  ?number_of_works\n  ?topic ?topicLabel\n \
+  \ ?organization ?organizationLabel  \nWITH {\n  # Bind organizations to variable\n\
+  \  SELECT ?organization WHERE {\n    VALUES ?organization { {% for q in qs %} wd:{{\
+  \ q }} {% endfor %} }\n  }\n} AS %organizations\nWITH {\n  # Find works associated\
+  \ with the organizations\n  SELECT\n    # Should not count authors twice\n    DISTINCT\
+  \ ?work ?organization\n  WHERE {\n    INCLUDE %organizations\n    ?work wdt:P50\
+  \ / (wdt:P108 | wdt:P463 | (wdt:P1416/wdt:P361*)) ?organization . \n  }\n} AS %works\n\
+  WITH {\n  # Count the number of works per topic per organization\n  SELECT\n   \
+  \ (COUNT(?work) AS ?number_of_works) ?topic ?organization\n  WHERE {\n    INCLUDE\
+  \ %works\n    ?work wdt:P921 ?topic .\n  } \n  GROUP BY ?topic ?organization\n}\
+  \ AS %work_numbers\nWHERE {\n  # Join the work and citation counts\n  INCLUDE %work_numbers\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?number_of_works)\nLIMIT 100\n\n"

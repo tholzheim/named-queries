@@ -1,0 +1,9 @@
+name: venue_incoming
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?intention\
+  \ ?intentionLabel (CONCAT(\"/cito/\", SUBSTR(STR(?intention), 32)) AS ?intentionUrl)\n\
+  (COUNT(DISTINCT ?citingArticle) AS ?count) WHERE {\n  VALUES ?JOURNAL { target:\
+  \ }\n  ?citingArticle p:P2860 ?citationStatement .\n  ?citationStatement pq:P3712\
+  \ ?intention ;\n                     ps:P2860 ?citedArticle .\n  ?citedArticle wdt:P1433\
+  \ ?JOURNAL .\n  ?intention wdt:P31 wd:Q96471816 ;\n             wdt:P2888 ?cito\
+  \ .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n} GROUP BY ?cito ?intention ?intentionLabel\n  ORDER BY DESC(?count)\n"

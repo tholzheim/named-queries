@@ -1,0 +1,17 @@
+name: event-series_recent-publications
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?publication_date\n\
+  \  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n \
+  \ ?authors ?authorsUrl\nWITH {\n  SELECT\n    DISTINCT ?person\n  WHERE {\n    ?event\
+  \ wdt:P179 | wdt:P31 target: .\n\n    {\n      # speaker\n      ?event wdt:P823\
+  \ ?person .\n    }\n    UNION\n    {\n      # organizer\n      ?event wdt:P664 ?person\
+  \ .\n    }\n    UNION\n    {\n      # participant\n      ?person wdt:P1344 | ^wdt:P710\
+  \ ?event .\n    }\n    UNION\n    {\n      # author\n      ?person ^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 ?event .\n    }\n  }\n} AS %people  \nWITH {\n  SELECT\n    (xsd:date(MAX(?publication_datetime))\
+  \ AS ?publication_date)\n    ?work\n    (GROUP_CONCAT(DISTINCT ?person_label; separator=\"\
+  , \") AS ?authors)\n    (CONCAT(\"../authors/\", GROUP_CONCAT(DISTINCT SUBSTR(STR(?person),\
+  \ 32); separator=\",\")) AS ?authorsUrl)\n  WHERE {\n    INCLUDE %people .\n   \
+  \ ?work wdt:P50 ?person ; wdt:P577 ?publication_datetime .\n    ?person rdfs:label\
+  \ ?person_label . FILTER(LANG(?person_label) = 'en')\n  }\n  GROUP BY ?work\n} AS\
+  \ %results\nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\". }\n}\nORDER\
+  \ BY DESC(?publication_date)\nLIMIT 500\n"

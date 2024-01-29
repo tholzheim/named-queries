@@ -1,0 +1,7 @@
+name: publisher_timeline
+query: "#defaultView:Timeline\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT DISTINCT ?datetime ?venue ?venueLabel WHERE {\n  # Publisher\n\
+  \  ?venue wdt:P123 target: .\n  \n  # Periodic literature\n  ?venue wdt:P31 / wdt:P279*\
+  \ wd:Q1002697 .\n  \n  # When the journal was started \n  ?venue wdt:P571 ?datetime.\n\
+  \  \n  # Label the journal\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?datetime)\nLIMIT 50\n"

@@ -1,0 +1,15 @@
+name: organization_topics
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?researchers\n\
+  \  ?topic ?topicLabel (CONCAT(\"/topic/\", SUBSTR(STR(?topic), 32)) AS ?topicUrl)\n\
+  \  (\"\U0001F50E\" AS ?zoom)\n  (CONCAT(\"{{ q }}/topic/\", SUBSTR(STR(?topic),\
+  \ 32)) AS ?zoomUrl)\n  ?topicDescription\n  ?samplework ?sampleworkLabel (CONCAT(\"\
+  /work/\", SUBSTR(STR(?samplework), 32)) AS ?sampleworkUrl)\nWITH {\n  SELECT DISTINCT\
+  \ ?researcher WHERE {\n    ?researcher ( wdt:P108 | wdt:P463 | wdt:P1416 ) / wdt:P361*\
+  \ target: .\n  } \n} AS %researchers\nWITH {\n  SELECT DISTINCT ?topic\n    (COUNT(DISTINCT\
+  \ ?researcher) AS ?researchers)\n    (SAMPLE(?work) AS ?samplework)\n  WHERE {\n\
+  \    INCLUDE %researchers\n    ?work wdt:P50 ?researcher . \n    ?work wdt:P921\
+  \ ?topic . \n  } \n  GROUP BY ?topic\n  ORDER BY DESC(?researchers)\n  LIMIT 500\n\
+  } AS %works_and_number_of_researchers\nWHERE {\n  INCLUDE %works_and_number_of_researchers\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,nl,no,ru,sv,zh\"\
+  \ . } \n}\nGROUP BY ?researchers ?topic ?topicLabel ?topicDescription ?samplework\
+  \ ?sampleworkLabel\nORDER BY DESC(?researchers)\n"

@@ -1,0 +1,13 @@
+name: topics_authors
+query: "# title: Authors for specific topics\nSELECT\n  ?score\n  ?author ?authorLabel\
+  \ (CONCAT(\"/author/\", SUBSTR(STR(?author), 32)) AS ?authorUrl)\n  ?example_work\
+  \ ?example_workLabel (CONCAT(\"/work/\", SUBSTR(STR(?example_work), 32)) AS ?example_workUrl)\n\
+  WITH {\n  SELECT (COUNT(?topic) AS ?score) ?author (SAMPLE(?work_) AS ?example_work)\n\
+  \    WHERE {\n    VALUES ?topic { {% for q in qs %} wd:{{ q }} {% endfor %} }\n\
+  \    \n    # A broad query including \"(wdt:P361+ | wdt:P1269+ | (wdt:P31* / wdt:P279*)\
+  \ )\" seems to take\n    # long time and time out.\n    ?work wdt:P921 ?topic  .\n\
+  \    ?work wdt:P2860 ?cited_work .\n    { ?cited_work wdt:P50 ?author . BIND(?cited_work\
+  \ AS ?work_) }\n    UNION\n    { ?work wdt:P50 ?author . BIND(?work AS ?work_) }\n\
+  \  }\n  GROUP BY ?author\n  ORDER BY DESC(?score)\n  LIMIT 200\n} AS %results\n\
+  WHERE {\n  INCLUDE %results\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\" . }\n}\nORDER BY DESC(?score)\n"

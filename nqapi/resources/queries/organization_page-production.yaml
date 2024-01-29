@@ -1,0 +1,14 @@
+name: organization_page-production
+query: "#defaultView:BarChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\n# Pages per year bar chart of an organization\nSELECT\n  ?year\n  (SUM(?pages_per_author)\
+  \ AS ?number_of_pages)\n  ?researcher_label\nWHERE {\n  {\n    SELECT\n      ?researcher_label\
+  \ ?work ?year\n      (SAMPLE(?pages) / COUNT(?researcher_of_paper) AS ?pages_per_author)\n\
+  \    WHERE {\n      # Find authors associated with organization\n      FILTER EXISTS\
+  \ { ?researcher wdt:P108 | wdt:P463 | (wdt:P1416 / wdt:P361*) target: . }\n    \
+  \  \n      ?work (wdt:P50|wdt:P2093) ?researcher_of_paper .\n      \n      # Disabled\
+  \ to only look on scholarly articles\n      # ?work wdt:P31 wd:Q13442814 .\n   \
+  \   \n      ?work wdt:P50 ?researcher .\n      ?work wdt:P1104 ?pages .\n      ?work\
+  \ wdt:P577 ?date . \n      BIND(STR(YEAR(?date)) AS ?year) \n      ?researcher rdfs:label\
+  \ ?researcher_label . FILTER(LANG(?researcher_label) = 'en')\n    } \n    GROUP\
+  \ BY ?work ?researcher_label ?year\n  }\n}\nGROUP BY ?year ?researcher_label \n\
+  ORDER BY ?year\n"

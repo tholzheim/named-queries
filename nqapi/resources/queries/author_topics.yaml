@@ -1,0 +1,34 @@
+name: author_topics
+description:
+  Get topics the author has published an article to and an example of the article of the topic
+parameter:
+  author_id:
+      label: q
+      type: Qid
+      description: Wikidata id of the event
+  lang:
+    label: lang
+    type: str
+    default_value: en
+    description: language of the labels that are queried
+query: >
+  PREFIX target: <http://www.wikidata.org/entity/{{ q }}>
+  
+  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+  
+  PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+  
+  SELECT ?count ?theme ?themeLabel ?example_work ?example_workLabel
+  WHERE {
+    {
+    SELECT (COUNT(?work) AS ?count) ?theme (SAMPLE(?work) AS ?example_work)
+    WHERE {
+      ?work wdt:P50 target: .
+      ?work wdt:P921 ?theme .
+    }
+    GROUP BY ?theme
+  }
+    OPTIONAL{?theme rdfs:label ?themeLabel. FILTER(lang(?themeLabel) = "{{ lang }}")}
+    OPTIONAL{?example_work rdfs:label ?example_workLabel. FILTER(lang(?example_workLabel) = "{{ lang }}")}
+  }
+  ORDER BY DESC(?count)

@@ -1,0 +1,10 @@
+name: venue-curation_missing-author-item
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  # Number\
+  \ of works with the author\n  ?count\n\n  # The author as a string, - rather than\
+  \ as an item\n  ?author\n\n  # Build URL to the Author disambiguator tool\n  (CONCAT(\n\
+  \      'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \      ENCODE_FOR_URI(?author)) AS ?resolver_url)\nWITH {\n  SELECT (COUNT(?work)\
+  \ as ?count) ?author WHERE {\n    ?work wdt:P1433 target: .\n    ?work wdt:P2093\
+  \ ?author .\n  }\n  GROUP BY ?author\n\n  ORDER BY DESC(?count)\n  \n  # Limit the\
+  \ number of result as the query may time out\n  LIMIT 1000\n} AS %result\nWHERE\
+  \ {\n  INCLUDE %result\n}\nORDER BY DESC(?count)"

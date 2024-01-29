@@ -1,0 +1,12 @@
+name: author-curation_missing-topic
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n?citations\
+  \  ?work ?workLabel (CONCAT(\"/work/\", SUBSTR(STR(?work), 32)) AS ?workUrl)\n(?work\
+  \ AS ?wikidata_url)\nWITH {\n  SELECT (COUNT(?work) as ?count) ?work WHERE {\n \
+  \ # Works by author\n    ?work wdt:P50 target: .\n  # Work does not have a main\
+  \ subject statement\n    FILTER NOT EXISTS { ?work wdt:P921 ?topic . }\n  }\n  GROUP\
+  \ BY ?work\n  ORDER BY DESC(?count)\n  LIMIT 2000\n} AS %works\nWITH {\n  SELECT\
+  \ (COUNT(?work1) as ?citations) ?work WHERE {\n  INCLUDE %works\n  # Works cited\n\
+  \    OPTIONAL { ?work1 wdt:P2860 ?work }.\n  }\n  GROUP BY ?work\n  ORDER BY DESC(?citations)\n\
+  \  LIMIT 200\n} AS %result\nWHERE {\n  INCLUDE %result\n  \n  # Label the results\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?citations)"

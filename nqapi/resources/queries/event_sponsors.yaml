@@ -1,0 +1,6 @@
+name: event_sponsors
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?sponsor\
+  \ ?sponsorLabel ?sponsorUrl ?sponsorDescription\nWHERE {\n  target: wdt:P859 ?sponsor\
+  \ .\n  BIND(CONCAT(\"/sponsor/\", SUBSTR(STR(?sponsor), 32)) AS ?sponsorUrl)\n \
+  \ SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n}\n"

@@ -1,0 +1,9 @@
+name: venue_author-awards
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: Author\
+  \ awards for a specific venue\nSELECT DISTINCT\n  ?year \n  ?author ?authorLabel\n\
+  \  ?award ?awardLabel ?awardDescription\nWHERE {\n  [] wdt:P1433 target: ;\n   \
+  \  wdt:P50 ?author .\n  ?author p:P166 ?award_statement .\n  ?award_statement ps:P166\
+  \ ?award .\n  OPTIONAL {\n    { ?award_statement pq:P585 ?time }\n    UNION\n  \
+  \  { ?award_statement pq:P580 ?time }\n    BIND(YEAR(?time) AS ?year)\n  }\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\
+  \  \n}\nORDER BY DESC(?year)\nLIMIT 500\n"

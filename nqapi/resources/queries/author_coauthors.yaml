@@ -1,0 +1,16 @@
+name: author_coauthors
+query: "#defaultView:Graph\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \n# Egocentric co-author graph for an author\nSELECT ?author1 ?author1Label ?rgb\
+  \ ?author2 ?author2Label\nWITH {\n  SELECT (COUNT(?work) AS ?count) ?author1 ?author2\
+  \ WHERE {\n    # Find co-authors\n    ?work wdt:P50 target:, ?author1, ?author2\
+  \ .\n\n    # Filtering \n    # Only journal and conference articles, books, not\
+  \ (yet?) software\n    # VALUES ?publication_type { wd:Q13442814 wd:Q571 wd:Q26973022}\
+  \  \n    # ?work wdt:P31 ?publication_type .\n  }\n  GROUP BY ?author1 ?author2\n\
+  \  ORDER BY DESC(?count)\n                    \n  # Limit the size of the graph,\
+  \ to avoid overburdening the browser\n  LIMIT 1000\n} AS %authors\nWITH {\n  SELECT\
+  \ ?author1 ?author2 ?rgb WHERE {\n    INCLUDE %authors\n    \n    # Exclude self-links\n\
+  \    FILTER (?author1 != ?author2)\n    \n    # Color according to gender\n    OPTIONAL\
+  \ {\n      ?author1 wdt:P21 ?gender1 . \n      BIND( IF(?gender1 = wd:Q6581097,\
+  \ \"3182BD\", \"E6550D\") AS ?rgb)\n    }\n  }\n} AS %result\nWHERE {\n  INCLUDE\
+  \ %result\n  # Label the results \n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,fr,de,ru,es,zh,jp\". }\n}\n"

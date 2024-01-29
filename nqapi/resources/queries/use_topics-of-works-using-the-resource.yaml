@@ -1,0 +1,8 @@
+name: use_topics-of-works-using-the-resource
+query: "#defaultView:BubbleChart\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?count\n  ?topic ?topicLabel\nWITH{\n  SELECT\n    (COUNT(?work)\
+  \ AS ?count)\n    ?topic\n  WHERE {\n    ?work wdt:P4510 / wdt:P279* target: ; \n\
+  \          wdt:P921 ?topic .\n  }\n  GROUP BY ?topic\n  ORDER BY DESC(?count)\n\
+  \  LIMIT 200\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"en,da,de,es,fr,nl,no,ru,sv,zh\" . }\n}\n\
+  ORDER BY DESC(?count)\n\n"

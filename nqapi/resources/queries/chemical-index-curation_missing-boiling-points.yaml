@@ -1,0 +1,9 @@
+name: chemical-index-curation_missing-boiling-points
+query: "SELECT ?wikis ?compound ?compoundLabel ?formula WITH {\n  SELECT ?wikis ?compound\
+  \ WHERE {\n    ?compound wdt:P31 wd:Q113145171 ;\n              wikibase:sitelinks\
+  \ ?wikis . hint:Prior hint:rangeSafe true .\n    MINUS { ?compound wdt:P2113 []\
+  \ } # compounds sublimates\n    FILTER(?wikis >= 40)\n    FILTER(NOT EXISTS {?compound\
+  \ wdt:P2102 []})\n  } ORDER BY DESC(?wikis)\n  LIMIT 100\n} AS %CHEMICALS WHERE\
+  \ {\n  INCLUDE %CHEMICALS\n  OPTIONAL { ?compound wdt:P274 ?formula }\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n\
+  } ORDER BY DESC(?wikis)\n"

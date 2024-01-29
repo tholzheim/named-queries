@@ -1,0 +1,7 @@
+name: cito_journals
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT (COUNT(DISTINCT\
+  \ ?citingArticle) AS ?count) \n?journal ?journalLabel (CONCAT(\"/venue/\", SUBSTR(STR(?journal),\
+  \ 32)) AS ?journalUrl) WHERE {\n  VALUES ?INTENTION { target: }\n  ?citingArticle\
+  \ p:P2860 ?citationStatement ;\n                 wdt:P1433 ?journal .\n  ?citationStatement\
+  \ pq:P3712 ?INTENTION .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} GROUP BY ?journal ?journalLabel\n  ORDER BY DESC(?count)\n"

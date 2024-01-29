@@ -1,0 +1,15 @@
+name: event_uses
+query: "# Use by people associated with an event\n\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT\n  ?number_of_persons\n  ?use ?useLabel (CONCAT(\"/use/\", SUBSTR(STR(?use),\
+  \ 32)) AS ?useUrl) ?useDescription\n  ?example_person ?example_personLabel (CONCAT(\"\
+  /author/\", SUBSTR(STR(?example_person), 32)) AS ?example_personUrl)\nWITH {\n \
+  \ SELECT\n    DISTINCT ?person\n  WHERE {\n    {\n      # speaker, organizer, program\
+  \ committee member\n      target: wdt:P823 | wdt:P664 | wdt:P5804 ?person .\n  \
+  \  }\n    UNION\n    {\n      # participant\n      ?person wdt:P1344 | ^wdt:P710\
+  \ target: .\n    }\n    UNION\n    {\n      # author\n      ?person ^wdt:P50 / wdt:P1433\
+  \ / wdt:P4745 target: .\n    }\n  }\n} AS %people  \nWITH {\n  SELECT\n    (COUNT(DISTINCT\
+  \ ?person) AS ?number_of_persons)\n    ?use\n    (SAMPLE(?person) AS ?example_person)\n\
+  \  WHERE {\n    INCLUDE %people\n    ?person ^wdt:P50 / wdt:P4510 ?use .\n  }\n\
+  \  GROUP BY ?use\n} AS %results\nWHERE {\n  INCLUDE %results\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,no,ru,sv,zh\"\
+  . }\n}\nORDER BY DESC(?number_of_persons)\nLIMIT 200\n"

@@ -1,0 +1,19 @@
+name: author-curation_missing-author-resolving
+query: "#title: Variants of author name strings\nPREFIX target: <http://www.wikidata.org/entity/{{\
+  \ q }}>\n\nSELECT \n  (COUNT(?work) AS ?count)\n  ?string\n  (CONCAT(\"https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=\"\
+  , \n        ENCODE_FOR_URI(?string)) AS ?author_resolver_url) \nWITH\n{\n  # Find\
+  \ strings associated with the target author\n  SELECT DISTINCT ?string_\n  WHERE\n\
+  \  {\n    { target: rdfs:label ?string_. } # in label\n    UNION\n    { target:\
+  \ skos:altLabel ?string_. } # in alias\n    UNION\n    {\n      ?author_statement\
+  \ ps:P50 target: ; \n                        pq:P1932 ?string_. # in \"stated as\"\
+  \ strings for \"author\" statements on work items\n    }\n  }\n} AS %RAWstrings\n\
+  WITH\n# This part is due to Dipsacus fullonum, as per https://w.wiki/5Brk\n{\n \
+  \ # Calculate capitalization variants of these raw strings\n  SELECT DISTINCT ?string\n\
+  \  WHERE\n  {\n    {\n      INCLUDE %RAWstrings\n      BIND(STR(?string_) AS ?string)\
+  \ # the raw strings\n    }\n    UNION\n    {\n      INCLUDE %RAWstrings\n      BIND(UCASE(STR(?string_))\
+  \ AS ?string) # uppercased versions of the raw strings\n    }\n    UNION\n    {\n\
+  \      INCLUDE %RAWstrings\n      BIND(LCASE(STR(?string_)) AS ?string) # lowercased\
+  \ versions of the raw strings\n    }\n  }\n} AS %NORMALIZEDstrings\nWHERE {\n  #\
+  \ Find works that have \"author name string\" values equal to these normalized strings\n\
+  \  INCLUDE %NORMALIZEDstrings\n  OPTIONAL { ?work wdt:P2093 ?string. }\n}\nGROUP\
+  \ BY ?string\nORDER BY DESC (?count)\n"

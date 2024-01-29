@@ -1,0 +1,1 @@
+uvicorn nqapi.webserver:app --reload

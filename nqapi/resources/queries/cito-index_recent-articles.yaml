@@ -1,0 +1,6 @@
+name: cito-index_recent-articles
+query: "select distinct ?date ?work ?workLabel ?venue ?venueLabel where {\n  ?work\
+  \ wdt:P577 ?dates ;\n        p:P2860 / pq:P3712 / wdt:P31 wd:Q96471816 .\n  BIND(xsd:date(?dates)\
+  \ AS ?date)\n  ?work wdt:P31 wd:Q109229154 . bind(\"explicit\" as ?type_)\n  ?work\
+  \ wdt:P1433 ?venue .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} ORDER BY DESC(?date)\n  LIMIT 50\n"

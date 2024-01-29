@@ -1,0 +1,6 @@
+name: license-index_work-counts
+query: "SELECT \n  ?count \n  ?license ?licenseLabel ?licenseDescription (CONCAT(\"\
+  /license/\", SUBSTR(STR(?license), 32)) AS ?licenseUrl)\nWITH {\n  SELECT \n   \
+  \ (COUNT(*) AS ?count)\n    ?license\n  WHERE {\n    [] wdt:P275 ?license .\n  }\n\
+  \  GROUP BY ?license\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?count)"

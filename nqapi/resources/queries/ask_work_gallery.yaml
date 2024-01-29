@@ -1,0 +1,2 @@
+name: ask_work_gallery
+query: "ASK {\n  wd:{{q}} wdt:P373 ?gallery  .\n}\n"

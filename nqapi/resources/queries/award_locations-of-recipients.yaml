@@ -1,0 +1,10 @@
+name: award_locations-of-recipients
+query: "#defaultView:Map\nPREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\
+  \nSELECT DISTINCT ?recipient ?recipientLabel ?image ?item ?itemLabel ?geo ?layer\n\
+  WITH {\n  SELECT DISTINCT ?recipient ?image ?item ?geo (?property_item_label AS\
+  \ ?layer) WHERE {\n    ?recipient wdt:P166 target: .\n    ?recipient ?property ?item\
+  \ . \n    ?item wdt:P625 ?geo .\n    ?property_item wikibase:directClaim ?property\
+  \ .\n    ?property_item rdfs:label ?property_item_label . FILTER (LANG(?property_item_label)\
+  \ = 'en')\n    OPTIONAL { ?item wdt:P18 ?image . }\n  }\n} AS %result\nWHERE {\n\
+  \  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"en,da,de,es,fr,jp,nl,no,ru,sv,zh\" . } \n}"

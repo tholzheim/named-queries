@@ -1,0 +1,14 @@
+name: chemical_related
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: related\
+  \ chemical structures\nSELECT ?mol ?molLabel ?InChIKey ?CAS ?ChemSpider ?PubChem_CID\
+  \ WITH {\n  SELECT ?queryKey ?srsearch ?filter WHERE {\n    target: wdt:P235 ?queryKey\
+  \ .\n    BIND (CONCAT(substr($queryKey,1,14), \" haswbstatement:P235\") AS ?srsearch)\n\
+  \    BIND (CONCAT(\"^\", substr($queryKey,1,14)) AS ?filter)\n  }\n} AS %MOLS WITH\
+  \ {\n  SELECT ?mol ?InChIKey WHERE {\n    INCLUDE %MOLS\n    SERVICE wikibase:mwapi\
+  \ {\n        bd:serviceParam wikibase:endpoint \"www.wikidata.org\";\n        wikibase:api\
+  \ \"Search\";\n        mwapi:srsearch ?srsearch;\n        mwapi:srlimit \"max\"\
+  .\n        ?mol wikibase:apiOutputItem mwapi:title.\n      }\n    ?mol wdt:P235\
+  \ ?InChIKey .\n    FILTER (regex(str(?InChIKey), ?filter))\n    FILTER (?InChIKey\
+  \ != ?queryKey)\n  }\n} AS %MOLS2 {\n  INCLUDE %MOLS2\n  OPTIONAL { ?mol wdt:P231\
+  \ ?CAS }\n  OPTIONAL { ?mol wdt:P661 ?ChemSpider }\n  OPTIONAL { ?mol wdt:P662 ?PubChem_CID\
+  \ }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". }\n}\n"

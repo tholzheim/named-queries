@@ -1,0 +1,10 @@
+name: license_recently-published-works
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  ?publication_date\n\
+  \  ?work ?workLabel ?workDescription\nWITH {\n  SELECT\n    ?publication_date_\n\
+  \    ?work\n  WHERE {\n    ?work wdt:P275 target: . \n    OPTIONAL { ?work wdt:P577\
+  \ ?publication_date_ . }\n  }\n  ORDER BY DESC(?publication_date_)\n  LIMIT 1100\n\
+  } AS %works\nWITH {\n  SELECT\n    (xsd:date(MAX(?publication_date_)) AS ?publication_date)\n\
+  \    ?work\n  WHERE {\n    INCLUDE %works\n  }\n  GROUP BY ?work\n  ORDER BY DESC(?publication_date)\n\
+  \  LIMIT 1000\n} AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label\
+  \ { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?publication_date)\n\
+  \n  "

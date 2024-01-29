@@ -1,0 +1,12 @@
+name: work_cito-incoming
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?intention\
+  \ ?intentionLabel (CONCAT(\"/cito/\", SUBSTR(STR(?intention), 32)) AS ?intentionUrl)\
+  \  \n?count ?example_work_for_intention ?example_work_for_intentionLabel \n\nWITH\
+  \ {\n  SELECT ?intention (COUNT(DISTINCT ?citingArticle) AS ?count) (SAMPLE(?citingArticle)\
+  \ AS ?example_work_for_intention) {\n    VALUES ?CITEDARTICLE { target: }\n    ?citingArticle\
+  \ p:P2860 ?citationStatement .\n    ?citationStatement pq:P3712 ?intention ;\n \
+  \                      ps:P2860 ?CITEDARTICLE .\n    ?intention wdt:P31 wd:Q96471816\
+  \ .\n  }\n  GROUP BY ?intention\n\n} AS %intentions\nWHERE {\n  INCLUDE %intentions\n\
+  \  SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\"\
+  . }\n}\nGROUP BY ?intention ?intentionLabel ?count ?example_work_for_intention ?example_work_for_intentionLabel\n\
+  ORDER BY DESC(?count)\n"

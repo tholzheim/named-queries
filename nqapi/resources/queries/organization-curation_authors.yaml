@@ -1,0 +1,11 @@
+name: organization-curation_authors
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT\n  (COUNT(?work)\
+  \ AS ?count) \n  ?author_name\n  (CONCAT(\n      'https://author-disambiguator.toolforge.org/names_oauth.php?doit=Look+for+author&name=',\n\
+  \      ENCODE_FOR_URI(?author_name)) AS ?author_resolver_url)\nWHERE {\n  {\n  \
+  \  SELECT DISTINCT ?author_name {\n      ?researcher_ ( wdt:P108 | wdt:P463 | wdt:P1416\
+  \ ) / wdt:P361* target: .\n      \n      ?researcher_ skos:altLabel | rdfs:label\
+  \ ?author_name_ .\n      \n      # The SELECT-DISTINCT-BIND trick here is due to\
+  \ Stanislav Kralin\n      # https://stackoverflow.com/questions/53933564\n     \
+  \ BIND (STR(?author_name_) AS ?author_name)\n    }\n    LIMIT 2000\n  }\n  OPTIONAL\
+  \ { ?work wdt:P2093 ?author_name . }\n}\nGROUP BY ?author_name \nHAVING (?count\
+  \ > 0)\nORDER BY DESC(?count)\n"

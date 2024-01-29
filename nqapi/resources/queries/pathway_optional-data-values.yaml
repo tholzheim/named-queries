@@ -1,0 +1,6 @@
+name: pathway_optional-data-values
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT ?wpid ?organism\
+  \ ?organismLabel ?pathwayDescription\nWHERE {\n  VALUES ?pathway { target: }\n \
+  \ OPTIONAL {\n    target: wdt:P2410 ?wpid ;\n    wdt:P703 ?organism .\n  }\n  SERVICE\
+  \ wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\" . }\n\
+  }"

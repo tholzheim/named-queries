@@ -1,0 +1,8 @@
+name: venue_retractions
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?work ?workLabel ?doi (COUNT(DISTINCT ?citing) AS ?citations) WHERE {\n  { ?work\
+  \ wdt:P31 wd:Q45182324 . }\n  UNION\n  { ?work wdt:P793 wd:Q7316896 . }\n  UNION\n\
+  \  { ?work wdt:P5824 [] . }\n  OPTIONAL { ?citing wdt:P2860 ?work . }\n  ?work wdt:P1433\
+  \ target: ; wdt:P356 ?doi .\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} GROUP BY ?work ?workLabel ?doi\n  ORDER BY DESC(?citations)\n\
+  \  LIMIT 100\n"

@@ -1,0 +1,9 @@
+name: publisher_most-cited
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# Count the number\
+  \ of citations for each journal published by a specified publisher\nSELECT\n  ?number_of_citations\n\
+  \  ?work ?workLabel ?journal ?journalLabel \nWITH {\n  SELECT ?work ?journal (COUNT(?citing_work)\
+  \ AS ?number_of_citations) WHERE {\n    ?journal wdt:P123 target: .\n    ?work wdt:P1433\
+  \ ?journal .\n    ?citing_work wdt:P2860 ?work\n  }\n  GROUP BY ?work ?journal\n\
+  \  ORDER BY DESC(?number_of_citations)\n  LIMIT 500  \n} AS %result\nWHERE {\n \
+  \ INCLUDE %result\n  # Label the result\n  SERVICE wikibase:label { bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . } \n}\nORDER BY DESC(?number_of_citations)\n"

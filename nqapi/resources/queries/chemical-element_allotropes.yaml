@@ -1,0 +1,12 @@
+name: chemical-element_allotropes
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\nSELECT DISTINCT\
+  \ ?allotrope ?allotropeLabel ?density ?densityUnit ?densityUnitLabel WITH {\n  SELECT\
+  \ ?allotrope (SAMPLE(?densityStats) AS ?densityStat) WHERE {\n    ?allotrope wdt:P31|wdt:P279\
+  \ ?allotropeType .\n    ?allotropeType p:P279 ?allotropeSpecsStatement .\n    ?allotropeSpecsStatement\
+  \ ps:P279 wd:Q21198401 ;\n                             pq:P642 target: .\n    OPTIONAL\
+  \ {\n      ?allotrope p:P2054 ?densityStats .\n    }\n  } GROUP BY ?allotrope\n\
+  } AS %ALLOTROPES {\n  INCLUDE %ALLOTROPES\n  OPTIONAL {\n    ?allotrope p:P2054\
+  \ ?densityStat .\n    ?densityStat psv:P2054 ?densityValNode .\n    ?densityValNode\
+  \ wikibase:quantityAmount ?density ;\n                    wikibase:quantityUnit\
+  \ ?densityUnit .\n  }\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n} ORDER BY ASC(?allotropeLabel)\n"

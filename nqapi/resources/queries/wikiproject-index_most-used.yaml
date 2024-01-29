@@ -1,0 +1,9 @@
+name: wikiproject-index_most-used
+query: "SELECT \n  ?count\n  ?wikiproject ?wikiprojectLabel\n  (CONCAT(\"/wikiproject/\"\
+  , SUBSTR(STR(?wikiproject), 32)) AS ?wikiprojectUrl)\n  ?wikiprojectDescription\n\
+  \  ?example ?exampleLabel (CONCAT(\"/\", SUBSTR(STR(?example), 32)) AS ?exampleUrl)\n\
+  WITH {\n  SELECT \n    (COUNT(?item) AS ?count)\n    ?wikiproject\n    (SAMPLE(?item)\
+  \ AS ?example)\n  WHERE {\n    ?wikiproject wdt:P31 wd:Q16695773 ;\n           \
+  \      ^(wdt:P6104 | wdt:P5008) ?item .\n  }\n  GROUP BY ?wikiproject\n} AS %result\n\
+  WHERE {\n  INCLUDE %result\n  SERVICE wikibase:label { bd:serviceParam wikibase:language\
+  \ \"[AUTO_LANGUAGE],en\". }\n}\nORDER BY DESC(?count)\nLIMIT 1000"

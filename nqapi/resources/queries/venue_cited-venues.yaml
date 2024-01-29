@@ -1,0 +1,12 @@
+name: venue_cited-venues
+query: "PREFIX target: <http://www.wikidata.org/entity/{{ q }}>\n\n# title: Cited\
+  \ venues from specific journal\nSELECT\n  ?count\n  ?short_name\n  ?cited_journal\
+  \ ?cited_journalLabel\nWITH {\n  SELECT\n    (COUNT(?cited_work) AS ?count)\n  \
+  \  ?cited_journal\n    (SAMPLE(?short_name_) AS ?short_name)\n  WHERE {\n    ?work\
+  \ wdt:P1433 target: .\n    ?work wdt:P2860 ?cited_work .\n    ?cited_work wdt:P1433\
+  \ ?cited_journal . \n    OPTIONAL {\n      ?work wdt:P577 ?publication_datetime\
+  \ .\n      BIND(xsd:date(?publication_datetime) AS ?publication_date)\n    }\n \
+  \   OPTIONAL { ?cited_journal wdt:P1813 ?short_name_ . }\n  }\n  GROUP BY ?cited_journal\n\
+  } AS %result\nWHERE {\n  INCLUDE %result\n  SERVICE wikibase:label {\n    bd:serviceParam\
+  \ wikibase:language \"[AUTO_LANGUAGE],en\" . } \n}\nORDER BY DESC(?count)\nLIMIT\
+  \ 200\n"

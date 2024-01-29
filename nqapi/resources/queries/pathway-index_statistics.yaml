@@ -1,0 +1,11 @@
+name: pathway-index_statistics
+query: "SELECT ?count ?description\nWITH {\n  SELECT (COUNT(DISTINCT ?article) AS\
+  \ ?count) WHERE {\n    VALUES ?database { wdt:P2410 wdt:P3937 }\n    [] ?database\
+  \ [] ; wdt:P2860 ?article .\n  }\n} AS %literature\nWITH {\n  SELECT (COUNT(*) AS\
+  \ ?count) WHERE { [] wdt:P2410 []. }\n} AS %wikipathways\nWITH {\n  SELECT (COUNT(*)\
+  \ AS ?count) WHERE { [] wdt:P3937 []. }\n} AS %reactome\nWHERE {\n  {\n    INCLUDE\
+  \ %wikipathways\n    BIND(\"Total number of WikiPathways pathways\" AS ?description)\n\
+  \  }\n  UNION\n  {\n    INCLUDE %literature\n    BIND(\"Total number of articles\
+  \ cited by pathways\" AS ?description)\n  }\n  UNION\n  {\n    INCLUDE %reactome\n\
+  \    BIND(\"Total number of Reactome pathways\" AS ?description)\n  }\n}\nORDER\
+  \ BY DESC(?count)"
